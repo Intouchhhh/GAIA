@@ -5,8 +5,8 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 5f;   
     public float jumpForce = 10f;  
 
-    private Rigidbody2D rb;        
-    private float moveDirection;   
+    private Rigidbody2D rb;
+    private float moveDirection;
 
     void Start()
     {
