@@ -2,25 +2,38 @@ using UnityEngine;
 
 public class EnemyStateMachine : MonoBehaviour
 {
-    public enum EnemyState { Patrol, Idle }
+    public enum EnemyState { Patrol, Idle, Chase }
 
     [Header("Patrol Settings")]
-    public float speed = 2f; // Movement speed
-    public Transform[] patrolPoints; // Waypoints for patrol
+    public float speed = 2f;
+    public Transform[] patrolPoints;
     private int currentPointIndex = 0;
+
+    [Header("Chase Settings")]
+    public float chaseSpeed = 3f;
+    public float detectionRange = 5f;
+    public Transform player;
 
     [Header("State Machine")]
     public EnemyState currentState = EnemyState.Patrol;
 
     private Rigidbody2D rb;
+    private SpriteRenderer spriteRenderer;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         rb.freezeRotation = true;
+
         if (patrolPoints.Length == 0)
         {
             Debug.LogWarning("No patrol points assigned!");
+        }
+        if (player == null)
+        {
+            Debug.LogError("Player Transform is not assigned!");
         }
     }
 
@@ -30,10 +43,15 @@ public class EnemyStateMachine : MonoBehaviour
         {
             case EnemyState.Patrol:
                 Patrol();
+                CheckForPlayer();
+                break;
+
+            case EnemyState.Chase:
+                ChasePlayer();
+                CheckForPlayerOutOfRange();
                 break;
 
             case EnemyState.Idle:
-                // Enemy can stop moving or perform another behavior.
                 rb.linearVelocity = Vector2.zero;
                 break;
         }
@@ -46,38 +64,68 @@ public class EnemyStateMachine : MonoBehaviour
         Transform targetPoint = patrolPoints[currentPointIndex];
         Vector2 direction = (targetPoint.position - transform.position).normalized;
 
-        // Move enemy towards the current patrol point
         rb.linearVelocity = new Vector2(direction.x * speed, rb.linearVelocity.y);
 
-        // Check if the enemy is close enough to switch to the next point
         if (Vector2.Distance(transform.position, targetPoint.position) < 0.2f)
         {
             currentPointIndex++;
             if (currentPointIndex >= patrolPoints.Length)
             {
-                currentPointIndex = 0; // Loop back to the first point
+                currentPointIndex = 0;
             }
-
-            // Flip the enemy sprite when changing direction
-            FlipSprite(direction.x);
         }
+
+        FlipSprite(direction.x);
+    }
+
+    void ChasePlayer()
+    {
+        if (player == null) return;
+
+        Vector2 direction = (player.position - transform.position).normalized;
+
+        rb.linearVelocity = new Vector2(direction.x * chaseSpeed, rb.linearVelocity.y);
+
+        FlipSprite(direction.x);
     }
 
     void FlipSprite(float moveDirection)
     {
-        if (moveDirection != 0)
+        if (moveDirection != 0 && spriteRenderer != null)
         {
-            transform.localScale = new Vector3(Mathf.Sign(moveDirection), 1, 1);
+            spriteRenderer.flipX = moveDirection < 0;
+        }
+    }
+
+    void CheckForPlayer()
+    {
+        if (player == null) return;
+
+        if (Vector2.Distance(transform.position, player.position) <= detectionRange)
+        {
+            currentState = EnemyState.Chase;
+        }
+    }
+
+    void CheckForPlayerOutOfRange()
+    {
+        if (player == null) return;
+
+        if (Vector2.Distance(transform.position, player.position) > detectionRange)
+        {
+            currentState = EnemyState.Patrol;
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if the player touches the enemy
         if (collision.gameObject.CompareTag("Player"))
         {
-            // Call a "Die" function on the player
-            collision.gameObject.GetComponent<PlayerController>().Die();
+            PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.Die();
+            }
         }
     }
 }

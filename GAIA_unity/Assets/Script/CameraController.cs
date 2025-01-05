@@ -2,27 +2,15 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform player; // Reference to the player's Transform.
+    public Transform player; 
+    public Vector3 offset = new Vector3(0f, 0f, -10f); 
+    public float smoothTime = 0.125f; 
+    public Vector3 Velocity = Vector3.zero;
 
-    public Vector3 offset = new Vector3(0f, 2f, -10f); // Offset to adjust camera position.
-
-    public float smoothSpeed = 0.125f; // Adjust for smoother camera movement.
-
-    void FixedUpdate()
+    void LateUpdate()
     {
-        if (player == null)
-        {
-            Debug.LogWarning("Player Transform is not assigned!");
-            return;
-        }
-
-        // Calculate the desired position of the camera.
-        Vector3 desiredPosition = player.position + offset;
-
-        // Smoothly interpolate between the camera's current position and the desired position.
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-
-        // Apply the new position to the camera.
+        Vector3 TargetPosition = player.position + offset;
+        Vector3 smoothedPosition = Vector3.SmoothDamp(transform.position, TargetPosition, ref Velocity, smoothTime);
         transform.position = smoothedPosition;
     }
 }
