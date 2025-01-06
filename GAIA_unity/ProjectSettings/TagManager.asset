@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - Spike
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -12,16 +14,16 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - ML_Ground
+  - ML_Hazard
+  - ML_Prize
+  - ML_Enemy
+  - ML_Player
+  - Ground
+  - Hazard
+  - Prize
+  - Enemy
+  - Player
   - 
   - 
   - 
