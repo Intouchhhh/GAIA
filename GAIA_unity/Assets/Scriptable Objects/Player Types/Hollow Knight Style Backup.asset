@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5759d6a660e3ac14dbd9a801bf9d7627, type: 3}
-  m_Name: Hollow Knight Style
+  m_Name: Hollow Knight Style Backup
   m_EditorClassIdentifier: 
   gravityStrength: -52
   gravityScale: 5.3007135

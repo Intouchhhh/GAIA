@@ -8,6 +8,8 @@
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -30,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
 	public bool IsWallJumping { get; private set; }
 	public bool IsDashing { get; private set; }
 	public bool IsSliding { get; private set; }
+	public bool IsDropping { get; private set; }
 
 	//Timers (also all fields, could be private and a method returning a bool could be used)
 	public float LastOnGroundTime { get; private set; }
@@ -50,6 +53,12 @@ public class PlayerMovement : MonoBehaviour
 	private bool _dashRefilling;
 	private Vector2 _lastDashDir;
 	private bool _isDashAttacking;
+
+	//DropDown
+	public string oneWayPlatformLayerName = "OneWayPlatform";
+	public string playerLayerName = "Player";
+	private bool isDropping = false;
+	public Collider2D dropTrigger;
 
 	#endregion
 
@@ -74,10 +83,14 @@ public class PlayerMovement : MonoBehaviour
 
     #region LAYERS & TAGS
     [Header("Layers & Tags")]
-	[SerializeField] private LayerMask _groundLayer;
+	[SerializeField] private LayerMask _groundLayer1;
+	[SerializeField] private LayerMask _groundLayer2;
+
+	private LayerMask _combinedGroundLayer;
+
 	#endregion
 
-    private void Awake()
+	private void Awake()
 	{
 		RB = GetComponent<Rigidbody2D>();
 		AnimHandler = GetComponent<PlayerAnimator>();
@@ -87,6 +100,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		SetGravityScale(Data.gravityScale);
 		IsFacingRight = true;
+		_combinedGroundLayer = _groundLayer1 | _groundLayer2;
 	}
 
 	private void Update()
@@ -108,7 +122,11 @@ public class PlayerMovement : MonoBehaviour
 		if (_moveInput.x != 0)
 			CheckDirectionToFace(_moveInput.x > 0);
 
-		if(Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.J))
+		#region DROP CHECKS
+		HandleDropThroughPlatform();
+		#endregion
+
+		if (!(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.J))
         {
 			OnJumpInput();
         }
@@ -128,7 +146,7 @@ public class PlayerMovement : MonoBehaviour
 		if (!IsDashing && !IsJumping)
 		{
 			//Ground Check
-			if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer)) //checks if set box overlaps with ground
+			if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _combinedGroundLayer)) //checks if set box overlaps with ground
 			{
 				if(LastOnGroundTime < -0.1f)
                 {
@@ -139,13 +157,13 @@ public class PlayerMovement : MonoBehaviour
             }		
 
 			//Right Wall Check
-			if (((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && IsFacingRight)
-					|| (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && !IsFacingRight)) && !IsWallJumping)
+			if (((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _combinedGroundLayer) && IsFacingRight)
+					|| (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _combinedGroundLayer) && !IsFacingRight)) && !IsWallJumping)
 				LastOnWallRightTime = Data.coyoteTime;
 
-			//Right Wall Check
-			if (((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && !IsFacingRight)
-				|| (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && IsFacingRight)) && !IsWallJumping)
+			//Left Wall Check
+			if (((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _combinedGroundLayer) && !IsFacingRight)
+				|| (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _combinedGroundLayer) && IsFacingRight)) && !IsWallJumping)
 				LastOnWallLeftTime = Data.coyoteTime;
 
 			//Two checks needed for both left and right walls since whenever the play turns the wall checkPoints swap sides
@@ -196,7 +214,7 @@ public class PlayerMovement : MonoBehaviour
 
 				_wallJumpStartTime = Time.time;
 				_lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
-
+				CheckDirectionToFace(_lastWallJumpDir > 0);
 				WallJump(_lastWallJumpDir);
 			}
 		}
@@ -501,6 +519,48 @@ public class PlayerMovement : MonoBehaviour
 		_dashRefilling = false;
 		_dashesLeft = Mathf.Min(Data.dashAmount, _dashesLeft + 1);
 	}
+	#endregion
+
+	#region DROP METHODS
+	private void HandleDropThroughPlatform()
+	{
+		if ((Input.GetAxis("Vertical") < 0) && Input.GetKeyDown(KeyCode.Space) && !isDropping)
+		{
+			// Ignore collision to drop down
+			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), true);
+			isDropping = true; // Mark as dropping
+			StartCoroutine(EnableCollisionAfterDelay(0.095f));
+		}
+	}
+
+	IEnumerator EnableCollisionAfterDelay(float delay)
+	{
+		yield return new WaitForSeconds(delay);
+
+		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), false);
+		isDropping = false;
+	}
+
+	//private void HandleDropThroughPlatform()
+	//{
+	//	if ((Input.GetAxis("Vertical") < 0) && Input.GetKeyDown(KeyCode.Space) && !isDropping)
+	//	{
+	//		// Ignore collision to drop down
+	//		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), true);
+	//		isDropping = true; // Mark as dropping
+	//	}
+	//}
+
+	//private void OnTriggerEnter2D(Collider2D collision)
+	//{
+	//	Debug.Log("Trigger1");
+	//	if (collision.gameObject.layer == LayerMask.NameToLayer(oneWayPlatformLayerName))
+	//	{
+	//		Debug.Log("Trigger2");
+	//		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), false);
+	//		isDropping = false;
+	//	}
+	//}
 	#endregion
 
 	#region OTHER MOVEMENT METHODS

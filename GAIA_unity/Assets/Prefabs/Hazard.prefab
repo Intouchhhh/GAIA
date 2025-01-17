@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 411833953752341620}
   - component: {fileID: 1123349021551655519}
   m_Layer: 7
-  m_Name: Triangle
+  m_Name: ML_Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

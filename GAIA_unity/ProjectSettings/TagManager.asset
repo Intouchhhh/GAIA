@@ -25,9 +25,9 @@ TagManager:
   - Prize
   - Enemy
   - Player
-  - 
-  - 
-  - 
+  - OneWayPlatform
+  - ML_Platform
+  - Checks
   - 
   - 
   - 

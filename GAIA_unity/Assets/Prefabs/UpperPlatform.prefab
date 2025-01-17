@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3237035356016600215}
   - component: {fileID: 6179223645784089755}
   - component: {fileID: 8363467101625505869}
-  m_Layer: 11
+  m_Layer: 16
   m_Name: UpperPlatform
   m_TagString: OneWayPlatform
   m_Icon: {fileID: 0}
@@ -144,14 +144,14 @@ PlatformEffector2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 510251183100058671}
   m_Enabled: 1
-  m_UseColliderMask: 1
+  m_UseColliderMask: 0
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
-  m_SurfaceArc: 145
+  m_SurfaceArc: 135
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -165,9 +165,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2085817575449795587}
   - component: {fileID: 3365799088470860721}
-  m_Layer: 6
+  m_Layer: 17
   m_Name: ML_Sprite
-  m_TagString: Untagged
+  m_TagString: OneWayPlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -232,7 +232,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -10
   m_Sprite: {fileID: 21300000, guid: 14e78dac51494fd43b5f7be93a1f580d, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

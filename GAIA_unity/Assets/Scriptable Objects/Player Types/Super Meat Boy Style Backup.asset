@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5759d6a660e3ac14dbd9a801bf9d7627, type: 3}
-  m_Name: Super Meat Boy Style
+  m_Name: Super Meat Boy Style Backup
   m_EditorClassIdentifier: 
   gravityStrength: -44.444447
   gravityScale: 4.5305243
