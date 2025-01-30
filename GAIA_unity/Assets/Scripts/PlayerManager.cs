@@ -13,18 +13,18 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Spike"))
-        {
-            Debug.Log("Player hit the spike (trigger)!");
-            Die();
-        }
-        if (collision.CompareTag("Checkpoint"))
-        {
-            Destroy(collision.gameObject);
-        }
-    }
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if (collision.CompareTag("Spike"))
+    //    {
+    //        Debug.Log("Player hit the spike (trigger)!");
+    //        Die();
+    //    }
+    //    if (collision.CompareTag("Coins"))
+    //    {
+    //        Destroy(collision.gameObject);
+    //    }
+    //}
 
     private void OnCollisionExit2D(Collision2D collision)
     {

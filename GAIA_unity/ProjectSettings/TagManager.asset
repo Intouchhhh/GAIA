@@ -8,6 +8,8 @@ TagManager:
   - Spike
   - Checkpoint
   - OneWayPlatform
+  - Coins
+  - Spawn
   layers:
   - Default
   - TransparentFX
@@ -28,8 +30,8 @@ TagManager:
   - OneWayPlatform
   - ML_Platform
   - Checks
-  - 
-  - 
+  - ML_Checkpoint
+  - Checkpoint
   - 
   - 
   - 
