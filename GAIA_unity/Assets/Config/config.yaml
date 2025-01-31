@@ -1,7 +1,7 @@
 behaviors:
     PlayerAgent:
         trainer_type: ppo
-        max_steps: 1000000                      # Total training steps before stopping
+        max_steps: 5000000                      # Total training steps before stopping
         time_horizon: 256                       # Number of steps before updating polic
         summary_freq: 2000                      # How often training logs are written
         hyperparameters:

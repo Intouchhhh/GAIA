@@ -17,7 +17,6 @@ public class AgentController : Agent
 	private List<GameObject> checkPointsList;
 
 	private bool wasJumpingLastFrame = false;
-
 	private bool wasDashingLastFrame = false;
 
 	private Vector2 previousPosition;
@@ -35,11 +34,14 @@ public class AgentController : Agent
 
 	public override void OnEpisodeBegin()
 	{
+		// Reset player velocity and state at the beginning of each episode
+		playerMovement.RB.linearVelocity = Vector3.zero;
+
 		// Reset player position and state at the beginning of each episode
 		int randomIndex = Random.Range(0, spawnPointsList.Count);
-		transform.position = spawnPointsList[randomIndex].transform.position;
+		//transform.position = spawnPointsList[randomIndex].transform.position;
 
-		//transform.position = stageManager.spawnPoint.transform.position;
+		transform.position = stageManager.spawnPoint.transform.position;
 
 		previousPosition = transform.position;
 		totalDistanceTraveled = 0f;
@@ -90,54 +92,51 @@ public class AgentController : Agent
 
 		float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
 		
-		int jumpAction = actions.DiscreteActions[0];
-		int jumpCutAction = actions.DiscreteActions[1];
+		bool jumpAction = actions.DiscreteActions[0] == 1;
+		bool jumpCutAction = actions.DiscreteActions[1] == 1;
+		bool dashAction = actions.DiscreteActions[2] == 1;
 
-		bool dash = actions.DiscreteActions[2] == 1;
-		bool jump = actions.DiscreteActions[0] == 1;
 
-		if (jumpAction == 1 & !wasDashingLastFrame)
+		// Call PlayerMovement methods based on actions
+		playerMovement._moveInput.x = moveX;
+
+		if (jumpAction & !wasJumpingLastFrame)
 		{
 			AddReward(-0.5f);
 			playerMovement.OnJumpInput();
 		}
 
-		// Jump Cut action (Can only happen if the agent is already jumping)
-		if (jumpCutAction == 1)
+		if (jumpCutAction)
 		{
 			playerMovement.OnJumpUpInput();
 		}
 
-		// Call PlayerMovement methods based on actions
-		playerMovement._moveInput.x = moveX;
-
-		//if (jump && !wasJumpingLastFrame) // Trigger jump only when action switches to true
-		//{
-		//	AddReward(-0.1f);
-		//	Debug.Log("OnJumpInput");
-		//	playerMovement.OnJumpInput();
-		//}
-
-		if (dash && !wasDashingLastFrame)
+		if (dashAction & !wasDashingLastFrame)
 		{
 			AddReward(-0.5f);
-			Debug.Log("OnDashInput");
 			playerMovement.OnDashInput();
 		}
 
-		wasJumpingLastFrame = jump;
-		wasDashingLastFrame = dash;
+		wasJumpingLastFrame = jumpAction;
+		wasDashingLastFrame = dashAction;
 
-		Debug.Log("moveX: " + moveX + " jump: " + jumpAction + " jumpcut: " + jumpCutAction + " dash: " + dash);
-		AddReward(-0.01f);
-
-		#region DISTANCE REWAD
+		#region DISTANCE REWARD
 		float stepDistance = Vector2.Distance(transform.position, previousPosition);
 		totalDistanceTraveled += stepDistance;
-		AddReward(stepDistance * 0.01f);
+
+		AddReward(stepDistance * 0.05f);
+
 		previousPosition = transform.position;
-		Debug.LogWarning("Cumulative Reward: " + GetCumulativeReward());
 		#endregion
+
+		#region STAYING STILL PENALTY
+		if (stepDistance < 0.01f)
+		{
+			AddReward(-0.05f);
+		}
+		#endregion
+
+		Debug.LogWarning("Cumulative Reward: " + GetCumulativeReward());
 	}
 
 	public override void Heuristic(in ActionBuffers actionsOut)
@@ -162,7 +161,7 @@ public class AgentController : Agent
 			discreteActions[1] = 0;
 		}
 
-		discreteActions[2] = Input.GetKey(KeyCode.LeftShift) ? 1 : 0; // Dash
+		discreteActions[2] = Input.GetKeyDown(KeyCode.LeftShift) ? 1 : 0; // Dash
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
@@ -172,13 +171,20 @@ public class AgentController : Agent
 			Debug.LogWarning("HIT Coin");
 			other.gameObject.SetActive(false);
 			AddReward(1.0f);
-			Debug.LogWarning("Cumulative Reward: " + GetCumulativeReward());
+			Debug.LogWarning("Coin: Cumulative Reward: " + GetCumulativeReward());
+		}
+		else if (other.gameObject.CompareTag("Checkpoint"))
+		{
+			Debug.LogWarning("HIT Checkpoint");
+			other.gameObject.SetActive(false);
+			AddReward(10.0f);
+			Debug.LogError("Checkpoint: Cumulative Reward: " + GetCumulativeReward());
 		}
 		else if (other.gameObject.CompareTag("Spike"))
 		{
 			Debug.LogWarning("HIT Spike");
-			AddReward(-100.0f);
-			Debug.LogWarning("Cumulative Reward: " + GetCumulativeReward());
+			AddReward(-10.0f);
+			Debug.LogError("DIED: Cumulative Reward: " + GetCumulativeReward());
 			EndEpisode();
 		}
 
