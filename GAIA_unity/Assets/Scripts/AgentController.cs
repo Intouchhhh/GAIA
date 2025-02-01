@@ -72,9 +72,10 @@ public class AgentController : Agent
 	public override void CollectObservations(VectorSensor sensor)
 	{
 		// Add player-related observations
-		sensor.AddObservation(playerMovement.IsFacingRight ? 1 : -1); // Direction
+		sensor.AddObservation(playerMovement.IsFacingRight ? 1 : 0); // Direction
 		sensor.AddObservation(playerMovement.IsJumping ? 1 : 0); // Jumping state
 		sensor.AddObservation(playerMovement.IsDashing ? 1 : 0); // Dashing state
+		sensor.AddObservation(playerMovement.IsDropping ? 1 : 0);
 		sensor.AddObservation(playerMovement.LastOnGroundTime); // Time since last grounded
 
 		// Add velocity observations
@@ -109,12 +110,12 @@ public class AgentController : Agent
 		bool jumpAction = actions.DiscreteActions[0] == 1;
 		bool jumpCutAction = actions.DiscreteActions[1] == 1;
 		bool dashAction = actions.DiscreteActions[2] == 1;
-
+		bool dropAction = actions.DiscreteActions[3] == 1;
 
 		// Call PlayerMovement methods based on actions
 		playerMovement._moveInput.x = moveX;
 
-		if (jumpAction & !wasJumpingLastFrame)
+		if (jumpAction && !wasJumpingLastFrame)
 		{
 			AddReward(-0.3f);
 			playerMovement.OnJumpInput();
@@ -125,10 +126,15 @@ public class AgentController : Agent
 			playerMovement.OnJumpUpInput();
 		}
 
-		if (dashAction & !wasDashingLastFrame)
+		if (dashAction && !wasDashingLastFrame)
 		{
 			AddReward(-0.3f);
 			playerMovement.OnDashInput();
+		}
+
+		if (dropAction)
+		{
+			playerMovement.HandleDropThroughPlatform();
 		}
 
 		wasJumpingLastFrame = jumpAction;
@@ -195,6 +201,7 @@ public class AgentController : Agent
 		}
 
 		discreteActions[2] = Input.GetKeyDown(KeyCode.LeftShift) ? 1 : 0; // Dash
+		discreteActions[3] = (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) ? 1 : 0; // Drop down from one-way platform
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)

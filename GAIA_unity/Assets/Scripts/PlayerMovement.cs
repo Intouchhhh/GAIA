@@ -127,7 +127,10 @@ public class PlayerMovement : MonoBehaviour
 			CheckDirectionToFace(_moveInput.x > 0);
 
 		#region DROP CHECKS
-		HandleDropThroughPlatform();
+		if ((Input.GetAxis("Vertical") < 0) && Input.GetKeyDown(KeyCode.Space) && !isDropping)
+		{
+			HandleDropThroughPlatform();
+		}
 		#endregion
 
 		if (!(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.J))
@@ -530,9 +533,9 @@ public class PlayerMovement : MonoBehaviour
 	#endregion
 
 	#region DROP METHODS
-	private void HandleDropThroughPlatform()
+	public void HandleDropThroughPlatform()
 	{
-		if ((Input.GetAxis("Vertical") < 0) && Input.GetKeyDown(KeyCode.Space) && !isDropping)
+		if (!isDropping)
 		{
 			// Ignore collision to drop down
 			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), true);
