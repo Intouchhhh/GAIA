@@ -19,10 +19,13 @@ public class AgentController : Agent
 	private bool wasJumpingLastFrame = false;
 	private bool wasDashingLastFrame = false;
 
-	private Vector2 previousPosition;
-	private float totalDistanceTraveled;
+	private float totalDistanceCovered;
+	private Vector2 lastPosition;
 
 	private bool jumpHeld = false;
+
+	private HashSet<Vector2Int> visitedAreas;
+
 
 	public override void Initialize()
 	{
@@ -34,23 +37,34 @@ public class AgentController : Agent
 
 	public override void OnEpisodeBegin()
 	{
+		// Reset visited area
+		visitedAreas = new HashSet<Vector2Int>();
+
 		// Reset player velocity and state at the beginning of each episode
 		playerMovement.RB.linearVelocity = Vector3.zero;
 
 		// Reset player position and state at the beginning of each episode
 		int randomIndex = Random.Range(0, spawnPointsList.Count);
-		//transform.position = spawnPointsList[randomIndex].transform.position;
+		transform.position = spawnPointsList[randomIndex].transform.position;
 
-		transform.position = stageManager.spawnPoint.transform.position;
+		// transform.position = stageManager.spawnPoint.transform.position;
 
-		previousPosition = transform.position;
-		totalDistanceTraveled = 0f;
+		totalDistanceCovered = 0f;
+		lastPosition = transform.position;
 
 		foreach (GameObject coin in coins)
 		{
 			if (coin != null)
 			{
 				coin.SetActive(true);
+			}
+		}
+
+		foreach (GameObject cp in checkPointsList)
+		{
+			if (cp != null)
+			{
+				cp.SetActive(true);
 			}
 		}
 	}
@@ -102,7 +116,7 @@ public class AgentController : Agent
 
 		if (jumpAction & !wasJumpingLastFrame)
 		{
-			AddReward(-0.5f);
+			AddReward(-0.3f);
 			playerMovement.OnJumpInput();
 		}
 
@@ -113,7 +127,7 @@ public class AgentController : Agent
 
 		if (dashAction & !wasDashingLastFrame)
 		{
-			AddReward(-0.5f);
+			AddReward(-0.3f);
 			playerMovement.OnDashInput();
 		}
 
@@ -121,21 +135,40 @@ public class AgentController : Agent
 		wasDashingLastFrame = dashAction;
 
 		#region DISTANCE REWARD
-		float stepDistance = Vector2.Distance(transform.position, previousPosition);
-		totalDistanceTraveled += stepDistance;
+		float distanceMoved = Vector2.Distance(transform.position, lastPosition);
+		totalDistanceCovered += distanceMoved;
 
-		AddReward(stepDistance * 0.05f);
+		if (distanceMoved > 0.1f)
+		{
+			AddReward(distanceMoved * 0.05f);
+		}
 
-		previousPosition = transform.position;
+		lastPosition = transform.position;
 		#endregion
 
 		#region STAYING STILL PENALTY
-		if (stepDistance < 0.01f)
+		if (distanceMoved < 0.1f)
 		{
 			AddReward(-0.05f);
 		}
 		#endregion
 
+		#region VISITED AREA
+		Vector2Int currentGridPos = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+
+		if (!visitedAreas.Contains(currentGridPos))
+		{
+			AddReward(0.2f); // Small reward for exploring new areas
+			visitedAreas.Add(currentGridPos);
+		}
+
+		if (visitedAreas.Count < 10) // If the agent barely moves around
+		{
+			AddReward(-0.1f);
+		}
+		#endregion
+
+		Debug.Log("stepDistance: " + distanceMoved + " Reward Given: " + distanceMoved * 0.05f);
 		Debug.LogWarning("Cumulative Reward: " + GetCumulativeReward());
 	}
 
@@ -171,7 +204,7 @@ public class AgentController : Agent
 			Debug.LogWarning("HIT Coin");
 			other.gameObject.SetActive(false);
 			AddReward(1.0f);
-			Debug.LogWarning("Coin: Cumulative Reward: " + GetCumulativeReward());
+			Debug.LogError("Coin: Cumulative Reward: " + GetCumulativeReward());
 		}
 		else if (other.gameObject.CompareTag("Checkpoint"))
 		{

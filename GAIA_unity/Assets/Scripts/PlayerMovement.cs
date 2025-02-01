@@ -446,7 +446,7 @@ public class PlayerMovement : MonoBehaviour
 			force -= RB.linearVelocity.y;
 
 		RB.AddForce(Vector2.up * force, ForceMode2D.Impulse);
-		Debug.Log($"Jump Force Applied: {force}");
+		// Debug.Log($"Jump Force Applied: {force}");
 		#endregion
 	}
 
