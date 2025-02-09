@@ -63,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
 	#endregion
 
 	#region INPUT PARAMETERS
-	private Vector2 _moveInput;
+	public Vector2 _moveInput;
 
 	public float LastPressedJumpTime { get; private set; }
 	public float LastPressedDashTime { get; private set; }
@@ -116,29 +116,39 @@ public class PlayerMovement : MonoBehaviour
 		#endregion
 
 		#region INPUT HANDLER
-		_moveInput.x = Input.GetAxisRaw("Horizontal");
-		_moveInput.y = Input.GetAxisRaw("Vertical");
+		//HERE
+		//_moveInput.x = Input.GetAxisRaw("Horizontal");
+		//_moveInput.y = Input.GetAxisRaw("Vertical");
+
+		//HERE
+		//Debug.Log(_moveInput);
 
 		if (_moveInput.x != 0)
 			CheckDirectionToFace(_moveInput.x > 0);
 
 		#region DROP CHECKS
-		HandleDropThroughPlatform();
+		if ((Input.GetAxis("Vertical") < 0) && Input.GetKeyDown(KeyCode.Space) && !isDropping)
+		{
+			HandleDropThroughPlatform();
+		}
 		#endregion
 
 		if (!(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.J))
         {
-			OnJumpInput();
-        }
-
-		if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.J))
-		{
-			OnJumpUpInput();
+			//HERE
+			//OnJumpInput();
 		}
 
-		if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.K))
+		if (Input.GetKeyUp(KeyCode.Space))
 		{
-			OnDashInput();
+			//HERE
+			//OnJumpUpInput();
+		}
+
+		if (Input.GetKeyDown(KeyCode.LeftShift))
+		{
+			//HERE
+			//OnDashInput();
 		}
 		#endregion
 
@@ -244,10 +254,10 @@ public class PlayerMovement : MonoBehaviour
 		#endregion
 
 		#region SLIDE CHECKS
-		if (CanSlide() && ((LastOnWallLeftTime > 0 && _moveInput.x < 0) || (LastOnWallRightTime > 0 && _moveInput.x > 0)))
-			IsSliding = true;
-		else
-			IsSliding = false;
+		//if (CanSlide() && ((LastOnWallLeftTime > 0 && _moveInput.x < 0) || (LastOnWallRightTime > 0 && _moveInput.x > 0)))
+		//	IsSliding = true;
+		//else
+		//	IsSliding = false;
 		#endregion
 
 		#region GRAVITY
@@ -311,9 +321,9 @@ public class PlayerMovement : MonoBehaviour
 			Run(Data.dashEndRunLerp);
 		}
 
-		//Handle Slide
-		if (IsSliding)
-			Slide();
+		////Handle Slide
+		//if (IsSliding)
+		//	Slide();
     }
 
     #region INPUT CALLBACKS
@@ -359,7 +369,7 @@ public class PlayerMovement : MonoBehaviour
 
 	//MOVEMENT METHODS
     #region RUN METHODS
-    private void Run(float lerpAmount)
+    public void Run(float lerpAmount)
 	{
 		//Calculate the direction we want to move in and our desired velocity
 		float targetSpeed = _moveInput.x * Data.runMaxSpeed;
@@ -439,6 +449,7 @@ public class PlayerMovement : MonoBehaviour
 			force -= RB.linearVelocity.y;
 
 		RB.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+		// Debug.Log($"Jump Force Applied: {force}");
 		#endregion
 	}
 
@@ -522,9 +533,9 @@ public class PlayerMovement : MonoBehaviour
 	#endregion
 
 	#region DROP METHODS
-	private void HandleDropThroughPlatform()
+	public void HandleDropThroughPlatform()
 	{
-		if ((Input.GetAxis("Vertical") < 0) && Input.GetKeyDown(KeyCode.Space) && !isDropping)
+		if (!isDropping)
 		{
 			// Ignore collision to drop down
 			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), true);
@@ -540,27 +551,6 @@ public class PlayerMovement : MonoBehaviour
 		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), false);
 		isDropping = false;
 	}
-
-	//private void HandleDropThroughPlatform()
-	//{
-	//	if ((Input.GetAxis("Vertical") < 0) && Input.GetKeyDown(KeyCode.Space) && !isDropping)
-	//	{
-	//		// Ignore collision to drop down
-	//		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), true);
-	//		isDropping = true; // Mark as dropping
-	//	}
-	//}
-
-	//private void OnTriggerEnter2D(Collider2D collision)
-	//{
-	//	Debug.Log("Trigger1");
-	//	if (collision.gameObject.layer == LayerMask.NameToLayer(oneWayPlatformLayerName))
-	//	{
-	//		Debug.Log("Trigger2");
-	//		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), false);
-	//		isDropping = false;
-	//	}
-	//}
 	#endregion
 
 	#region OTHER MOVEMENT METHODS
@@ -592,23 +582,23 @@ public class PlayerMovement : MonoBehaviour
 			Turn();
 	}
 
-    private bool CanJump()
+    public bool CanJump()
     {
-		return LastOnGroundTime > 0 && !IsJumping;
+		return LastOnGroundTime > 0 && !IsJumping && !IsDashing && !IsDropping;
     }
 
 	private bool CanWallJump()
     {
-		return LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && (!IsWallJumping ||
+		return !IsDropping && LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && (!IsWallJumping ||
 			 (LastOnWallRightTime > 0 && _lastWallJumpDir == 1) || (LastOnWallLeftTime > 0 && _lastWallJumpDir == -1));
 	}
 
-	private bool CanJumpCut()
+	public bool CanJumpCut()
     {
 		return IsJumping && RB.linearVelocity.y > 0;
     }
 
-	private bool CanWallJumpCut()
+	public bool CanWallJumpCut()
 	{
 		return IsWallJumping && RB.linearVelocity.y > 0;
 	}

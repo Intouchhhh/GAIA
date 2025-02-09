@@ -1,0 +1,65 @@
+{
+    "PlayerAgent": {
+        "checkpoints": [
+            {
+                "steps": 1924023,
+                "file_path": "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-1924023.onnx",
+                "reward": 16.55364556312561,
+                "creation_time": 1738550063.4155529,
+                "auxillary_file_paths": [
+                    "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-1924023.pt"
+                ]
+            },
+            {
+                "steps": 1999902,
+                "file_path": "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-1999902.onnx",
+                "reward": 11.210793154580253,
+                "creation_time": 1738605449.3826993,
+                "auxillary_file_paths": [
+                    "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-1999902.pt"
+                ]
+            },
+            {
+                "steps": 2499870,
+                "file_path": "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-2499870.onnx",
+                "reward": 9.111595398501345,
+                "creation_time": 1738616953.3282301,
+                "auxillary_file_paths": [
+                    "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-2499870.pt"
+                ]
+            },
+            {
+                "steps": 2999981,
+                "file_path": "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-2999981.onnx",
+                "reward": 17.144233848367417,
+                "creation_time": 1738628767.2157102,
+                "auxillary_file_paths": [
+                    "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-2999981.pt"
+                ]
+            },
+            {
+                "steps": 3321234,
+                "file_path": "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-3321234.onnx",
+                "reward": 18.884183804194134,
+                "creation_time": 1738636485.565372,
+                "auxillary_file_paths": [
+                    "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-3321234.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 3321234,
+            "file_path": "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent.onnx",
+            "reward": 18.884183804194134,
+            "creation_time": 1738636485.565372,
+            "auxillary_file_paths": [
+                "results\\RandomSpawn_VisitedArea_NoJumpDuringDrop\\PlayerAgent\\PlayerAgent-3321234.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}

@@ -7,7 +7,7 @@ public class StageManager : MonoBehaviour
     private Camera _cam;
     private PlayerMovement _player;
     [SerializeField] private Tilemap[] levels;
-    [SerializeField] private Transform spawnPoint;
+    [SerializeField] public Transform spawnPoint;
 
     [SerializeField] private TextMeshProUGUI nameText;
 

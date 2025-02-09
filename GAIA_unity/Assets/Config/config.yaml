@@ -1,0 +1,27 @@
+behaviors:
+    PlayerAgent:
+        trainer_type: ppo
+        max_steps: 5000000                      # Total training steps before stopping
+        time_horizon: 256                       # Number of steps before updating polic
+        summary_freq: 2000                      # How often training logs are written
+        hyperparameters:
+            batch_size: 128                     # How many experiences to use for each training step
+            buffer_size: 12800                  # How many experiences to collect before updating
+            learning_rate: 0.0003               # Adjust learning speed (lower = more stable training)
+            learning_rate_schedule: constant
+            beta: 5.0e-3                        # Entropy regularization (higher = more exploration)
+            beta_schedule: constant
+            epsilon: 0.2                        # PPO clip range for policy updates
+            epsilon_schedule: constant
+            lambd: 0.9                          # Smoothing factor for GAE (Generalized Advantage Estimation)
+            num_epoch: 3                        # Number of passes through data for training
+        
+        network_settings:
+            normalize: true                     # Normalizes observations for stable training
+            hidden_units: 256                   # Size of hidden layers in the neural network
+            num_layers: 2                       # Number of hidden layers
+        
+        reward_signals:
+            extrinsic:
+                gamma: 0.99                         # Discount factor (long-term reward consideration)
+                strength: 1.0                       # Multiplier for extrinsic rewards

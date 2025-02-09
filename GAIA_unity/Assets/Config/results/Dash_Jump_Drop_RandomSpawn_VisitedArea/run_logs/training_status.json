@@ -1,0 +1,56 @@
+{
+    "PlayerAgent": {
+        "checkpoints": [
+            {
+                "steps": 499829,
+                "file_path": "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-499829.onnx",
+                "reward": 2.109285871828756,
+                "creation_time": 1738443052.46385,
+                "auxillary_file_paths": [
+                    "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-499829.pt"
+                ]
+            },
+            {
+                "steps": 999911,
+                "file_path": "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-999911.onnx",
+                "reward": 5.595666300166737,
+                "creation_time": 1738456633.7657723,
+                "auxillary_file_paths": [
+                    "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-999911.pt"
+                ]
+            },
+            {
+                "steps": 1499798,
+                "file_path": "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-1499798.onnx",
+                "reward": 12.343956291675568,
+                "creation_time": 1738470561.4006104,
+                "auxillary_file_paths": [
+                    "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-1499798.pt"
+                ]
+            },
+            {
+                "steps": 1560428,
+                "file_path": "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-1560428.onnx",
+                "reward": 11.722545305887857,
+                "creation_time": 1738472254.3700137,
+                "auxillary_file_paths": [
+                    "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-1560428.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1560428,
+            "file_path": "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent.onnx",
+            "reward": 11.722545305887857,
+            "creation_time": 1738472254.3700137,
+            "auxillary_file_paths": [
+                "results\\Dash_Jump_Drop_RandomSpawn_VisitedArea\\PlayerAgent\\PlayerAgent-1560428.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}
