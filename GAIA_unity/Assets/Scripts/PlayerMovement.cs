@@ -551,27 +551,6 @@ public class PlayerMovement : MonoBehaviour
 		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), false);
 		isDropping = false;
 	}
-
-	//private void HandleDropThroughPlatform()
-	//{
-	//	if ((Input.GetAxis("Vertical") < 0) && Input.GetKeyDown(KeyCode.Space) && !isDropping)
-	//	{
-	//		// Ignore collision to drop down
-	//		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), true);
-	//		isDropping = true; // Mark as dropping
-	//	}
-	//}
-
-	//private void OnTriggerEnter2D(Collider2D collision)
-	//{
-	//	Debug.Log("Trigger1");
-	//	if (collision.gameObject.layer == LayerMask.NameToLayer(oneWayPlatformLayerName))
-	//	{
-	//		Debug.Log("Trigger2");
-	//		Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(playerLayerName), LayerMask.NameToLayer(oneWayPlatformLayerName), false);
-	//		isDropping = false;
-	//	}
-	//}
 	#endregion
 
 	#region OTHER MOVEMENT METHODS
@@ -605,12 +584,12 @@ public class PlayerMovement : MonoBehaviour
 
     public bool CanJump()
     {
-		return LastOnGroundTime > 0 && !IsJumping;
+		return LastOnGroundTime > 0 && !IsJumping && !IsDashing && !IsDropping;
     }
 
 	private bool CanWallJump()
     {
-		return LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && (!IsWallJumping ||
+		return !IsDropping && LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && (!IsWallJumping ||
 			 (LastOnWallRightTime > 0 && _lastWallJumpDir == 1) || (LastOnWallLeftTime > 0 && _lastWallJumpDir == -1));
 	}
 

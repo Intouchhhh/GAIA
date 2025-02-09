@@ -75,7 +75,7 @@ public class AgentController : Agent
 		sensor.AddObservation(playerMovement.IsFacingRight ? 1 : 0); // Direction
 		sensor.AddObservation(playerMovement.IsJumping ? 1 : 0); // Jumping state
 		sensor.AddObservation(playerMovement.IsDashing ? 1 : 0); // Dashing state
-		sensor.AddObservation(playerMovement.IsDropping ? 1 : 0);
+		sensor.AddObservation(playerMovement.IsDropping ? 1 : 0); // Dropping state
 		sensor.AddObservation(playerMovement.LastOnGroundTime); // Time since last grounded
 
 		// Add velocity observations
