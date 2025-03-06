@@ -5,6 +5,8 @@ public class PlayerManager : MonoBehaviour
 {
     private Rigidbody2D rb;
 
+    public int maxHealth = 3;
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))

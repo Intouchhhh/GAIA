@@ -23,9 +23,9 @@ public class AgentController : Agent
 	private float totalDistanceCovered;
 	private Vector2 lastPosition;
 
-	private bool jumpHeld = false;
+    private bool isJumping = false;
 
-	private HashSet<Vector2Int> visitedAreas;
+    private HashSet<Vector2Int> visitedAreas;
 
 
 	public override void Initialize()
@@ -90,45 +90,63 @@ public class AgentController : Agent
 
 	public override void OnActionReceived(ActionBuffers actions)
 	{
-		// Map the actions to the player's inputs
+        // Map the actions to the player's inputs
 
-		//int moveX = actions.DiscreteActions[0];
-		//if (moveX == 0)
-		//{
-		//	playerMovement._moveInput.x = -1.00;
-		//}
-		//else if (moveX == 1)
-		//{
-		//	playerMovement._moveInput.x = 0.00;
-		//}
-		//else if (moveX == 2)
-		//{
-		//	playerMovement._moveInput.x = 1;
-		//}
+        #region TEMP MOVEMENT
+        //int moveX = actions.DiscreteActions[0];
+        //if (moveX == 0)
+        //{
+        //	playerMovement._moveInput.x = -1.00;
+        //}
+        //else if (moveX == 1)
+        //{
+        //	playerMovement._moveInput.x = 0.00;
+        //}
+        //else if (moveX == 2)
+        //{
+        //	playerMovement._moveInput.x = 1;
+        //}
+        #endregion
 
-		float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
-		
-		bool jumpAction = actions.DiscreteActions[0] == 1;
-		bool jumpCutAction = actions.DiscreteActions[1] == 1;
-		bool dashAction = actions.DiscreteActions[2] == 1;
-		bool dropAction = actions.DiscreteActions[3] == 1;
+        float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
+		float jumpAction = Mathf.Clamp01(actions.ContinuousActions[1]);
+
+        bool dashAction = actions.DiscreteActions[0] == 1;
+		bool dropAction = actions.DiscreteActions[1] == 1;
 
 		// Call PlayerMovement methods based on actions
 		playerMovement._moveInput.x = moveX;
 
-		if (jumpAction && !wasJumpingLastFrame)
-		{
-			Debug.LogError("Jump Action");
-			AddReward(-0.3f);
-			actionModules.Jump();
-		}
+        // Jump Holding Logic
 
-		if (jumpCutAction)
-		{
-			actionModules.JumpRelease();
-		}
+        #region TEMP JUMP
+        //if (jumpAction > 0f) // If the agent is holding jump
+        //{
+        //    if (!isJumping) // Only trigger jump once
+        //    {
+        //        actionModules.Jump();
+        //        isJumping = true;
+        //    }
+        //}
+        //else if (isJumping) // If agent releases jump
+        //{
+        //    actionModules.JumpRelease(); // Apply increased gravity
+        //    isJumping = false;
+        //}
+        #endregion
 
-		if (dashAction && !wasDashingLastFrame)
+        if (jumpAction > 0.33)
+        {
+            Debug.LogError("Jump Action");
+            AddReward(-0.3f);
+            actionModules.Jump();
+            if (jumpAction > 0.66)
+            {
+                actionModules.JumpRelease();
+            }
+        }
+
+        if (dashAction && !wasDashingLastFrame)
 		{
 			AddReward(-0.3f);
 			actionModules.Dash();
@@ -139,7 +157,7 @@ public class AgentController : Agent
 			actionModules.Drop();
 		}
 
-		wasJumpingLastFrame = jumpAction;
+		// wasJumpingLastFrame = jumpAction;
 		wasDashingLastFrame = dashAction;
 
 		#region DISTANCE REWARD
@@ -186,24 +204,18 @@ public class AgentController : Agent
 		var discreteActions = actionsOut.DiscreteActions;
 
 		continuousActions[0] = Input.GetAxisRaw("Horizontal");
-		discreteActions[0] = Input.GetKeyDown(KeyCode.Space) ? 1 : 0; // Jump
 
-		if (Input.GetKey(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			jumpHeld = true;
-		}
-		if (!Input.GetKey(KeyCode.Space) && jumpHeld)
+			continuousActions[1] = 0.5f;
+        }
+		if (Input.GetKeyUp(KeyCode.Space))
 		{
-			discreteActions[1] = 1; // JumpCut
-			jumpHeld = false; // Reset the flag
-		}
-		else
-		{
-			discreteActions[1] = 0;
+			continuousActions[1] = 1.0f;
 		}
 
-		discreteActions[2] = Input.GetKeyDown(KeyCode.LeftShift) ? 1 : 0; // Dash
-		discreteActions[3] = (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) ? 1 : 0; // Drop down from one-way platform
+		discreteActions[0] = Input.GetKeyDown(KeyCode.LeftShift) ? 1 : 0; // Dash
+		discreteActions[1] = (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) ? 1 : 0; // Drop down from one-way platform
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
