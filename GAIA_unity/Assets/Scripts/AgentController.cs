@@ -11,6 +11,7 @@ public class AgentController : Agent
 	[SerializeField] private PlayerManager playerManager;
 	[SerializeField] private PlayerMovement playerMovement;
 	[SerializeField] private StageManager stageManager;
+	[SerializeField] private ActionModules actionModules;
 
 	private List<GameObject> coins;
 	private List<GameObject> spawnPointsList;
@@ -117,24 +118,25 @@ public class AgentController : Agent
 
 		if (jumpAction && !wasJumpingLastFrame)
 		{
+			Debug.LogError("Jump Action");
 			AddReward(-0.3f);
-			playerMovement.OnJumpInput();
+			actionModules.Jump();
 		}
 
 		if (jumpCutAction)
 		{
-			playerMovement.OnJumpUpInput();
+			actionModules.JumpRelease();
 		}
 
 		if (dashAction && !wasDashingLastFrame)
 		{
 			AddReward(-0.3f);
-			playerMovement.OnDashInput();
+			actionModules.Dash();
 		}
 
 		if (dropAction)
 		{
-			playerMovement.HandleDropThroughPlatform();
+			actionModules.Drop();
 		}
 
 		wasJumpingLastFrame = jumpAction;

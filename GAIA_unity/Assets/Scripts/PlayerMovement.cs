@@ -242,8 +242,6 @@ public class PlayerMovement : MonoBehaviour
 			else
 				_lastDashDir = IsFacingRight ? Vector2.right : Vector2.left;
 
-
-
 			IsDashing = true;
 			IsJumping = false;
 			IsWallJumping = false;
