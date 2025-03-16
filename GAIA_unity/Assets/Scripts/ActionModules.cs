@@ -2,25 +2,20 @@ using UnityEngine;
 
 public class ActionModules : MonoBehaviour
 {
-    public PlayerMovement playerMovement;
+    public BasicPlayerMovement playerMovement;
 
     public void Jump()
     {
-        playerMovement.OnJumpInput();
-    }
-
-    public void JumpRelease()
-    {
-        playerMovement.OnJumpUpInput();
+        // playerMovement.OnJumpInput();
     }
 
     public void Dash()
     {
-        playerMovement.OnDashInput();
+        // playerMovement.HandleDash();
     }
 
     public void Drop()
     {
-        playerMovement.HandleDropThroughPlatform();
+        // playerMovement.HandleDropThroughPlatform();
     }
 }

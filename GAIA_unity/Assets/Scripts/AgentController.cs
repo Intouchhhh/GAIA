@@ -142,7 +142,7 @@ public class AgentController : Agent
             actionModules.Jump();
             if (jumpAction > 0.66)
             {
-                actionModules.JumpRelease();
+                // actionModules.JumpRelease();
             }
         }
 
