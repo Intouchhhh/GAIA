@@ -17,13 +17,13 @@ public class AgentController : Agent
 	private List<GameObject> spawnPointsList;
 	private List<GameObject> checkPointsList;
 
-	private bool wasJumpingLastFrame = false;
+	//private bool wasJumpingLastFrame = false;
 	private bool wasDashingLastFrame = false;
 
 	private float totalDistanceCovered;
 	private Vector2 lastPosition;
 
-    private bool isJumping = false;
+    //private bool isJumping = false;
 
     private HashSet<Vector2Int> visitedAreas;
 
