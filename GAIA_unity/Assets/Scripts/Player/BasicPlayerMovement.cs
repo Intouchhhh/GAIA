@@ -56,8 +56,10 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private Vector2 dashingDirection;
 
 	[SerializeField] private Vector2 moveInput;
+    [SerializeField] private float dropInput;
+    [SerializeField] private float moveDir;
 
-	[Header("Flags")]
+    [Header("Flags")]
 	[SerializeField] private bool isGrounded;
 	[SerializeField] private bool isOnRightWall;
 	[SerializeField] private bool isOnLeftWall;
@@ -93,7 +95,8 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		HandleMovement(moveInput.x);
+		Debug.Log(rb.linearVelocity.y);
+		HandleMovement(moveDir);
 		HandleFriction();
 		HandleWallSlide();
 		HandleGrounded();
@@ -105,8 +108,42 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void HandleInput()
 	{
-		// Movement Input
-		moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        #region Agent Notes
+        // Input:
+        // 0: moveDir = moveInput.x;						0 = still, 1 = left, 2 = right
+        // 1: dropInput = moveInput.y;						0 = still, 1 = down, 2 = up
+        // 2: jump = Input.GetKeyDown(KeyCode.Space)		0 = still, 1 = jump
+        // 3: dash = Input.GetKeyDown(KeyCode.LeftShift)	0 = still, 1 = dash
+        //
+        // switch (xInput)
+        // {
+        //		case 0: moveDir =  0f; break;
+        //		case 1: moveDir = -1f; break;
+        //		case 2: moveDir = +1f; break;
+        // }
+        //
+        // switch (yInput)
+        // {
+        //		case 0: dropInput =  0f; break;
+        //		case 1: dropInput = -1f; break;
+        //		case 2: dropInput = +1f; break;
+        // }
+        //
+        // if (jump)
+        // {
+        //		Jump();
+        // }
+        //
+        // if (dash)
+        // {
+        //		Dash();
+        // }
+        #endregion
+
+        // Movement Input
+        moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        moveDir = moveInput.x;
+        dropInput = moveInput.y;
 
 		// Jump Pressed (For Jump Buffering)
 		if (Input.GetKeyDown(KeyCode.Space))
@@ -154,6 +191,11 @@ public class BasicPlayerMovement : MonoBehaviour
 	#region JUMP
 	private void Jump()
 	{
+		if (moveInput.y < 0)
+		{
+			Drop();
+			return;
+		}
 		lastJumpPressedTime = Time.time;
 	}
 
@@ -255,11 +297,22 @@ public class BasicPlayerMovement : MonoBehaviour
 		}
 	}
 
-	#endregion
+    #endregion
 
-	#region CHECK
+    #region DROP
 
-	private void HandleGrounded()
+	private void Drop()
+	{
+		if (isGrounded)
+		{
+			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
+		}
+    }
+
+    #endregion
+    #region CHECK
+
+    private void HandleGrounded()
 	{
 		isGrounded = Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) != null;
 
