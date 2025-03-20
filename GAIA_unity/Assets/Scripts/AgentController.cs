@@ -241,6 +241,5 @@ public class AgentController : Agent
 			Debug.LogError("DIED: Cumulative Reward: " + GetCumulativeReward());
 			EndEpisode();
 		}
-
 	}
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Unity.Sentis;
 
 public class BasicPlayerMovement : MonoBehaviour
 {
@@ -38,7 +39,9 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private Vector2 _wallCheckSize = new Vector2(0.11f, 0.46f);
 	[SerializeField] private Transform _groundCheckPoint;
 	[SerializeField] private Vector2 _groundCheckSize = new Vector2(0.5f, 0.03f);
+	public string _playerLayer = "Player";
 	public LayerMask _groundLayer;
+	public string _oneWayPlatLayer = "OneWayPlatform";
 
 	[Header("Serialize")]
 	[SerializeField] private Rigidbody2D rb;
@@ -285,11 +288,31 @@ public class BasicPlayerMovement : MonoBehaviour
 		isOnWall = isOnLeftWall || isOnRightWall;
 	}
 
-	#endregion
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("OneWayPlatCheck"))
+        {
+            Debug.Log("One Way (trigger)!");
+			if (rb.linearVelocity.y > 0)
+			{
+				Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
+            }
+        }
+    }
 
-	#region CUSTOM PHYSICS
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("OneWayPlatCheck"))
+        {
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), false);
+        }
+    }
 
-	private void ApplyCustomGravity()
+    #endregion
+
+    #region CUSTOM PHYSICS
+
+    private void ApplyCustomGravity()
 	{
 		if (isJumping && Mathf.Abs(rb.linearVelocity.y) < 0.1f)
 		{
