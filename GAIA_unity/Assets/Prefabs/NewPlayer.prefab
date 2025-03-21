@@ -451,7 +451,7 @@ GameObject:
   - component: {fileID: 3363386385997106607}
   - component: {fileID: 3372386723828129746}
   - component: {fileID: 5250842869969060356}
-  - component: {fileID: 5574471061033654832}
+  - component: {fileID: 1648687140326611434}
   - component: {fileID: 8200482642318605724}
   - component: {fileID: 915562971328702106}
   m_Layer: 15
@@ -552,7 +552,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &5574471061033654832
+--- !u!114 &1648687140326611434
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -561,24 +561,52 @@ MonoBehaviour:
   m_GameObject: {fileID: 5979926348532237693}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b25879a85aef4049811869e47d814b6, type: 3}
+  m_Script: {fileID: 11500000, guid: ece521aa815af2540b11735a971c3988, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Data: {fileID: 11400000, guid: e6de6150ab38ff74b9ee0fa32028adf7, type: 2}
-  oneWayPlatformLayerName: OneWayPlatform
-  playerLayerName: Player
-  dropTrigger: {fileID: 7323098451310700876}
-  _groundCheckPoint: {fileID: 7096618315434226335}
-  _groundCheckSize: {x: 0.63, y: 0.03}
-  _frontWallCheckPoint: {fileID: 2042728690721446901}
-  _backWallCheckPoint: {fileID: 3771018419910840521}
-  _wallCheckSize: {x: 0.2, y: 0.94}
-  _groundLayer1:
+  moveSpeed: 11
+  acceleration: 13
+  decceleration: 16
+  velPower: 0.9
+  gravityScale: 5
+  frictionAmount: 0.5
+  jumpForce: 18
+  coyoteTime: 0.15
+  jumpBufferTime: 0.1
+  jumpHangGravityMultiplier: 0.5
+  fallMultiplier: 2
+  maxFallSpeed: 0
+  wallJumpForce: {x: 15, y: 25}
+  wallJumpLerp: 10
+  wallSlideSpeed: 2
+  _wallLayer:
     serializedVersion: 2
     m_Bits: 2048
-  _groundLayer2:
+  dashSpeed: 14
+  dashDuration: 0.5
+  dashCooldown: 1
+  _wallCheckPointLeft: {fileID: 3771018419910840521}
+  _wallCheckPointRight: {fileID: 2042728690721446901}
+  _wallCheckSize: {x: 0.11, y: 0.46}
+  _groundCheckPoint: {fileID: 7096618315434226335}
+  _groundCheckSize: {x: 0.5, y: 0.03}
+  _playerLayer: Player
+  _groundLayer:
     serializedVersion: 2
-    m_Bits: 65536
+    m_Bits: 67584
+  _oneWayPlatLayer: OneWayPlatform
+  rb: {fileID: 0}
+  lastGroundedTime: 0
+  lastJumpPressedTime: 0
+  wallJumpDir: 0
+  lastDashTime: 0
+  lastDashPressedTime: 0
+  dashDirection: {x: 0, y: 0}
+  moveInput: {x: 0, y: 0}
+  dropInput: 0
+  moveDir: 0
+  jumpInput: 0
+  dashInput: 0
 --- !u!114 &8200482642318605724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -608,6 +636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf90b9d88ab41db4fbeab3617f9da290, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 3
 --- !u!1 &7292108782940707498
 GameObject:
   m_ObjectHideFlags: 0

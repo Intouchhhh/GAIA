@@ -10,6 +10,9 @@ TagManager:
   - OneWayPlatform
   - Coins
   - Spawn
+  - Undefined
+  - OneWayDropCheck
+  - OneWayJumpCheck
   layers:
   - Default
   - TransparentFX

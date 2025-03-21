@@ -1,37 +1,38 @@
 using UnityEngine;
 using System.Collections;
 using Unity.Sentis;
+using JetBrains.Annotations;
 
 public class BasicPlayerMovement : MonoBehaviour
 {
 	#region VARS
 
 	[Header("Movement Settings")]
-	public float moveSpeed = 11f;
-	public float acceleration = 13f;
-	public float decceleration = 16f;
-	public float velPower = 0.9f;
-	public float gravityScale = 5.0f;
-	public float frictionAmount = 0.5f;
+	[SerializeField] private float moveSpeed = 11f;
+	[SerializeField] private float acceleration = 13f;
+	[SerializeField] private float decceleration = 16f;
+	[SerializeField] private float velPower = 0.9f;
+	[SerializeField] private float gravityScale = 5.0f;
+	[SerializeField] private float frictionAmount = 0.5f;
 
 	[Header("Jump Settings")]
-	public float jumpForce = 18f;
-	public float coyoteTime = 0.15f;
-	public float jumpBufferTime = 0.1f;
-	public float jumpHangGravityMultiplier = 0.5f;
-	public float fallMultiplier = 2f;
-	public float maxFallSpeed;
+	[SerializeField] private float jumpForce = 18f;
+	[SerializeField] private float coyoteTime = 0.15f;
+	[SerializeField] private float jumpBufferTime = 0.1f;
+	[SerializeField] private float jumpHangGravityMultiplier = 0.5f;
+	[SerializeField] private float fallMultiplier = 2f;
+	[SerializeField] private float maxFallSpeed;
 
 	[Header("Wall Jump Settings")]
-	public Vector2 wallJumpForce = new Vector2(15.0f, 25.0f);
-	public float wallJumpLerp = 10f;
-	public float wallSlideSpeed = 2f;
-	public LayerMask _wallLayer;
+	[SerializeField] private Vector2 wallJumpForce = new Vector2(15.0f, 25.0f);
+	[SerializeField] private float wallJumpLerp = 10f;
+	[SerializeField] private float wallSlideSpeed = 2f;
+	[SerializeField] private LayerMask _wallLayer;
 
 	[Header("Dash Settings")]
-	public float dashSpeed = 14f;
-	public float dashDuration = 0.5f;
-	public float dashCooldown = 1f;
+	[SerializeField] private float dashSpeed = 14f;
+	[SerializeField] private float dashDuration = 0.5f;
+	[SerializeField] private float dashCooldown = 1f;
 
 	[Header("Checks")]
 	[SerializeField] private Transform _wallCheckPointLeft;
@@ -39,9 +40,9 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private Vector2 _wallCheckSize = new Vector2(0.11f, 0.46f);
 	[SerializeField] private Transform _groundCheckPoint;
 	[SerializeField] private Vector2 _groundCheckSize = new Vector2(0.5f, 0.03f);
-	public string _playerLayer = "Player";
-	public LayerMask _groundLayer;
-	public string _oneWayPlatLayer = "OneWayPlatform";
+	[SerializeField] private string _playerLayer = "Player";
+	[SerializeField] private LayerMask _groundLayer;
+	[SerializeField] private string _oneWayPlatLayer = "OneWayPlatform";
 
 	[Header("Serialize")]
 	[SerializeField] private Rigidbody2D rb;
@@ -53,27 +54,89 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	[SerializeField] private float lastDashTime;
 	[SerializeField] private float lastDashPressedTime;
-	[SerializeField] private Vector2 dashingDirection;
+	[SerializeField] private Vector2 dashDirection;
 
-	[SerializeField] private Vector2 moveInput;
-    [SerializeField] private float dropInput;
-    [SerializeField] private float moveDir;
+	[Header("Inputs (Public)")]
+	public Vector2 moveInput;
+	public float dropInput;
+	public float moveDir;
+	public bool jumpInput;
+	public bool dashInput;
 
     [Header("Flags")]
-	[SerializeField] private bool isGrounded;
-	[SerializeField] private bool isOnRightWall;
-	[SerializeField] private bool isOnLeftWall;
-	[SerializeField] private bool isOnWall;
-	[SerializeField] private bool isDashing;
-	[SerializeField] private bool isJumping;
-	[SerializeField] private bool isWallJumping;
-	[SerializeField] private bool isFacingRight;
+	private bool isGrounded;
+	private bool isOnRightWall;
+	private bool isOnLeftWall;
+	private bool isOnWall;
+	private bool isDashing;
+	private bool isJumping;
+	private bool isDropping;
+	private bool isWallJumping;
+	private bool isFacingRight;
 
+	#region PUBLIC GETTERS
+
+	[Header("Public getters")]
+	// Flags (Read-only)
 	public bool IsGrounded => isGrounded;
+	public bool IsOnRightWall => isOnRightWall;
+	public bool IsOnLeftWall => isOnLeftWall;
 	public bool IsOnWall => isOnWall;
 	public bool IsDashing => isDashing;
 	public bool IsJumping => isJumping;
 	public bool IsWallJumping => isWallJumping;
+	public bool IsFacingRight => isFacingRight;
+	public bool IsDropping => isDropping;
+
+	// Movement settings (Read-only)
+	public float MoveSpeed => moveSpeed;
+	public float Acceleration => acceleration;
+	public float Decceleration => decceleration;
+	public float VelPower => velPower;
+	public float GravityScale => gravityScale;
+	public float FrictionAmount => frictionAmount;
+
+	// Jump settings (Read-only)
+	public float JumpForce => jumpForce;
+	public float CoyoteTime => coyoteTime;
+	public float JumpBufferTime => jumpBufferTime;
+	public float JumpHangGravityMultiplier => jumpHangGravityMultiplier;
+	public float FallMultiplier => fallMultiplier;
+	public float MaxFallSpeed => maxFallSpeed;
+
+	// Wall jump settings (Read-only)
+	public Vector2 WallJumpForce => wallJumpForce;
+	public float WallJumpLerp => wallJumpLerp;
+	public float WallSlideSpeed => wallSlideSpeed;
+	public LayerMask WallLayer => _wallLayer;
+
+	// Dash settings (Read-only)
+	public float DashSpeed => dashSpeed;
+	public float DashDuration => dashDuration;
+	public float DashCooldown => dashCooldown;
+
+	// Checks (Read-only)
+	public Transform WallCheckPointLeft => _wallCheckPointLeft;
+	public Transform WallCheckPointRight => _wallCheckPointRight;
+	public Vector2 WallCheckSize => _wallCheckSize;
+	public Transform GroundCheckPoint => _groundCheckPoint;
+	public Vector2 GroundCheckSize => _groundCheckSize;
+	public string PlayerLayer => _playerLayer;
+	public LayerMask GroundLayer => _groundLayer;
+	public string OneWayPlatLayer => _oneWayPlatLayer;
+
+	// Serialized references (Read-only)
+	public Rigidbody2D Rb => rb;
+
+	// Last action times (Read-only)
+	public float LastGroundedTime => lastGroundedTime;
+	public float LastJumpPressedTime => lastJumpPressedTime;
+	public int WallJumpDir => wallJumpDir;
+	public float LastDashTime => lastDashTime;
+	public float LastDashPressedTime => lastDashPressedTime;
+	public Vector2 DashDirection => dashDirection;
+
+	#endregion
 
 	#endregion
 
@@ -95,7 +158,6 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		Debug.Log(rb.linearVelocity.y);
 		HandleMovement(moveDir);
 		HandleFriction();
 		HandleWallSlide();
@@ -142,17 +204,20 @@ public class BasicPlayerMovement : MonoBehaviour
 
         // Movement Input
         moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
         moveDir = moveInput.x;
         dropInput = moveInput.y;
+		jumpInput = Input.GetKeyDown(KeyCode.Space);
+		dashInput = Input.GetKeyDown(KeyCode.LeftShift);
 
 		// Jump Pressed (For Jump Buffering)
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (jumpInput)
 		{
 			Jump();
 		}
 
 		// Dash Input (Single press detection)
-		if (Input.GetKeyDown(KeyCode.LeftShift))
+		if (dashInput)
 		{
 			Dash();
 		}
@@ -191,7 +256,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	#region JUMP
 	private void Jump()
 	{
-		if (moveInput.y < 0)
+		if (dropInput < 0)
 		{
 			Drop();
 			return;
@@ -268,12 +333,11 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private IEnumerator PerformDash()
 	{
-		Debug.Log("Dash");
 		isDashing = true;
 
 		lastDashPressedTime = Time.time;
 
-		Vector2 dashDirection = isFacingRight ? Vector2.right : Vector2.left;
+		dashDirection = isFacingRight ? Vector2.right : Vector2.left;
 
 		rb.gravityScale = 0;
 		rb.linearVelocity = dashDirection * dashSpeed;
@@ -306,10 +370,12 @@ public class BasicPlayerMovement : MonoBehaviour
 		if (isGrounded)
 		{
 			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
+			isDropping = true;
 		}
     }
 
     #endregion
+
     #region CHECK
 
     private void HandleGrounded()
@@ -343,11 +409,13 @@ public class BasicPlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("OneWayPlatCheck"))
+        if (collision.CompareTag("OneWayJumpCheck"))
         {
-            Debug.Log("One Way (trigger)!");
+            Debug.LogError("One Way (trigger)!");
+			Debug.LogError(rb.linearVelocity.y);
 			if (rb.linearVelocity.y > 0)
 			{
+				Debug.LogError("Ignore!");
 				Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
             }
         }
@@ -355,10 +423,11 @@ public class BasicPlayerMovement : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("OneWayPlatCheck"))
-        {
-            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), false);
-        }
+        if (collision.CompareTag("OneWayDropCheck"))
+		{
+			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), false);
+			isDropping = false;
+		}
     }
 
     #endregion

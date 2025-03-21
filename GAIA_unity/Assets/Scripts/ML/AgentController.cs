@@ -9,7 +9,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class AgentController : Agent
 {
 	[SerializeField] private PlayerManager playerManager;
-	[SerializeField] private PlayerMovement playerMovement;
+	[SerializeField] private BasicPlayerMovement playerMovement;
 	[SerializeField] private StageManager stageManager;
 	[SerializeField] private ActionModules actionModules;
 
@@ -42,7 +42,7 @@ public class AgentController : Agent
 		visitedAreas = new HashSet<Vector2Int>();
 
 		// Reset player velocity and state at the beginning of each episode
-		playerMovement.RB.linearVelocity = Vector3.zero;
+		playerMovement.Rb.linearVelocity = Vector3.zero;
 
 		// Reset player position and state at the beginning of each episode
 		int randomIndex = Random.Range(0, spawnPointsList.Count);
@@ -77,11 +77,11 @@ public class AgentController : Agent
 		sensor.AddObservation(playerMovement.IsJumping ? 1 : 0); // Jumping state
 		sensor.AddObservation(playerMovement.IsDashing ? 1 : 0); // Dashing state
 		sensor.AddObservation(playerMovement.IsDropping ? 1 : 0); // Dropping state
-		sensor.AddObservation(playerMovement.LastOnGroundTime); // Time since last grounded
+		sensor.AddObservation(playerMovement.LastGroundedTime); // Time since last grounded
 
 		// Add velocity observations
-		sensor.AddObservation(playerMovement.RB.linearVelocity.x);
-		sensor.AddObservation(playerMovement.RB.linearVelocity.y);
+		sensor.AddObservation(playerMovement.Rb.linearVelocity.x);
+		sensor.AddObservation(playerMovement.Rb.linearVelocity.y);
 
 		// Add position-related observations
 		//sensor.AddObservation(transform.position.x);
@@ -115,7 +115,7 @@ public class AgentController : Agent
 		bool dropAction = actions.DiscreteActions[1] == 1;
 
 		// Call PlayerMovement methods based on actions
-		playerMovement._moveInput.x = moveX;
+		playerMovement.moveInput.x = moveX;
 
         // Jump Holding Logic
 
