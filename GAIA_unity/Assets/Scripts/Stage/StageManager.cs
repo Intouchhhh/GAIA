@@ -5,7 +5,7 @@ using TMPro;
 public class StageManager : MonoBehaviour
 {
     private Camera _cam;
-    private BasicPlayerMovement _player;
+    private PlayerMovement _player;
     [SerializeField] private Tilemap[] levels;
     [SerializeField] public Transform spawnPoint;
 
@@ -20,7 +20,7 @@ public class StageManager : MonoBehaviour
     private void Awake()
     {
         _cam = FindFirstObjectByType<Camera>();
-        _player = GameObject.FindWithTag("Player").GetComponent<BasicPlayerMovement>();
+        _player = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
     }
 
     private void Start()

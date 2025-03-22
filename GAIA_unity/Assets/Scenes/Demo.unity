@@ -5923,6 +5923,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c246c70a4fe074343bcc9bcc428c2a80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTypes:
+  - {fileID: 11400000, guid: e6de6150ab38ff74b9ee0fa32028adf7, type: 2}
+  - {fileID: 11400000, guid: f4f40d643214f51468b2f79845a6d929, type: 2}
+  - {fileID: 11400000, guid: 00d5f0210bb671246aa78857e25adfce, type: 2}
   levels:
   - {fileID: 1877164981}
   - {fileID: 822965087}
@@ -5930,7 +5934,7 @@ MonoBehaviour:
   - {fileID: 1666989612}
   spawnPoint: {fileID: 538560688}
   nameText: {fileID: 425258558}
-  stageData: {fileID: 0}
+  SceneData: {fileID: 11400000, guid: ef27be30fe2a5784494b3d189b302457, type: 2}
 --- !u!1 &1415217472
 GameObject:
   m_ObjectHideFlags: 0
