@@ -3,199 +3,107 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+using static Unity.Cinemachine.CinemachineTriggerAction.ActionSettings;
 
 public class AgentController : Agent
 {
-	[SerializeField] private PlayerManager playerManager;
-	[SerializeField] private BasicPlayerMovement playerMovement;
-	[SerializeField] private StageManager stageManager;
 	[SerializeField] private ActionModules actionModules;
-
-	private List<GameObject> coins;
-	private List<GameObject> spawnPointsList;
-	private List<GameObject> checkPointsList;
-
-	//private bool wasJumpingLastFrame = false;
-	private bool wasDashingLastFrame = false;
-
-	private float totalDistanceCovered;
+	[SerializeField] private List<Transform> spawnPoints;
 	private Vector2 lastPosition;
-
-    //private bool isJumping = false;
-
-    private HashSet<Vector2Int> visitedAreas;
-
+	private HashSet<Vector2Int> visitedAreas;
 
 	public override void Initialize()
 	{
 		Time.timeScale = 1;
-		coins = new List<GameObject>(GameObject.FindGameObjectsWithTag("Coins"));
-		spawnPointsList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Spawn"));
-		checkPointsList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Checkpoint"));
+
+		if (actionModules == null)
+			actionModules = GetComponent<ActionModules>();
+
+		if (actionModules == null)
+		{
+			Debug.LogError("ActionModules not found on " + gameObject.name);
+			return;
+		}
+
+		spawnPoints = new List<Transform>();
+		foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Spawn"))
+		{
+			spawnPoints.Add(obj.transform);
+		}
 	}
 
 	public override void OnEpisodeBegin()
 	{
-		// Reset visited area
 		visitedAreas = new HashSet<Vector2Int>();
-
-		// Reset player velocity and state at the beginning of each episode
-		playerMovement.Rb.linearVelocity = Vector3.zero;
-
-		// Reset player position and state at the beginning of each episode
-		int randomIndex = Random.Range(0, spawnPointsList.Count);
-		transform.position = spawnPointsList[randomIndex].transform.position;
-
-		// transform.position = stageManager.spawnPoint.transform.position;
-
-		totalDistanceCovered = 0f;
 		lastPosition = transform.position;
 
-		foreach (GameObject coin in coins)
+		if (actionModules == null)
+			actionModules = GetComponent<ActionModules>();
+
+		if (actionModules == null)
 		{
-			if (coin != null)
-			{
-				coin.SetActive(true);
-			}
+			Debug.LogError("ActionModules not found on " + gameObject.name);
+			return;
 		}
 
-		foreach (GameObject cp in checkPointsList)
+		if (spawnPoints.Count > 0)
 		{
-			if (cp != null)
-			{
-				cp.SetActive(true);
-			}
+			transform.position = spawnPoints[Random.Range(0, spawnPoints.Count)].position;
+		}
+
+		if (actionModules != null)
+		{
+			actionModules.basicPlayerMovement.inputEnabled = false;
+			actionModules.playerAttack.inputEnabled = false;
+		}
+		else
+		{
+			Debug.LogError("ActionModules not found on " + gameObject.name);
 		}
 	}
 
 	public override void CollectObservations(VectorSensor sensor)
 	{
-		// Add player-related observations
-		sensor.AddObservation(playerMovement.IsFacingRight ? 1 : 0); // Direction
-		sensor.AddObservation(playerMovement.IsJumping ? 1 : 0); // Jumping state
-		sensor.AddObservation(playerMovement.IsDashing ? 1 : 0); // Dashing state
-		sensor.AddObservation(playerMovement.IsDropping ? 1 : 0); // Dropping state
-		sensor.AddObservation(playerMovement.LastGroundedTime); // Time since last grounded
-
-		// Add velocity observations
-		sensor.AddObservation(playerMovement.Rb.linearVelocity.x);
-		sensor.AddObservation(playerMovement.Rb.linearVelocity.y);
-
-		// Add position-related observations
-		//sensor.AddObservation(transform.position.x);
-		//sensor.AddObservation(transform.position.y);
+		sensor.AddObservation(transform.position.x);
+		sensor.AddObservation(transform.position.y);
+		sensor.AddObservation(actionModules.basicPlayerMovement.IsGrounded ? 1 : 0);
+		sensor.AddObservation(actionModules.basicPlayerMovement.IsJumping ? 1 : 0);
+		sensor.AddObservation(actionModules.basicPlayerMovement.IsFacingRight ? 1 : 0);
+		sensor.AddObservation(actionModules.basicPlayerMovement.IsDashing ? 1 : 0);
+		sensor.AddObservation(actionModules.basicPlayerMovement.IsDropping ? 1 : 0);
+		sensor.AddObservation(actionModules.basicPlayerMovement.IsOnWall ? 1 : 0);
+		sensor.AddObservation(actionModules.basicPlayerMovement.IsWallJumping ? 1 : 0);
 	}
 
 	public override void OnActionReceived(ActionBuffers actions)
 	{
-        // Map the actions to the player's inputs
+		float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
+		bool jumpAction = actions.DiscreteActions[0] == 1;
+		bool dashAction = actions.DiscreteActions[1] == 1;
+		bool attackAction = actions.DiscreteActions[2] == 1;
+		bool dropAction = actions.DiscreteActions[3] == 1;
 
-        #region TEMP MOVEMENT
-        //int moveX = actions.DiscreteActions[0];
-        //if (moveX == 0)
-        //{
-        //	playerMovement._moveInput.x = -1.00;
-        //}
-        //else if (moveX == 1)
-        //{
-        //	playerMovement._moveInput.x = 0.00;
-        //}
-        //else if (moveX == 2)
-        //{
-        //	playerMovement._moveInput.x = 1;
-        //}
-        #endregion
+		actionModules.Move(moveX);
+		if (jumpAction) actionModules.Jump();
+		if (dashAction) actionModules.Dash();
+		if (attackAction) actionModules.Attack();
+		if (dropAction) actionModules.Drop();
 
-        float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
-		float jumpAction = Mathf.Clamp01(actions.ContinuousActions[1]);
+		EvaluateRewards();
+	}
 
-        bool dashAction = actions.DiscreteActions[0] == 1;
-		bool dropAction = actions.DiscreteActions[1] == 1;
-
-		// Call PlayerMovement methods based on actions
-		playerMovement.moveInput.x = moveX;
-
-        // Jump Holding Logic
-
-        #region TEMP JUMP
-        //if (jumpAction > 0f) // If the agent is holding jump
-        //{
-        //    if (!isJumping) // Only trigger jump once
-        //    {
-        //        actionModules.Jump();
-        //        isJumping = true;
-        //    }
-        //}
-        //else if (isJumping) // If agent releases jump
-        //{
-        //    actionModules.JumpRelease(); // Apply increased gravity
-        //    isJumping = false;
-        //}
-        #endregion
-
-        if (jumpAction > 0.33)
-        {
-            Debug.LogError("Jump Action");
-            AddReward(-0.3f);
-            actionModules.Jump();
-            if (jumpAction > 0.66)
-            {
-                // actionModules.JumpRelease();
-            }
-        }
-
-        if (dashAction && !wasDashingLastFrame)
-		{
-			AddReward(-0.3f);
-			actionModules.Dash();
-		}
-
-		if (dropAction)
-		{
-			actionModules.Drop();
-		}
-
-		// wasJumpingLastFrame = jumpAction;
-		wasDashingLastFrame = dashAction;
-
-		#region DISTANCE REWARD
+	private void EvaluateRewards()
+	{
 		float distanceMoved = Vector2.Distance(transform.position, lastPosition);
-		totalDistanceCovered += distanceMoved;
-
-		if (distanceMoved > 0.1f)
-		{
-			AddReward(distanceMoved * 0.05f);
-		}
-
 		lastPosition = transform.position;
-		#endregion
+		if (distanceMoved > 0.1f) AddReward(0.05f * distanceMoved);
 
-		#region STAYING STILL PENALTY
-		if (distanceMoved < 0.1f)
+		Vector2Int gridPos = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+		if (!visitedAreas.Contains(gridPos))
 		{
-			AddReward(-0.05f);
+			AddReward(0.2f);
+			visitedAreas.Add(gridPos);
 		}
-		#endregion
-
-		#region VISITED AREA
-		Vector2Int currentGridPos = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-
-		if (!visitedAreas.Contains(currentGridPos))
-		{
-			AddReward(0.2f); // Small reward for exploring new areas
-			visitedAreas.Add(currentGridPos);
-		}
-
-		if (visitedAreas.Count < 10) // If the agent barely moves around
-		{
-			AddReward(-0.1f);
-		}
-		#endregion
-
-		Debug.Log("stepDistance: " + distanceMoved + " Reward Given: " + distanceMoved * 0.05f);
-		Debug.LogWarning("Cumulative Reward: " + GetCumulativeReward());
 	}
 
 	public override void Heuristic(in ActionBuffers actionsOut)
@@ -204,42 +112,9 @@ public class AgentController : Agent
 		var discreteActions = actionsOut.DiscreteActions;
 
 		continuousActions[0] = Input.GetAxisRaw("Horizontal");
-
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			continuousActions[1] = 0.5f;
-        }
-		if (Input.GetKeyUp(KeyCode.Space))
-		{
-			continuousActions[1] = 1.0f;
-		}
-
-		discreteActions[0] = Input.GetKeyDown(KeyCode.LeftShift) ? 1 : 0; // Dash
-		discreteActions[1] = (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) ? 1 : 0; // Drop down from one-way platform
-	}
-
-	private void OnTriggerEnter2D(Collider2D other)
-	{
-		if (other.gameObject.CompareTag("Coins"))
-		{
-			Debug.LogWarning("HIT Coin");
-			other.gameObject.SetActive(false);
-			AddReward(1.0f);
-			Debug.LogError("Coin: Cumulative Reward: " + GetCumulativeReward());
-		}
-		else if (other.gameObject.CompareTag("Checkpoint"))
-		{
-			Debug.LogWarning("HIT Checkpoint");
-			other.gameObject.SetActive(false);
-			AddReward(10.0f);
-			Debug.LogError("Checkpoint: Cumulative Reward: " + GetCumulativeReward());
-		}
-		else if (other.gameObject.CompareTag("Spike"))
-		{
-			Debug.LogWarning("HIT Spike");
-			AddReward(-10.0f);
-			Debug.LogError("DIED: Cumulative Reward: " + GetCumulativeReward());
-			EndEpisode();
-		}
+		discreteActions[0] = Input.GetKeyDown(KeyCode.Space) ? 1 : 0;
+		discreteActions[1] = Input.GetKeyDown(KeyCode.LeftShift) ? 1 : 0;
+		discreteActions[2] = Input.GetMouseButtonDown(0) ? 1 : 0;
+		discreteActions[3] = Input.GetKey(KeyCode.S) ? 1 : 0;
 	}
 }

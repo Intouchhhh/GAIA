@@ -6,8 +6,8 @@ using JetBrains.Annotations;
 public class BasicPlayerMovement : MonoBehaviour
 {
 	#region VARS
-
-	[Header("Movement Settings")]
+	
+	// Movement
 	[SerializeField] private float moveSpeed = 11f;
 	[SerializeField] private float acceleration = 13f;
 	[SerializeField] private float decceleration = 16f;
@@ -15,7 +15,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private float gravityScale = 5.0f;
 	[SerializeField] private float frictionAmount = 0.5f;
 
-	[Header("Jump Settings")]
+	// Jump
 	[SerializeField] private float jumpForce = 18f;
 	[SerializeField] private float coyoteTime = 0.15f;
 	[SerializeField] private float jumpBufferTime = 0.1f;
@@ -23,18 +23,18 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private float fallMultiplier = 2f;
 	[SerializeField] private float maxFallSpeed;
 
-	[Header("Wall Jump Settings")]
+	// Wall Jump
 	[SerializeField] private Vector2 wallJumpForce = new Vector2(15.0f, 25.0f);
 	[SerializeField] private float wallJumpLerp = 10f;
 	[SerializeField] private float wallSlideSpeed = 2f;
 	[SerializeField] private LayerMask _wallLayer;
 
-	[Header("Dash Settings")]
+	// Dash
 	[SerializeField] private float dashSpeed = 14f;
 	[SerializeField] private float dashDuration = 0.5f;
 	[SerializeField] private float dashCooldown = 1f;
 
-	[Header("Checks")]
+	// Checks
 	[SerializeField] private Transform _wallCheckPointLeft;
 	[SerializeField] private Transform _wallCheckPointRight;
 	[SerializeField] private Vector2 _wallCheckSize = new Vector2(0.11f, 0.46f);
@@ -44,35 +44,33 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private LayerMask _groundLayer;
 	[SerializeField] private string _oneWayPlatLayer = "OneWayPlatform";
 
-	[Header("Serialize")]
+	// Serialized
 	[SerializeField] private Rigidbody2D rb;
-
 	[SerializeField] private float lastGroundedTime;
-
 	[SerializeField] private float lastJumpPressedTime;
 	[SerializeField] private int wallJumpDir;
-
 	[SerializeField] private float lastDashTime;
 	[SerializeField] private float lastDashPressedTime;
 	[SerializeField] private Vector2 dashDirection;
 
-	[Header("Inputs (Public)")]
+	// Inputs
 	public Vector2 moveInput;
 	public float dropInput;
 	public float moveDir;
 	public bool jumpInput;
 	public bool dashInput;
+	public bool inputEnabled = true;
 
-    [Header("Flags")]
-	private bool isGrounded;
-	private bool isOnRightWall;
-	private bool isOnLeftWall;
-	private bool isOnWall;
-	private bool isDashing;
-	private bool isJumping;
-	private bool isDropping;
-	private bool isWallJumping;
-	private bool isFacingRight;
+    // Flags
+	[SerializeField] private bool isGrounded;
+	[SerializeField] private bool isOnRightWall;
+	[SerializeField] private bool isOnLeftWall;
+	[SerializeField] private bool isOnWall;
+	[SerializeField] private bool isDashing;
+	[SerializeField] private bool isJumping;
+	[SerializeField] private bool isDropping;
+	[SerializeField] private bool isWallJumping;
+	[SerializeField] private bool isFacingRight;
 
 	#region PUBLIC GETTERS
 
@@ -170,40 +168,42 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void HandleInput()
 	{
-        #region Agent Notes
-        // Input:
-        // 0: moveDir = moveInput.x;						0 = still, 1 = left, 2 = right
-        // 1: dropInput = moveInput.y;						0 = still, 1 = down, 2 = up
-        // 2: jump = Input.GetKeyDown(KeyCode.Space)		0 = still, 1 = jump
-        // 3: dash = Input.GetKeyDown(KeyCode.LeftShift)	0 = still, 1 = dash
-        //
-        // switch (xInput)
-        // {
-        //		case 0: moveDir =  0f; break;
-        //		case 1: moveDir = -1f; break;
-        //		case 2: moveDir = +1f; break;
-        // }
-        //
-        // switch (yInput)
-        // {
-        //		case 0: dropInput =  0f; break;
-        //		case 1: dropInput = -1f; break;
-        //		case 2: dropInput = +1f; break;
-        // }
-        //
-        // if (jump)
-        // {
-        //		Jump();
-        // }
-        //
-        // if (dash)
-        // {
-        //		Dash();
-        // }
-        #endregion
+		#region Agent Notes
+		// Input:
+		// 0: moveDir = moveInput.x;						0 = still, 1 = left, 2 = right
+		// 1: dropInput = moveInput.y;						0 = still, 1 = down, 2 = up
+		// 2: jump = Input.GetKeyDown(KeyCode.Space)		0 = still, 1 = jump
+		// 3: dash = Input.GetKeyDown(KeyCode.LeftShift)	0 = still, 1 = dash
+		//
+		// switch (xInput)
+		// {
+		//		case 0: moveDir =  0f; break;
+		//		case 1: moveDir = -1f; break;
+		//		case 2: moveDir = +1f; break;
+		// }
+		//
+		// switch (yInput)
+		// {
+		//		case 0: dropInput =  0f; break;
+		//		case 1: dropInput = -1f; break;
+		//		case 2: dropInput = +1f; break;
+		// }
+		//
+		// if (jump)
+		// {
+		//		Jump();
+		// }
+		//
+		// if (dash)
+		// {
+		//		Dash();
+		// }
+		#endregion
 
-        // Movement Input
-        moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		if (!inputEnabled) return;
+
+		// Movement Input
+		moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
         moveDir = moveInput.x;
         dropInput = moveInput.y;
@@ -254,7 +254,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	#endregion
 
 	#region JUMP
-	private void Jump()
+	public void Jump()
 	{
 		if (dropInput < 0)
 		{
@@ -314,7 +314,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	#endregion
 
 	#region DASH
-	private void Dash()
+	public void Dash()
 	{
 		if (Time.time >= lastDashTime + dashCooldown)
 		{
@@ -365,7 +365,7 @@ public class BasicPlayerMovement : MonoBehaviour
 
     #region DROP
 
-	private void Drop()
+	public void Drop()
 	{
 		if (isGrounded)
 		{

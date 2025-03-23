@@ -6,33 +6,18 @@ public class PlayerManager : MonoBehaviour
     private Rigidbody2D rb;
 
     public int maxHealth = 3;
+    public int attackDamage = 1;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.CompareTag("Spike"))
         {
-            Debug.Log("Hit");
+            Debug.Log("Player hit the spike (trigger)!");
+            Die();
         }
-    }
-
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    if (collision.CompareTag("Spike"))
-    //    {
-    //        Debug.Log("Player hit the spike (trigger)!");
-    //        Die();
-    //    }
-    //    if (collision.CompareTag("Coins"))
-    //    {
-    //        Destroy(collision.gameObject);
-    //    }
-    //}
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.CompareTag("Coins"))
         {
-            Debug.Log("Out");
+            Destroy(collision.gameObject);
         }
     }
 
