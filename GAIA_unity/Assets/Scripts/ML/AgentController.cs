@@ -34,6 +34,8 @@ public class AgentController : Agent
 
 	public override void OnEpisodeBegin()
 	{
+		Debug.Log($"TimeScale: {Time.timeScale}, FixedDeltaTime: {Time.fixedDeltaTime}, DeltaTime: {Time.deltaTime}");
+
 		visitedAreas = new HashSet<Vector2Int>();
 		lastPosition = transform.position;
 
@@ -53,8 +55,14 @@ public class AgentController : Agent
 
 		if (actionModules != null)
 		{
-			actionModules.basicPlayerMovement.inputEnabled = false;
-			actionModules.playerAttack.inputEnabled = false;
+			if (actionModules.basicPlayerMovement != null)
+			{
+				actionModules.basicPlayerMovement.inputEnabled = false;
+			}
+			if (actionModules.playerAttack != null)
+			{
+				actionModules.playerAttack.inputEnabled = false;
+			}
 		}
 		else
 		{

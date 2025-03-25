@@ -24,9 +24,9 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private float maxFallSpeed;
 
 	// Wall Jump
-	[SerializeField] private Vector2 wallJumpForce = new Vector2(15.0f, 25.0f);
-	[SerializeField] private float wallJumpLerp = 10f;
-	[SerializeField] private float wallSlideSpeed = 2f;
+	[SerializeField] private Vector2 wallJumpForce = new Vector2(12.0f, 17.0f);
+	[SerializeField] private float wallJumpLerp = 4.0f;
+	[SerializeField] private float wallSlideSpeed = 5.0f;
 	[SerializeField] private LayerMask _wallLayer;
 
 	// Dash
@@ -229,11 +229,11 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void HandleMovement(float direction)
 	{
-		if (isDashing) return;
+		if (IsDashing) return;
 
-		if (direction > 0 && !isFacingRight)
+		if (direction > 0 && !IsFacingRight)
 			Flip();
-		else if (direction < 0 && isFacingRight)
+		else if (direction < 0 && IsFacingRight)
 			Flip();
 
 		float targetSpeed = direction * moveSpeed;
@@ -241,7 +241,7 @@ public class BasicPlayerMovement : MonoBehaviour
 		float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? acceleration : decceleration;
 		float movement = Mathf.Pow(Mathf.Abs(speedDifference) * accelRate, velPower) * Mathf.Sign(speedDifference);
 
-		if (!isWallJumping)
+		if (!IsWallJumping)
 		{
 			rb.AddForce(movement * Vector2.right);
 		}
@@ -274,22 +274,26 @@ public class BasicPlayerMovement : MonoBehaviour
 			}
 			else if (CanWallJump())
 			{
-				wallJumpDir = (isOnRightWall) ? -1 : 1;
+				wallJumpDir = (IsOnRightWall) ? -1 : 1;
 				PerformWallJump(wallJumpDir);
 			}
 		}
 	}
 
-	private bool CanJump() => isGrounded || Time.time - lastGroundedTime <= coyoteTime;
-	private bool CanWallJump() => isOnWall && !isGrounded;
+	private bool CanJump() => (IsGrounded || Time.time - lastGroundedTime <= coyoteTime) && !IsDashing;
+	private bool CanWallJump() => IsOnWall && !IsGrounded && !IsWallJumping;
 
 	private void PerformJump()
 	{
 		lastGroundedTime = 0;
 		lastJumpPressedTime = 0;
-		rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
 
-		rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+		//rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+
+		//rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+		rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+
 		isJumping = true;
 	}
 
@@ -305,9 +309,26 @@ public class BasicPlayerMovement : MonoBehaviour
 			force.x -= rb.linearVelocity.x;
 
 		if (rb.linearVelocity.y < 0)
+		{
+			Debug.LogWarning("Vy: " + rb.linearVelocity.y);
+			Debug.LogWarning("Before sub: " + force.y);
 			force.y -= rb.linearVelocity.y;
+			Debug.LogWarning("After sub: " + force.y);
+		}
 
+		Debug.LogWarning("WallJump: " + force);
 		rb.AddForce(force, ForceMode2D.Impulse);
+
+		//Vector2 newVelocity = new Vector2(wallJumpForce.x * dir, wallJumpForce.y);
+
+		//if (rb.linearVelocity.y < 0)
+		//{
+		//	newVelocity.y = Mathf.Max(newVelocity.y, rb.linearVelocity.y + wallJumpForce.y);
+		//}
+
+		//Debug.LogWarning("WallJump Velocity: " + rb.linearVelocity);
+		//rb.linearVelocity = newVelocity;
+
 		isWallJumping = true;
 	}
 
@@ -329,7 +350,7 @@ public class BasicPlayerMovement : MonoBehaviour
 			StartCoroutine(PerformDash());
 		}
 	}
-	private bool CanDash() => !isDashing && (Time.time >= lastDashTime + dashCooldown);
+	private bool CanDash() => !IsDashing && (Time.time >= lastDashTime + dashCooldown);
 
 	private IEnumerator PerformDash()
 	{
@@ -337,7 +358,7 @@ public class BasicPlayerMovement : MonoBehaviour
 
 		lastDashPressedTime = Time.time;
 
-		dashDirection = isFacingRight ? Vector2.right : Vector2.left;
+		dashDirection = IsFacingRight ? Vector2.right : Vector2.left;
 
 		rb.gravityScale = 0;
 		rb.linearVelocity = dashDirection * dashSpeed;
@@ -355,7 +376,7 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void HandleWallSlide()
 	{
-		if (isOnWall && !isGrounded && rb.linearVelocity.y < 0)
+		if (IsOnWall && !IsGrounded && rb.linearVelocity.y < 0)
 		{
 			rb.linearVelocity = new Vector2(rb.linearVelocity.x, -wallSlideSpeed);
 		}
@@ -367,7 +388,7 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	public void Drop()
 	{
-		if (isGrounded)
+		if (IsGrounded)
 		{
 			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
 			isDropping = true;
@@ -382,7 +403,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	{
 		isGrounded = Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) != null;
 
-		if (isGrounded)
+		if (IsGrounded)
 		{
 			lastGroundedTime = Time.time;
 			isJumping = false;
@@ -392,30 +413,28 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void HandleWallDetection()
 	{
-		if (isGrounded)
+		if (IsGrounded)
 		{
 			isOnWall = isOnLeftWall = isOnRightWall = false;
 			return;
 		}
 
-		Transform leftCheck = isFacingRight ? _wallCheckPointLeft : _wallCheckPointRight;
-		Transform rightCheck = isFacingRight ? _wallCheckPointRight : _wallCheckPointLeft;
+		Transform leftCheck = IsFacingRight ? _wallCheckPointLeft : _wallCheckPointRight;
+		Transform rightCheck = IsFacingRight ? _wallCheckPointRight : _wallCheckPointLeft;
 
 		isOnLeftWall = Physics2D.OverlapBox(leftCheck.position, _wallCheckSize, 0, _wallLayer) != null;
 		isOnRightWall = Physics2D.OverlapBox(rightCheck.position, _wallCheckSize, 0, _wallLayer) != null;
 
-		isOnWall = isOnLeftWall || isOnRightWall;
+		isOnWall = IsOnLeftWall || IsOnRightWall;
+		isWallJumping = false;
 	}
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("OneWayJumpCheck"))
         {
-            Debug.LogError("One Way (trigger)!");
-			Debug.LogError(rb.linearVelocity.y);
 			if (rb.linearVelocity.y > 0)
 			{
-				Debug.LogError("Ignore!");
 				Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
             }
         }
@@ -436,16 +455,16 @@ public class BasicPlayerMovement : MonoBehaviour
 
     private void ApplyCustomGravity()
 	{
-		if (isJumping && Mathf.Abs(rb.linearVelocity.y) < 0.1f)
+		if (IsJumping && Mathf.Abs(rb.linearVelocity.y) < 0.1f)
 		{
 			rb.gravityScale = gravityScale * jumpHangGravityMultiplier;
 		}
-		else if (!isDashing && rb.linearVelocity.y < 0) // Apply increased gravity when falling
+		else if (!IsDashing && rb.linearVelocity.y < 0) // Apply increased gravity when falling
 		{
 			rb.gravityScale = gravityScale * fallMultiplier;
 			rb.linearVelocity = new Vector2(rb.linearVelocity.x,Mathf.Max(rb.linearVelocity.y, -maxFallSpeed));
 		}
-		else if (!isDashing)
+		else if (!IsDashing)
 		{
 			rb.gravityScale = gravityScale;
 		}
