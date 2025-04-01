@@ -117,8 +117,8 @@ public class PlayerMovement : MonoBehaviour
 
 		#region INPUT HANDLER
 		//HERE
-		//_moveInput.x = Input.GetAxisRaw("Horizontal");
-		//_moveInput.y = Input.GetAxisRaw("Vertical");
+		_moveInput.x = Input.GetAxisRaw("Horizontal");
+		_moveInput.y = Input.GetAxisRaw("Vertical");
 
 		//HERE
 		//Debug.Log(_moveInput);
@@ -136,19 +136,19 @@ public class PlayerMovement : MonoBehaviour
 		if (!(Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.J))
         {
 			//HERE
-			//OnJumpInput();
+			OnJumpInput();
 		}
 
 		if (Input.GetKeyUp(KeyCode.Space))
 		{
 			//HERE
-			//OnJumpUpInput();
+			OnJumpUpInput();
 		}
 
 		if (Input.GetKeyDown(KeyCode.LeftShift))
 		{
 			//HERE
-			//OnDashInput();
+			OnDashInput();
 		}
 		#endregion
 
