@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
 {
-    private PlayerMovement move;
-    private Animator anim;
-    private SpriteRenderer spriteRend;
+    private BasicPlayerMovement move;
+	[SerializeField] private Animator anim;
+	[SerializeField] private SpriteRenderer spriteRend;
 
     private StageManager stageManager;
 
