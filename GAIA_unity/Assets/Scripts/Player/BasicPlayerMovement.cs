@@ -431,10 +431,13 @@ public class BasicPlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+		Debug.LogWarning("Trigger");
         if (collision.CompareTag("OneWayJumpCheck"))
-        {
+		{
+			Debug.LogWarning("OneWayJumpCheck");
 			if (rb.linearVelocity.y > 0)
 			{
+				Debug.LogWarning("Ignore");
 				Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
             }
         }

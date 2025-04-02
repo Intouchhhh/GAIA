@@ -27,7 +27,7 @@ public class PlayerAnimator : MonoBehaviour
 
     private void Start()
     {
-        move = GetComponent<PlayerMovement>();
+        move = GetComponent<BasicPlayerMovement>();
         spriteRend = GetComponentInChildren<SpriteRenderer>();
         anim = spriteRend.GetComponent<Animator>();
 
@@ -44,13 +44,13 @@ public class PlayerAnimator : MonoBehaviour
 
         int mult = -1;
 
-        if (move.IsSliding)
+        if (move.IsDashing)
         {
             tiltProgress = 0.25f;
         }
         else
         {
-            tiltProgress = Mathf.InverseLerp(-move.Data.runMaxSpeed, move.Data.runMaxSpeed, move.RB.linearVelocity.x);
+            tiltProgress = Mathf.InverseLerp(-move.MoveSpeed, move.MoveSpeed, move.Rb.linearVelocity.x);
             mult = (move.IsFacingRight) ? 1 : -1;
         }
             
@@ -87,6 +87,6 @@ public class PlayerAnimator : MonoBehaviour
             return;
         }
 
-        anim.SetFloat("Vel Y", move.RB.linearVelocity.y);
+        anim.SetFloat("Vel Y", move.Rb.linearVelocity.y);
     }
 }

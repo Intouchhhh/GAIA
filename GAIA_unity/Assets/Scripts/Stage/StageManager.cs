@@ -5,7 +5,7 @@ using TMPro;
 public class StageManager : MonoBehaviour
 {
     private Camera _cam;
-    private PlayerMovement _player;
+    private BasicPlayerMovement _player;
     [SerializeField] private Tilemap[] levels;
     [SerializeField] public Transform spawnPoint;
 
@@ -20,7 +20,7 @@ public class StageManager : MonoBehaviour
     private void Awake()
     {
         _cam = FindFirstObjectByType<Camera>();
-        _player = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
+        _player = GameObject.FindWithTag("Player").GetComponent<BasicPlayerMovement>();
     }
 
     private void Start()
@@ -35,7 +35,6 @@ public class StageManager : MonoBehaviour
 
         _cam.orthographicSize = data.camSize;
         _cam.backgroundColor = data.backgroundColor;
-        //levels[_currentTilemapIndex].color = data.foregroundColor;
 
         _currentForegroundColor = data.foregroundColor;
     }
