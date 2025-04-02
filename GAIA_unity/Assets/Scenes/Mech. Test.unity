@@ -304,11 +304,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d024cc73ad207e438a7a1d777842e0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTilt: 0
-  tiltSpeed: 0
-  jumpFX: {fileID: 0}
-  landFX: {fileID: 0}
-  currentVelY: 0
 --- !u!1 &1127691628
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,10 +440,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02285c9222862aa4eab46b2dbfd1201c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  offset: {x: 0, y: 0, z: -10}
-  smoothTime: 0.125
-  Velocity: {x: 0, y: 0, z: 0}
 --- !u!1 &1264760073
 GameObject:
   m_ObjectHideFlags: 0
@@ -1234,11 +1225,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8229053154620089690, guid: f2c020c2732ce594eb68d94c83e7eb90, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.924
+      value: 11.15
       objectReference: {fileID: 0}
     - target: {fileID: 8229053154620089690, guid: f2c020c2732ce594eb68d94c83e7eb90, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.9554796
+      value: -1.81
       objectReference: {fileID: 0}
     - target: {fileID: 8229053154620089690, guid: f2c020c2732ce594eb68d94c83e7eb90, type: 3}
       propertyPath: m_LocalPosition.z
