@@ -12,29 +12,34 @@ public class EnemyStateMachine : MonoBehaviour
     [Header("Chase Settings")]
     public float chaseSpeed = 3f;
     public float detectionRange = 5f;
-    public Transform player;
-    public GameObject detected;
+    public BasicPlayerMovement playerObj;
+	public Transform playerPosition;
+	public GameObject detected;
 
 	[Header("State Machine")]
     public EnemyState currentState = EnemyState.Patrol;
 
     private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
+    public GameObject sprite;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
         rb.freezeRotation = true;
 
-        if (patrolPoints.Length == 0)
+		playerObj = FindFirstObjectByType<BasicPlayerMovement>();
+		if (playerObj != null)
+		{
+			playerPosition = playerObj.transform;
+		}
+		else
+		{
+			Debug.LogError("No GameObject with BasicPlayerMovement found in the scene!");
+		}
+
+		if (patrolPoints.Length == 0)
         {
             Debug.LogWarning("No patrol points assigned!");
-        }
-        if (player == null)
-        {
-            Debug.LogError("Player Transform is not assigned!");
         }
     }
 
@@ -81,9 +86,9 @@ public class EnemyStateMachine : MonoBehaviour
 
     void ChasePlayer()
     {
-        if (player == null) return;
+        if (playerPosition == null) return;
 
-        Vector2 direction = (player.position - transform.position).normalized;
+        Vector2 direction = (playerPosition.position - transform.position).normalized;
 
         rb.linearVelocity = new Vector2(direction.x * chaseSpeed, rb.linearVelocity.y);
 
@@ -92,17 +97,23 @@ public class EnemyStateMachine : MonoBehaviour
 
     void FlipSprite(float moveDirection)
     {
-        if (moveDirection != 0 && spriteRenderer != null)
+        if (moveDirection != 0 && sprite != null)
         {
-            spriteRenderer.flipX = moveDirection < 0;
-        }
+			Vector3 scale = sprite.transform.localScale;
+
+			if ((moveDirection < 0 && scale.x > 0) || (moveDirection > 0 && scale.x < 0))
+			{
+				scale.x *= -1;
+				sprite.transform.localScale = scale;
+			}
+		}
     }
 
     void CheckForPlayer()
     {
-        if (player == null) return;
+        if (playerPosition == null) return;
 
-        if (Vector2.Distance(transform.position, player.position) <= detectionRange)
+        if (Vector2.Distance(transform.position, playerPosition.position) <= detectionRange)
         {
             Debug.LogWarning("Player Found!");
             detected.SetActive(true);
@@ -112,9 +123,9 @@ public class EnemyStateMachine : MonoBehaviour
 
     void CheckForPlayerOutOfRange()
     {
-        if (player == null) return;
+        if (playerPosition == null) return;
 
-        if (Vector2.Distance(transform.position, player.position) > detectionRange)
+        if (Vector2.Distance(transform.position, playerPosition.position) > detectionRange)
         {
 			Debug.LogWarning("Player Gone!");
 			detected.SetActive(false);
