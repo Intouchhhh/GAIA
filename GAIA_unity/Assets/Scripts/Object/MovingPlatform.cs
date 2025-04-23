@@ -30,6 +30,9 @@ public class MovingPlatform : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             collision.gameObject.transform.parent = transform;
+            Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
+
+            playerRb.interpolation = RigidbodyInterpolation2D.None;
         }
     }
 
@@ -38,6 +41,9 @@ public class MovingPlatform : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             collision.gameObject.transform.parent = null;
+            Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
+
+            playerRb.interpolation = RigidbodyInterpolation2D.Interpolate;
         }
     }
 }
