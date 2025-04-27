@@ -14,6 +14,8 @@ public class PlayerAttack : MonoBehaviour
 
 	[SerializeField] private PlayerManager playerManager;
 
+	public bool isAttacking { get; private set; }
+
 	private float lastAttackTime;
 	public bool attackInput;
 	public bool inputEnabled = true;
@@ -46,6 +48,7 @@ public class PlayerAttack : MonoBehaviour
 		if (Time.time < lastAttackTime + attackCooldown) return;
 
 		lastAttackTime = Time.time;
+		isAttacking = true;
 
 		// Enable attack visual
 		if (attackVisual != null)
@@ -57,14 +60,21 @@ public class PlayerAttack : MonoBehaviour
 		// Detect enemies in range
 		Collider2D[] hitEnemies = Physics2D.OverlapCapsuleAll(attackPoint.position, attackCapsuleSize, capsuleDirection, 0, enemyLayer);
 
-		foreach (Collider2D enemy in hitEnemies)
+		foreach (Collider2D enemyCollider in hitEnemies)
 		{
-			Debug.LogError("Attack Hit");
+			EnemyActionModule enemy = enemyCollider.GetComponent<EnemyActionModule>();
+			if (enemy != null)
+			{
+				enemy.TakeDamage(attackDamage, transform.position); // Apply knockback from player position
+				Debug.Log("Enemy hit and damaged!");
+			}
 		}
 	}
 
 	private void DisableAttackVisual()
 	{
+		isAttacking = false;
+
 		if (attackVisual != null)
 		{
 			attackVisual.SetActive(false);

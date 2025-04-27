@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ActionModules : MonoBehaviour
+public class PlayerActionModules : MonoBehaviour
 {
 	public BasicPlayerMovement basicPlayerMovement;
 	public PlayerAttack playerAttack;

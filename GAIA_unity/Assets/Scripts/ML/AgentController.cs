@@ -3,86 +3,101 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using static Unity.Cinemachine.CinemachineTriggerAction.ActionSettings;
 
 public class AgentController : Agent
 {
-	[SerializeField] private ActionModules actionModules;
-	[SerializeField] private List<Transform> spawnPoints;
+	#region Fields & Components
+	[SerializeField] private PlayerActionModules playerActionModules;
+	[SerializeField] private PlayerManager playerManager;
+	[SerializeField] private List<GameObject> spawnPointsList;
 	private Vector2 lastPosition;
 	private HashSet<Vector2Int> visitedAreas;
+	#endregion
 
+	#region Initialization
 	public override void Initialize()
 	{
 		Time.timeScale = 1;
 
-		if (actionModules == null)
-			actionModules = GetComponent<ActionModules>();
+		if (playerActionModules == null)
+			playerActionModules = GetComponent<PlayerActionModules>();
 
-		if (actionModules == null)
-		{
-			Debug.LogError("ActionModules not found on " + gameObject.name);
-			return;
-		}
+		if (playerManager == null)
+			playerManager = GetComponent<PlayerManager>();
 
-		spawnPoints = new List<Transform>();
-		foreach (GameObject obj in GameObject.FindGameObjectsWithTag("Spawn"))
-		{
-			spawnPoints.Add(obj.transform);
-		}
+		spawnPointsList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Spawn"));
 	}
+	#endregion
 
+	#region Episode Handling
 	public override void OnEpisodeBegin()
 	{
-		Debug.Log($"TimeScale: {Time.timeScale}, FixedDeltaTime: {Time.fixedDeltaTime}, DeltaTime: {Time.deltaTime}");
+		if (playerActionModules == null)
+			playerActionModules = GetComponent<PlayerActionModules>();
 
-		visitedAreas = new HashSet<Vector2Int>();
-		lastPosition = transform.position;
+		DisablePlayerInput();
 
-		if (actionModules == null)
-			actionModules = GetComponent<ActionModules>();
-
-		if (actionModules == null)
+		// Reset velocity and position
+		if (playerActionModules?.basicPlayerMovement != null)
 		{
-			Debug.LogError("ActionModules not found on " + gameObject.name);
+			playerActionModules.basicPlayerMovement.rb = GetComponent<Rigidbody2D>();
+			playerActionModules.basicPlayerMovement.Rb.linearVelocity = Vector2.zero;
+		}
+
+		// transform.position = spawnPointsList[Random.Range(0, spawnPointsList.Count)].transform.position;
+
+		lastPosition = transform.position;
+		visitedAreas = new HashSet<Vector2Int>();
+	}
+
+	private void DisablePlayerInput()
+	{
+		if (playerActionModules == null) return;
+
+		if (playerActionModules.basicPlayerMovement == null)
+			playerActionModules.basicPlayerMovement = GetComponent<BasicPlayerMovement>();
+
+		if (playerActionModules.playerAttack == null)
+			playerActionModules.playerAttack = GetComponent<PlayerAttack>();
+
+		playerActionModules.basicPlayerMovement.inputEnabled = false;
+		playerActionModules.playerAttack.inputEnabled = false;
+	}
+	#endregion
+
+	#region Observations
+	public override void CollectObservations(VectorSensor sensor)
+	{
+		var movement = playerActionModules?.basicPlayerMovement;
+
+		if (movement == null)
+		{
+			sensor.AddObservation(0f); // fallback values
 			return;
 		}
 
-		if (spawnPoints.Count > 0)
-		{
-			transform.position = spawnPoints[Random.Range(0, spawnPoints.Count)].position;
-		}
-
-		if (actionModules != null)
-		{
-			if (actionModules.basicPlayerMovement != null)
-			{
-				actionModules.basicPlayerMovement.inputEnabled = false;
-			}
-			if (actionModules.playerAttack != null)
-			{
-				actionModules.playerAttack.inputEnabled = false;
-			}
-		}
-		else
-		{
-			Debug.LogError("ActionModules not found on " + gameObject.name);
-		}
-	}
-
-	public override void CollectObservations(VectorSensor sensor)
-	{
+		// Position
 		sensor.AddObservation(transform.position.x);
 		sensor.AddObservation(transform.position.y);
-		sensor.AddObservation(actionModules.basicPlayerMovement.IsGrounded ? 1 : 0);
-		sensor.AddObservation(actionModules.basicPlayerMovement.IsJumping ? 1 : 0);
-		sensor.AddObservation(actionModules.basicPlayerMovement.IsFacingRight ? 1 : 0);
-		sensor.AddObservation(actionModules.basicPlayerMovement.IsDashing ? 1 : 0);
-		sensor.AddObservation(actionModules.basicPlayerMovement.IsDropping ? 1 : 0);
-		sensor.AddObservation(actionModules.basicPlayerMovement.IsOnWall ? 1 : 0);
-		sensor.AddObservation(actionModules.basicPlayerMovement.IsWallJumping ? 1 : 0);
-	}
 
+		// Movement States
+		sensor.AddObservation(movement.IsGrounded ? 1f : 0f);
+		sensor.AddObservation(movement.IsJumping ? 1f : 0f);
+		sensor.AddObservation(movement.IsFacingRight ? 1f : 0f);
+		sensor.AddObservation(movement.IsDashing ? 1f : 0f);
+		sensor.AddObservation(movement.IsDropping ? 1f : 0f);
+		sensor.AddObservation(movement.IsOnWall ? 1f : 0f);
+		sensor.AddObservation(movement.IsWallJumping ? 1f : 0f);
+
+		// Health
+		sensor.AddObservation(playerManager.currentHealth);
+
+		// Attacking States
+		sensor.AddObservation(playerActionModules.playerAttack.isAttacking ? 1f : 0f);
+	}
+	#endregion
+
+	#region Actions
 	public override void OnActionReceived(ActionBuffers actions)
 	{
 		float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
@@ -91,21 +106,30 @@ public class AgentController : Agent
 		bool attackAction = actions.DiscreteActions[2] == 1;
 		bool dropAction = actions.DiscreteActions[3] == 1;
 
-		actionModules.Move(moveX);
-		if (jumpAction) actionModules.Jump();
-		if (dashAction) actionModules.Dash();
-		if (attackAction) actionModules.Attack();
-		if (dropAction) actionModules.Drop();
+		// Delegate input
+		playerActionModules.Move(moveX);
+		if (jumpAction) playerActionModules.Jump();
+		if (dashAction) playerActionModules.Dash();
+		if (attackAction) playerActionModules.Attack();
+		if (dropAction) playerActionModules.Drop();
 
 		EvaluateRewards();
 	}
+	#endregion
 
+	#region Reward System
 	private void EvaluateRewards()
 	{
+		// Distance Reward
 		float distanceMoved = Vector2.Distance(transform.position, lastPosition);
-		lastPosition = transform.position;
-		if (distanceMoved > 0.1f) AddReward(0.05f * distanceMoved);
+		if (distanceMoved > 0.1f)
+			AddReward(0.05f * distanceMoved);
+		else
+			AddReward(-0.01f);
 
+		lastPosition = transform.position;
+
+		// Exploration Reward
 		Vector2Int gridPos = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
 		if (!visitedAreas.Contains(gridPos))
 		{
@@ -113,7 +137,34 @@ public class AgentController : Agent
 			visitedAreas.Add(gridPos);
 		}
 	}
+	#endregion
 
+	#region Collisions
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		switch (collision.tag)
+		{
+			case "Coins":
+				AddReward(1.0f);
+				break;
+
+			case "Hazard":
+				AddReward(-3.0f);
+				EndEpisode();
+				break;
+
+			case "Enemy":
+				AddReward(-2.0f);
+				break;
+
+			case "Checkpoint":
+				AddReward(5.0f);
+				break;
+		}
+	}
+	#endregion
+
+	#region Heuristics (for manual testing)
 	public override void Heuristic(in ActionBuffers actionsOut)
 	{
 		var continuousActions = actionsOut.ContinuousActions;
@@ -125,4 +176,5 @@ public class AgentController : Agent
 		discreteActions[2] = Input.GetMouseButtonDown(0) ? 1 : 0;
 		discreteActions[3] = Input.GetKey(KeyCode.S) ? 1 : 0;
 	}
+	#endregion
 }

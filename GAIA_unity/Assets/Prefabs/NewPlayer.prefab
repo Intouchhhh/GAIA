@@ -959,7 +959,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 3
+  currentHealth: 3
   attackDamage: 1
+  spawnPointsList: []
 --- !u!114 &1204745540818095902
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1149,8 +1151,9 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
-  actionModules: {fileID: 0}
-  spawnPoints: []
+  playerActionModules: {fileID: 0}
+  playerManager: {fileID: 0}
+  spawnPointsList: []
 --- !u!1 &7292108782940707498
 GameObject:
   m_ObjectHideFlags: 0

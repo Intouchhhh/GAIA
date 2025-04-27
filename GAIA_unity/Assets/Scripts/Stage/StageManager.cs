@@ -26,7 +26,7 @@ public class StageManager : MonoBehaviour
     private void Start()
     {
         SetSceneData(stageData);
-		_player.transform.position = spawnPoint.position;
+		//_player.transform.position = spawnPoint.position;
 	}
 
     public void SetSceneData(StageData data)
