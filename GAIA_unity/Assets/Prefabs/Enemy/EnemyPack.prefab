@@ -1056,7 +1056,7 @@ MonoBehaviour:
   currentHealth: 0
   isInvincible: 0
   invincibilityTimer: 0
-  actionModule: {fileID: 0}
+  actionModule: {fileID: 1518033529806913268}
 --- !u!114 &1518033529806913268
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1069,7 +1069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6298a57ed84f90c4290bf0583118c18a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyCombat: {fileID: 0}
+  enemyCombat: {fileID: 2833711804086129905}
 --- !u!114 &2760339540881677667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1083,14 +1083,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
-  patrolPoints: []
+  patrolPoints:
+  - {fileID: 5807397870592843589}
+  - {fileID: 8884019489877748083}
   chaseSpeed: 3
   detectionRange: 1.5
   playerObj: {fileID: 0}
   playerPosition: {fileID: 0}
   detected: {fileID: 0}
   currentState: 0
-  sprite: {fileID: 0}
+  sprite: {fileID: 6428875962033275270}
 --- !u!1 &7205299472561185863
 GameObject:
   m_ObjectHideFlags: 0
