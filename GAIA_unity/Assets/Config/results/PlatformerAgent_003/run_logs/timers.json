@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1745426077",
+        "python_version": "3.10.12 | packaged by Anaconda, Inc. | (main, Jul  5 2023, 19:01:18) [MSC v.1916 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\ASUS\\.conda\\envs\\mlagents\\Scripts\\mlagents-learn config.yaml --run-id=PlatformerAgent_003 --force",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.2.2+cu121",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1745426090"
+    },
+    "total": 12.28734269994311,
+    "count": 1,
+    "self": 0.0071486999513581395,
+    "children": {
+        "run_training.setup": {
+            "total": 0.12467519997153431,
+            "count": 1,
+            "self": 0.12467519997153431
+        },
+        "TrainerController.start_learning": {
+            "total": 12.155518800020218,
+            "count": 1,
+            "self": 0.0004154000198468566,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 12.155086899991147,
+                    "count": 1,
+                    "self": 12.155086899991147
+                },
+                "TrainerController._save_models": {
+                    "total": 1.650000922381878e-05,
+                    "count": 1,
+                    "self": 1.650000922381878e-05
+                }
+            }
+        }
+    }
+}

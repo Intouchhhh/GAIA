@@ -938,6 +938,8 @@ GameObject:
   - component: {fileID: 3722995268261342842}
   - component: {fileID: 1066430176827367051}
   - component: {fileID: 2833711804086129905}
+  - component: {fileID: 1518033529806913268}
+  - component: {fileID: 2760339540881677667}
   m_Layer: 14
   m_Name: Enemy
   m_TagString: Untagged
@@ -1059,6 +1061,35 @@ MonoBehaviour:
   detected: {fileID: 1543124203998610171}
   currentState: 0
   sprite: {fileID: 6428875962033275270}
+--- !u!114 &1518033529806913268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6446651279119864647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bb19b8bfa329fe4587c226f060336e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyCombat: {fileID: 0}
+--- !u!114 &2760339540881677667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6446651279119864647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e46c3b2e42a9fdd4f920c1ec4046c979, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 3
+  damageCooldown: 0.5
+  knockbackForce: 5
+  actionModule: {fileID: 0}
 --- !u!1 &7205299472561185863
 GameObject:
   m_ObjectHideFlags: 0

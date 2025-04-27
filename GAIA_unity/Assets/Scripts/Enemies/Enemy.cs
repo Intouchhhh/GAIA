@@ -1,153 +1,63 @@
 using UnityEngine;
 
-public class EnemyStateMachine : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
-    public enum EnemyState { Patrol, Idle, Chase }
+	[SerializeField] private int maxHealth = 3;
+	[SerializeField] private float damageCooldown = 0.5f;
+	[SerializeField] private float knockbackForce = 5f;
 
-    [Header("Patrol Settings")]
-    public float speed = 2f;
-    public Transform[] patrolPoints;
-    private int currentPointIndex = 0;
+	[SerializeField] private int currentHealth;
+	[SerializeField] private bool isInvincible;
+	[SerializeField] private float invincibilityTimer;
+	private Rigidbody2D rb;
 
-    [Header("Chase Settings")]
-    public float chaseSpeed = 3f;
-    public float detectionRange = 5f;
-    public BasicPlayerMovement playerObj;
-	public Transform playerPosition;
-	public GameObject detected;
+	public EnemyActionModule actionModule;
 
-	[Header("State Machine")]
-    public EnemyState currentState = EnemyState.Patrol;
-
-    private Rigidbody2D rb;
-    public GameObject sprite;
-
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        rb.freezeRotation = true;
-
-		playerObj = FindFirstObjectByType<BasicPlayerMovement>();
-		if (playerObj != null)
-		{
-			playerPosition = playerObj.transform;
-		}
-		else
-		{
-			Debug.LogError("No GameObject with BasicPlayerMovement found in the scene!");
-		}
-
-		if (patrolPoints.Length == 0)
-        {
-            Debug.LogWarning("No patrol points assigned!");
-        }
-    }
-
-    void Update()
-    {
-        switch (currentState)
-        {
-            case EnemyState.Patrol:
-                Patrol();
-                CheckForPlayer();
-                break;
-
-            case EnemyState.Chase:
-                ChasePlayer();
-                CheckForPlayerOutOfRange();
-                break;
-
-            case EnemyState.Idle:
-                rb.linearVelocity = Vector2.zero;
-                break;
-        }
-    }
-
-    void Patrol()
-    {
-        if (patrolPoints.Length == 0) return;
-
-        Transform targetPoint = patrolPoints[currentPointIndex];
-        Vector2 direction = (targetPoint.position - transform.position).normalized;
-
-        rb.linearVelocity = new Vector2(direction.x * speed, rb.linearVelocity.y);
-
-        if (Vector2.Distance(transform.position, targetPoint.position) < 0.2f)
-        {
-            currentPointIndex++;
-            if (currentPointIndex >= patrolPoints.Length)
-            {
-                currentPointIndex = 0;
-            }
-        }
-
-        FlipSprite(direction.x);
-    }
-
-    void ChasePlayer()
-    {
-        if (playerPosition == null) return;
-
-        Vector2 direction = (playerPosition.position - transform.position).normalized;
-
-        rb.linearVelocity = new Vector2(direction.x * chaseSpeed, rb.linearVelocity.y);
-
-        FlipSprite(direction.x);
-    }
-
-    void FlipSprite(float moveDirection)
-    {
-        if (moveDirection != 0 && sprite != null)
-        {
-			Vector3 scale = sprite.transform.localScale;
-
-			if ((moveDirection < 0 && scale.x > 0) || (moveDirection > 0 && scale.x < 0))
-			{
-				scale.x *= -1;
-				sprite.transform.localScale = scale;
-			}
-		}
-    }
-
-    void CheckForPlayer()
-    {
-        if (playerPosition == null) return;
-
-        if (Vector2.Distance(transform.position, playerPosition.position) <= detectionRange)
-        {
-            Debug.LogWarning("Player Found!");
-            detected.SetActive(true);
-            currentState = EnemyState.Chase;
-        }
-    }
-
-    void CheckForPlayerOutOfRange()
-    {
-        if (playerPosition == null) return;
-
-        if (Vector2.Distance(transform.position, playerPosition.position) > detectionRange)
-        {
-			Debug.LogWarning("Player Gone!");
-			detected.SetActive(false);
-			currentState = EnemyState.Patrol;
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-			PlayerManager playerManager = collision.gameObject.GetComponent<PlayerManager>();
-            if (playerManager != null)
-            {
-				playerManager.Die();
-            }
-        }
-    }
-
-	private void OnDrawGizmosSelected()
+	private void Awake()
 	{
-		Gizmos.color = Color.red;
-		Gizmos.DrawWireSphere(transform.position, detectionRange);
+		currentHealth = maxHealth;
+		rb = GetComponent<Rigidbody2D>();
+		if (actionModule == null)
+			actionModule = GetComponent<EnemyActionModule>();
+	}
+
+	private void Update()
+	{
+		if (isInvincible)
+		{
+			invincibilityTimer -= Time.deltaTime;
+			if (invincibilityTimer <= 0)
+				isInvincible = false;
+		}
+	}
+
+	public void TakeDamage(int amount, Vector2 hitSource)
+	{
+		if (isInvincible) return;
+
+		currentHealth -= amount;
+		isInvincible = true;
+		invincibilityTimer = damageCooldown;
+
+		ApplyKnockback(hitSource);
+
+		if (currentHealth <= 0)
+		{
+			actionModule.Die();
+		}
+	}
+
+	private void ApplyKnockback(Vector2 hitSource)
+	{
+		Debug.LogWarning("Knockback");
+		if (rb == null) return;
+
+		Vector2 dir = ((Vector2)transform.position - hitSource).normalized;
+		rb.AddForce(dir * knockbackForce, ForceMode2D.Impulse);
+	}
+
+	public void Die()
+	{
+		Destroy(gameObject);
 	}
 }

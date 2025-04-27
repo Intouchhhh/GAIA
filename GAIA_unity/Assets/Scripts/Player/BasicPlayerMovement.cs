@@ -45,7 +45,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private string _oneWayPlatLayer = "OneWayPlatform";
 
 	// Serialized
-	[SerializeField] private Rigidbody2D rb;
+	[SerializeField] public Rigidbody2D rb;
 	[SerializeField] private float lastGroundedTime;
 	[SerializeField] private float lastJumpPressedTime;
 	[SerializeField] private int wallJumpDir;
@@ -136,6 +136,8 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	#endregion
 
+	private PlayerAttack playerAttack;
+
 	#endregion
 
 	private void Awake()
@@ -145,6 +147,7 @@ public class BasicPlayerMovement : MonoBehaviour
 		isFacingRight = true;
 
 		rb = GetComponent<Rigidbody2D>();
+		playerAttack = GetComponent<PlayerAttack>();
 	}
 
 	private void Update()
@@ -231,10 +234,13 @@ public class BasicPlayerMovement : MonoBehaviour
 	{
 		if (IsDashing) return;
 
-		if (direction > 0 && !IsFacingRight)
-			Flip();
-		else if (direction < 0 && IsFacingRight)
-			Flip();
+		if (playerAttack == null || !playerAttack.isAttacking)
+		{
+			if (direction > 0 && !IsFacingRight)
+				Flip();
+			else if (direction < 0 && IsFacingRight)
+				Flip();
+		}
 
 		float targetSpeed = direction * moveSpeed;
 		float speedDifference = targetSpeed - rb.linearVelocity.x;
@@ -310,13 +316,9 @@ public class BasicPlayerMovement : MonoBehaviour
 
 		if (rb.linearVelocity.y < 0)
 		{
-			Debug.LogWarning("Vy: " + rb.linearVelocity.y);
-			Debug.LogWarning("Before sub: " + force.y);
 			force.y -= rb.linearVelocity.y;
-			Debug.LogWarning("After sub: " + force.y);
 		}
 
-		Debug.LogWarning("WallJump: " + force);
 		rb.AddForce(force, ForceMode2D.Impulse);
 
 		//Vector2 newVelocity = new Vector2(wallJumpForce.x * dir, wallJumpForce.y);
@@ -431,13 +433,10 @@ public class BasicPlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-		Debug.LogWarning("Trigger");
         if (collision.CompareTag("OneWayJumpCheck"))
 		{
-			Debug.LogWarning("OneWayJumpCheck");
 			if (rb.linearVelocity.y > 0)
 			{
-				Debug.LogWarning("Ignore");
 				Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
             }
         }

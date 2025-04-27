@@ -5,11 +5,14 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
-  - Spike
+  - Hazard
   - Checkpoint
   - OneWayPlatform
   - Coins
   - Spawn
+  - OneWayJumpCheck
+  - OneWayDropCheck
+  - Enemy
   layers:
   - Default
   - TransparentFX
