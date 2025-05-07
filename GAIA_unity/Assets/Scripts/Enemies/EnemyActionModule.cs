@@ -3,6 +3,7 @@ using UnityEngine;
 public class EnemyActionModule : MonoBehaviour
 {
 	public Enemy enemyCombat;
+	public RewardConfigSO rewardConfigSO;
 
 	private void Awake()
 	{
@@ -15,7 +16,7 @@ public class EnemyActionModule : MonoBehaviour
 		AgentController agent = FindFirstObjectByType<AgentController>();
 		if (agent != null)
 		{
-			agent.AddReward(1.0f);
+			agent.AddReward(rewardConfigSO.enemyKillReward);
 		}
 		if (enemyCombat != null)
 			enemyCombat.TakeDamage(amount, hitSource);
@@ -26,7 +27,7 @@ public class EnemyActionModule : MonoBehaviour
 		AgentController agent = FindFirstObjectByType<AgentController>();
 		if (agent != null)
 		{
-			agent.AddReward(5.0f);
+			agent.AddReward(rewardConfigSO.enemyDamageReward);
 		}
 
 		if (enemyCombat != null)

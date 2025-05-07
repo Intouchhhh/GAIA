@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -9,9 +10,20 @@ public class AgentController : Agent
 	#region Fields & Components
 	[SerializeField] private PlayerActionModules playerActionModules;
 	[SerializeField] private PlayerManager playerManager;
+	[SerializeField] private RewardConfigSO rewardConfigSO;
 	[SerializeField] private List<GameObject> spawnPointsList;
+	private int totalCoins;
+	private int totalCheckpoints;
+	private int collectedCoins;
+	private int collectedCheckpoints;
 	private Vector2 lastPosition;
 	private HashSet<Vector2Int> visitedAreas;
+	private HashSet<GameObject> visitedCheckpoints;
+	private bool episodeCompleted = false;
+	private List<GameObject> allCoins;
+	private List<GameObject> allEnemies;
+	private int jumpCount = 0;
+	private int dashCount = 0;
 	#endregion
 
 	#region Initialization
@@ -26,8 +38,21 @@ public class AgentController : Agent
 			playerManager = GetComponent<PlayerManager>();
 
 		spawnPointsList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Spawn"));
+
+		allCoins = new List<GameObject>(GameObject.FindGameObjectsWithTag("Coins"));
+
+		allEnemies = new List<GameObject>(GameObject.FindGameObjectsWithTag("Enemy"));
 	}
 	#endregion
+
+	private void FixedUpdate()
+	{
+		if (!episodeCompleted && StepCount >= MaxStep && MaxStep > 0)
+		{
+			Debug.LogError("Max Step Reached !!!");
+			CompleteEpisode();
+		}
+	}
 
 	#region Episode Handling
 	public override void OnEpisodeBegin()
@@ -44,10 +69,45 @@ public class AgentController : Agent
 			playerActionModules.basicPlayerMovement.Rb.linearVelocity = Vector2.zero;
 		}
 
-		// transform.position = spawnPointsList[Random.Range(0, spawnPointsList.Count)].transform.position;
+		if (Academy.Instance.IsCommunicatorOn)
+		{
+			transform.position = spawnPointsList[Random.Range(0, spawnPointsList.Count)].transform.position;
+		}
+
+		playerManager.currentHealth = playerManager.maxHealth;
 
 		lastPosition = transform.position;
 		visitedAreas = new HashSet<Vector2Int>();
+		visitedCheckpoints = new HashSet<GameObject>();
+
+		totalCoins = GameObject.FindGameObjectsWithTag("Coins").Length;
+		totalCheckpoints = GameObject.FindGameObjectsWithTag("Checkpoint").Length;
+		collectedCoins = 0;
+		collectedCheckpoints = 0;
+
+		episodeCompleted = false;
+
+		foreach (var coin in allCoins)
+		{
+			if (coin != null)
+				coin.SetActive(true);
+		}
+
+		foreach (var enemy in allEnemies)
+		{
+			if (enemy != null)
+			{
+				enemy.SetActive(true);
+				var enemyScript = enemy.GetComponent<Enemy>();
+				if (enemyScript != null)
+				{
+					enemyScript.ResetEnemy();
+				}
+			}
+		}
+
+		jumpCount = 0;
+		dashCount = 0;
 	}
 
 	private void DisablePlayerInput()
@@ -95,6 +155,23 @@ public class AgentController : Agent
 		// Attacking States
 		sensor.AddObservation(playerActionModules.playerAttack.isAttacking ? 1f : 0f);
 	}
+
+	private GameObject GetNearestCoin()
+	{
+		return allCoins
+			.Where(c => c.activeSelf)
+			.OrderBy(c => Vector2.Distance(transform.position, c.transform.position))
+			.FirstOrDefault();
+	}
+
+	private void CompleteEpisode()
+	{
+		if (episodeCompleted) return;
+		episodeCompleted = true;
+
+		HandleCompletionRewards();
+		EndEpisode();  // This triggers reset, only safe to call once
+	}
 	#endregion
 
 	#region Actions
@@ -108,8 +185,18 @@ public class AgentController : Agent
 
 		// Delegate input
 		playerActionModules.Move(moveX);
-		if (jumpAction) playerActionModules.Jump();
-		if (dashAction) playerActionModules.Dash();
+		if (jumpAction)
+		{
+			AddReward(rewardConfigSO.jumpPenalty);
+			playerActionModules.Jump();
+			jumpCount++;
+		}
+		if (dashAction)
+		{
+			AddReward(rewardConfigSO.dashPenalty);
+			playerActionModules.Dash();
+			dashCount++;
+		}
 		if (attackAction) playerActionModules.Attack();
 		if (dropAction) playerActionModules.Drop();
 
@@ -123,9 +210,9 @@ public class AgentController : Agent
 		// Distance Reward
 		float distanceMoved = Vector2.Distance(transform.position, lastPosition);
 		if (distanceMoved > 0.1f)
-			AddReward(0.05f * distanceMoved);
+			AddReward(rewardConfigSO.movingReward * distanceMoved); // Moving Reward
 		else
-			AddReward(-0.01f);
+			AddReward(rewardConfigSO.idlePenalty); // Idle Penalty
 
 		lastPosition = transform.position;
 
@@ -133,8 +220,16 @@ public class AgentController : Agent
 		Vector2Int gridPos = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
 		if (!visitedAreas.Contains(gridPos))
 		{
-			AddReward(0.2f);
+			AddReward(rewardConfigSO.explorationReward); // Explore Reward
 			visitedAreas.Add(gridPos);
+		}
+
+		var nearestCoin = GetNearestCoin();
+		if (nearestCoin != null)
+		{
+			float distance = Vector2.Distance(transform.position, nearestCoin.transform.position);
+			float reward = Mathf.Clamp01(1f / (distance + 1f)); // Smaller distance = higher reward
+			AddReward(rewardConfigSO.coinShapingWeight * reward); // e.g. 0.01f
 		}
 	}
 	#endregion
@@ -145,24 +240,57 @@ public class AgentController : Agent
 		switch (collision.tag)
 		{
 			case "Coins":
-				AddReward(1.0f);
+				Debug.LogError("Coins Hit");
+				AddReward(rewardConfigSO.coinReward); // Coin Reward
+				collectedCoins++;
 				break;
 
 			case "Hazard":
-				AddReward(-3.0f);
-				EndEpisode();
-				break;
-
-			case "Enemy":
-				AddReward(-2.0f);
+				Debug.LogError("Hazard Hit");
+				AddReward(rewardConfigSO.hazardPenalty); // Hazard Penalty
+				CompleteEpisode();
 				break;
 
 			case "Checkpoint":
-				AddReward(5.0f);
+				if (!visitedCheckpoints.Contains(collision.gameObject))
+				{
+					Debug.LogError("Checkpoint Hit");
+					AddReward(rewardConfigSO.checkpointReward);
+					collectedCheckpoints++;
+					visitedCheckpoints.Add(collision.gameObject);
+				}
+				break;
+		}
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		switch (collision.gameObject.tag)
+		{
+			case "Enemy":
+				Debug.LogError("Enemy Hit");
+				AddReward(rewardConfigSO.hitByEnemyPenalty);
 				break;
 		}
 	}
 	#endregion
+
+	public void HandleCompletionRewards()
+	{
+		if (totalCoins > 0)
+		{
+			float coinCompletion = (float)collectedCoins / totalCoins;
+			Debug.Log($"Coin Completion: {coinCompletion * 100f}%");
+			AddReward(rewardConfigSO.coinCompletionBonus * coinCompletion);
+		}
+
+		if (totalCheckpoints > 0)
+		{
+			float checkpointCompletion = (float)collectedCheckpoints / totalCheckpoints;
+			Debug.Log($"Checkpoint Completion: {checkpointCompletion * 100f}%");
+			AddReward(rewardConfigSO.checkpointCompletionBonus * checkpointCompletion);
+		}
+	}
 
 	#region Heuristics (for manual testing)
 	public override void Heuristic(in ActionBuffers actionsOut)

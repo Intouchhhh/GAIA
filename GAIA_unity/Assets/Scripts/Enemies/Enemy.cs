@@ -58,6 +58,21 @@ public class Enemy : MonoBehaviour
 
 	public void Die()
 	{
-		Destroy(gameObject);
+		gameObject.SetActive(false);
 	}
+	public void ResetEnemy()
+	{
+		currentHealth = maxHealth;
+		isInvincible = false;
+		invincibilityTimer = 0f;
+		gameObject.SetActive(true);
+
+		// Optional: reset position, velocity, animation state, etc.
+		if (rb != null)
+		{
+			rb.linearVelocity = Vector2.zero;
+			rb.angularVelocity = 0f;
+		}
+	}
+
 }

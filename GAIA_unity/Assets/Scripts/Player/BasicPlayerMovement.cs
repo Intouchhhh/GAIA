@@ -262,6 +262,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	#region JUMP
 	public void Jump()
 	{
+		Debug.Log("Jump");
 		if (dropInput < 0)
 		{
 			Drop();
@@ -435,6 +436,7 @@ public class BasicPlayerMovement : MonoBehaviour
     {
         if (collision.CompareTag("OneWayJumpCheck"))
 		{
+			Debug.LogWarning("OneWayJumpCheck");
 			if (rb.linearVelocity.y > 0)
 			{
 				Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), true);
@@ -446,6 +448,7 @@ public class BasicPlayerMovement : MonoBehaviour
     {
         if (collision.CompareTag("OneWayDropCheck"))
 		{
+			Debug.LogWarning("OneWayDropCheck");
 			Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer(_playerLayer), LayerMask.NameToLayer(_oneWayPlatLayer), false);
 			isDropping = false;
 		}

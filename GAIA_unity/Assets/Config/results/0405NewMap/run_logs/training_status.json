@@ -1,0 +1,38 @@
+{
+    "PlayerAgent": {
+        "checkpoints": [
+            {
+                "steps": 499544,
+                "file_path": "results\\0405NewMap\\PlayerAgent\\PlayerAgent-499544.onnx",
+                "reward": -30.349408268928528,
+                "creation_time": 1746328290.3681293,
+                "auxillary_file_paths": [
+                    "results\\0405NewMap\\PlayerAgent\\PlayerAgent-499544.pt"
+                ]
+            },
+            {
+                "steps": 997104,
+                "file_path": "results\\0405NewMap\\PlayerAgent\\PlayerAgent-997104.onnx",
+                "reward": -26.96212112903595,
+                "creation_time": 1746352594.4450245,
+                "auxillary_file_paths": [
+                    "results\\0405NewMap\\PlayerAgent\\PlayerAgent-997104.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 997104,
+            "file_path": "results\\0405NewMap\\PlayerAgent.onnx",
+            "reward": -26.96212112903595,
+            "creation_time": 1746352594.4450245,
+            "auxillary_file_paths": [
+                "results\\0405NewMap\\PlayerAgent\\PlayerAgent-997104.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}

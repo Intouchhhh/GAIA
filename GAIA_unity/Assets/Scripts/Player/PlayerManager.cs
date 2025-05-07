@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using Unity.MLAgents;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
     private Rigidbody2D rb;
+	private AgentController agentController;
 
     public int maxHealth = 3;
     public int currentHealth = 3;
@@ -28,13 +30,29 @@ public class PlayerManager : MonoBehaviour
         }
         if (collision.CompareTag("Coins"))
         {
-            Destroy(collision.gameObject);
-        }
-    }
+			collision.gameObject.SetActive(false);
+		}
+	}
 
-    public void Die()
+	public void TakeDamage(int damage)
+	{
+		currentHealth -= damage;
+		if (currentHealth <= 0)
+		{
+			Die();
+		}
+	}
+
+	public void Die()
     {
         Debug.Log("Player Died!");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+		if (!Academy.Instance.IsCommunicatorOn)
+		{
+			if (agentController == null)
+				agentController = GetComponent<AgentController>();
+
+			agentController.HandleCompletionRewards();
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+		}
+	}
 }

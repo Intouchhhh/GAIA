@@ -123,7 +123,7 @@ public class EnemyStateMachine : MonoBehaviour
 			PlayerManager playerManager = collision.gameObject.GetComponent<PlayerManager>();
 			if (playerManager != null)
 			{
-				playerManager.Die();
+				playerManager.TakeDamage(1);
 			}
 		}
 	}

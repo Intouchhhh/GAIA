@@ -126,7 +126,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.102, y: 0.12153847, z: 0}
-  m_LocalScale: {x: 1, y: 0.7692308, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1616615562419340040}
@@ -767,7 +767,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.437, y: 0.12153847, z: 0}
-  m_LocalScale: {x: 1, y: 0.7692308, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5129323021517919791}
@@ -846,8 +846,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 0.8, y: 0.5, z: 0.8}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5217980446441139677}
   - {fileID: 5200378005017076075}
@@ -892,7 +892,7 @@ MonoBehaviour:
   dashCooldown: 1
   _wallCheckPointLeft: {fileID: 3771018419910840521}
   _wallCheckPointRight: {fileID: 2042728690721446901}
-  _wallCheckSize: {x: 0.1, y: 0.7}
+  _wallCheckSize: {x: 0.1, y: 0.47}
   _groundCheckPoint: {fileID: 7096618315434226335}
   _groundCheckSize: {x: 0.6, y: 0.04}
   _playerLayer: Player
@@ -1150,9 +1150,10 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 5000
   playerActionModules: {fileID: 0}
   playerManager: {fileID: 0}
+  rewardConfigSO: {fileID: 11400000, guid: beadf184299474549b99a93c6a9f004c, type: 2}
   spawnPointsList: []
 --- !u!1 &7292108782940707498
 GameObject:
