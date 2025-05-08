@@ -18,12 +18,34 @@ public class AgentController : Agent
 	private int collectedCheckpoints;
 	private Vector2 lastPosition;
 	private HashSet<Vector2Int> visitedAreas;
-	private HashSet<GameObject> visitedCheckpoints;
+
 	private bool episodeCompleted = false;
+
+	private HashSet<GameObject> visitedCheckpoints;
 	private List<GameObject> allCoins;
 	private List<GameObject> allEnemies;
+
 	private int jumpCount = 0;
 	private int dashCount = 0;
+	private static int episodeCounter = 0;
+	private static int totalStepsAcrossEpisodes = 0;
+	private static int cumulativeDeaths = 0;
+
+	public event System.Action OnEpisodeEnded;
+	#endregion
+
+	#region Expose
+	public int JumpCount => jumpCount;
+	public int DashCount => dashCount;
+	public int CollectedCoins => collectedCoins;
+	public int CollectedCheckpoints => collectedCheckpoints;
+	public int TotalCoins => totalCoins;
+	public int TotalCheckpoints => totalCheckpoints;
+	public RewardConfigSO Config => rewardConfigSO;
+	public int EpisodeNumber => episodeCounter;
+	public int AverageSteps => episodeCounter == 0 ? 0 : totalStepsAcrossEpisodes / episodeCounter;
+	public int DeathCount => cumulativeDeaths;
+
 	#endregion
 
 	#region Initialization
@@ -164,13 +186,21 @@ public class AgentController : Agent
 			.FirstOrDefault();
 	}
 
-	private void CompleteEpisode()
+	public void CompleteEpisode()
 	{
+		episodeCounter++;
+		totalStepsAcrossEpisodes += StepCount;
+
+		if (playerManager.currentHealth <= 0 || transform == null)
+		{
+			cumulativeDeaths++;
+		}
+
 		if (episodeCompleted) return;
 		episodeCompleted = true;
 
 		HandleCompletionRewards();
-		EndEpisode();  // This triggers reset, only safe to call once
+		EndEpisode();
 	}
 	#endregion
 
@@ -248,7 +278,6 @@ public class AgentController : Agent
 			case "Hazard":
 				Debug.LogError("Hazard Hit");
 				AddReward(rewardConfigSO.hazardPenalty); // Hazard Penalty
-				CompleteEpisode();
 				break;
 
 			case "Checkpoint":
@@ -290,7 +319,13 @@ public class AgentController : Agent
 			Debug.Log($"Checkpoint Completion: {checkpointCompletion * 100f}%");
 			AddReward(rewardConfigSO.checkpointCompletionBonus * checkpointCompletion);
 		}
+
+		AddReward(rewardConfigSO.jumpCountTax * jumpCount);
+		AddReward(rewardConfigSO.dashCountTax * dashCount);
+		OnEpisodeEnded?.Invoke();
+		EndEpisode();
 	}
+
 
 	#region Heuristics (for manual testing)
 	public override void Heuristic(in ActionBuffers actionsOut)

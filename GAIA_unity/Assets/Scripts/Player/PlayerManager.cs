@@ -26,7 +26,7 @@ public class PlayerManager : MonoBehaviour
         if (collision.CompareTag("Hazard"))
         {
             Debug.Log("Player hit the spike (trigger)!");
-            Die();
+			TakeDamage(maxHealth);
         }
         if (collision.CompareTag("Coins"))
         {
@@ -53,6 +53,13 @@ public class PlayerManager : MonoBehaviour
 
 			agentController.HandleCompletionRewards();
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+		}
+		else
+		{
+			if (agentController == null)
+				agentController = GetComponent<AgentController>();
+
+			agentController.CompleteEpisode();
 		}
 	}
 }

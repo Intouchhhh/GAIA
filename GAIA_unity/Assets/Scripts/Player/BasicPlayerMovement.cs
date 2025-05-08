@@ -22,6 +22,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private float jumpHangGravityMultiplier = 0.5f;
 	[SerializeField] private float fallMultiplier = 2f;
 	[SerializeField] private float maxFallSpeed;
+	[SerializeField] private float jumpCooldown = 0.1f;
 
 	// Wall Jump
 	[SerializeField] private Vector2 wallJumpForce = new Vector2(12.0f, 17.0f);
@@ -52,6 +53,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private float lastDashTime;
 	[SerializeField] private float lastDashPressedTime;
 	[SerializeField] private Vector2 dashDirection;
+	[SerializeField] private float lastJumpTime;
 
 	// Inputs
 	public Vector2 moveInput;
@@ -71,6 +73,9 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private bool isDropping;
 	[SerializeField] private bool isWallJumping;
 	[SerializeField] private bool isFacingRight;
+	[SerializeField] private bool hasJumped = false;
+	[SerializeField] private bool hasWallJumped = false;
+	[SerializeField] private bool wasGrounded = false;
 
 	#region PUBLIC GETTERS
 
@@ -85,7 +90,9 @@ public class BasicPlayerMovement : MonoBehaviour
 	public bool IsWallJumping => isWallJumping;
 	public bool IsFacingRight => isFacingRight;
 	public bool IsDropping => isDropping;
-
+	public bool HasJumped => hasJumped;
+	public bool HasWallJumped => hasWallJumped;
+	public bool WasGrounded => wasGrounded;
 	// Movement settings (Read-only)
 	public float MoveSpeed => moveSpeed;
 	public float Acceleration => acceleration;
@@ -275,29 +282,35 @@ public class BasicPlayerMovement : MonoBehaviour
 	{
 		if (Time.time - lastJumpPressedTime <= jumpBufferTime)
 		{
-			if (CanJump())
+			if (CanJump() && !hasJumped)
 			{
 				PerformJump();
+				hasJumped = true;
 			}
-			else if (CanWallJump())
+			else if (CanWallJump() && !hasWallJumped)
 			{
 				wallJumpDir = (IsOnRightWall) ? -1 : 1;
 				PerformWallJump(wallJumpDir);
+				hasWallJumped = true;
 			}
 		}
 	}
 
-	private bool CanJump() => (IsGrounded || Time.time - lastGroundedTime <= coyoteTime) && !IsDashing;
-	private bool CanWallJump() => IsOnWall && !IsGrounded && !IsWallJumping;
+	private bool CanJump()
+	{
+		return (IsGrounded || Time.time - lastGroundedTime <= coyoteTime)
+			   && !IsDashing
+			   && Time.time > lastJumpTime + jumpCooldown;
+	}
+	private bool CanWallJump() => IsOnWall && !IsGrounded && !IsWallJumping && !hasWallJumped;
 
 	private void PerformJump()
 	{
 		lastGroundedTime = 0;
 		lastJumpPressedTime = 0;
+		lastJumpTime = Time.time;
 
-		//rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-
-		//rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+		rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
 
 		rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
@@ -306,8 +319,13 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void PerformWallJump(int dir)
 	{
+		if (isWallJumping || hasWallJumped) return;
+
+		Debug.LogError("Wall Jump");
 		lastGroundedTime = 0;
 		lastJumpPressedTime = 0;
+
+		rb.linearVelocity = Vector2.zero;
 
 		Vector2 force = new Vector2(wallJumpForce.x, wallJumpForce.y);
 		force.x *= dir;
@@ -322,17 +340,8 @@ public class BasicPlayerMovement : MonoBehaviour
 
 		rb.AddForce(force, ForceMode2D.Impulse);
 
-		//Vector2 newVelocity = new Vector2(wallJumpForce.x * dir, wallJumpForce.y);
-
-		//if (rb.linearVelocity.y < 0)
-		//{
-		//	newVelocity.y = Mathf.Max(newVelocity.y, rb.linearVelocity.y + wallJumpForce.y);
-		//}
-
-		//Debug.LogWarning("WallJump Velocity: " + rb.linearVelocity);
-		//rb.linearVelocity = newVelocity;
-
 		isWallJumping = true;
+		hasWallJumped = true;
 	}
 
 	#endregion
@@ -406,12 +415,21 @@ public class BasicPlayerMovement : MonoBehaviour
 	{
 		isGrounded = Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) != null;
 
-		if (IsGrounded)
+		if (isGrounded && !wasGrounded)
 		{
-			lastGroundedTime = Time.time;
+			// Just landed
+			hasJumped = false;
+			hasWallJumped = false;
 			isJumping = false;
 			isWallJumping = false;
 		}
+
+		if (isGrounded && rb.linearVelocityY <= 0)
+		{
+			lastGroundedTime = Time.time;
+		}
+
+		wasGrounded = isGrounded;
 	}
 
 	private void HandleWallDetection()
