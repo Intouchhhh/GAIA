@@ -748,6 +748,20 @@ Source:
 \href{https://devlog.levi.dev/2021/09/building-platformer-ai-from-low-level.html?utm\_source=chatgpt.com}{https://devlog.levi.dev/2021/09/building-platformer-ai-from-low-level.html?utm\_source=chatgpt.com}  
 \end{figure}
 Smith's algorithmic approach, in contrast to machine learning-based navigation systems, allows for a greater degree of control and responsiveness. However, it is still limited. Deep reinforcement learning (DRL) would be an alternative approach to AI navigation, where agents would learn movement strategies through trial and error. On the one hand, the advantage of DRL-based AI is its adaptation to a dynamically changing environment; this, of course, comes alongside their requirement of extensive training and computation resources. Smith's method, conversely, is fast and reliable during runtime, for their physics-based paths are pre-calculated, yet they lack the adaptability of AI solutions based on DRL to tackle the unforeseen changes of levels.\par
+\newpage
+\section{Gap Analysis}
+While there has been development in the area of AI-driven gameplay agents, there are still many fields with which one must dare to be precise. One, albeit a major limitation, is the fact that much study has been undertaken with very specific tasks or under very specific game environments, limiting the ability of agents to generalize through new levels or by game mechanics. Second, very few works consider the train environment in which both the player-like AIs and the opponent AIs coexist, thus foregoing any possible adversarial learning or mutual adaptation. Third, most prior work overlooks modularity or reusability, which are necessary for real applications in indie game development.\par
+
+On the other hand, Mario AI-type benchmarks serve a useful purpose by defining a controlled experiment; however, they often do not cover the broader spectrum of challenges present in more complex or custom-built platformers. Thus, the need exists for flexible, open-ended environments where AI agents could be trained to interact with not just static platforms but also dynamic obstacles, NPCs, and contextual goals.\par
+\section{How our work differs}
+The project is different even from the past research in several key aspects. First, we have introduced a custom-designed 2D platformer environment specifically intended to aid in the training and testing of AI agents under different scenarios. Unlike previous benchmarks, our environment is modular and extendable, so new mechanics, enemies, and layout difficulties can really be added quickly.\par
+
+Second, and importantly, this work trains and tests both types of agents at the same time: player agents and enemy agents. Since this dual-agent arrangement, it tends to make for more interesting and, hence, dynamic gameplay interaction scenarios, both in adversarial reinforcement learning settings where agents must adjust not only to their evolving environment but also to each other's evolving strategies.\par
+
+Third, the AI models learned in this paper work are reusable and adaptable assets. By emphasizing modularity and generalization, we expect to provide tools usable across multiple games with minimal effort, thereby helping to fill a big hole in game AI software development-land, especially for those indie developers that operate on a shoestring budget.\par
+
+Lastly, for this research, we apply Proximal Policy Optimization (PPO), a powerful and stable reinforcement learning algorithm that trains agents to adapt to complex platformer environments. This underscores our commitment to using scalable, state-of-the-art methodologies in real-time game AI.\par
+
 
 % Can define this in the preamble..
 %You can place the figure and refer to it as Figure~\ref{fig:model2}.
