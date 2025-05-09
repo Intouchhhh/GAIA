@@ -38,8 +38,8 @@ public class RewardLogger : MonoBehaviour
 					   $"{agent.JumpCount}," +
 					   $"{jumpPenalty:F2}," +
 					   $"{agent.DashCount}," +
-					   $"{dashPenalty:F2}" +
-					   $"{agent.AverageSteps}" +
+					   $"{dashPenalty:F2}," +
+					   $"{agent.AverageSteps}," +
                        $"{agent.AverageRewards}";
 
 		File.AppendAllText(filePath, entry + "\n");
