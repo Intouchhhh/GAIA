@@ -22,7 +22,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private float jumpHangGravityMultiplier = 0.5f;
 	[SerializeField] private float fallMultiplier = 2f;
 	[SerializeField] private float maxFallSpeed;
-	[SerializeField] private float jumpCooldown = 0.1f;
+	[SerializeField] private float jumpCooldown = 0.05f;
 
 	// Wall Jump
 	[SerializeField] private Vector2 wallJumpForce = new Vector2(12.0f, 17.0f);
