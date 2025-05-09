@@ -11,7 +11,8 @@ public class RewardTrackerUI : MonoBehaviour
         if (agent == null || text == null) return;
 
         text.text =
-			$"<b>EPISODE:</b> {agent.EpisodeNumber}   <b>AVG STEPS:</b> {agent.AverageSteps}   <b>DEATHS:</b> {agent.DeathCount}\n" +
+			$"<b>EPISODE:</b> {agent.EpisodeNumber} <b>DEATHS:</b> {agent.DeathCount}\n" +
+            $"<b>AVG STEPS:</b> {agent.AverageSteps}    <b>AVG REW:</b> {agent.AverageRewards}\n" +
 			$"<b>STEP:</b> {agent.StepCount}/{agent.MaxStep}\n" +
             $"<b>REWARD:</b> {agent.GetCumulativeReward():F2}\n" +
             $"<b>HEALTH:</b> {agent.GetComponent<PlayerManager>().currentHealth}/{agent.GetComponent<PlayerManager>().maxHealth}\n" +

@@ -14,7 +14,7 @@ public class RewardLogger : MonoBehaviour
 
 		if (!File.Exists(filePath))
 		{
-			File.WriteAllText(filePath, "Episode,Steps,Reward,CoinsCollected,TotalCoins,CheckpointsCollected,TotalCheckpoints,JumpCount,JumpPenalty,DashCount,DashPenalty\n");
+			File.WriteAllText(filePath, "Episode,Steps,Reward,CoinsCollected,TotalCoins,CheckpointsCollected,TotalCheckpoints,JumpCount,JumpPenalty,DashCount,DashPenalty,CumulativeAvgSteps,CumulativeAvgRewards\n");
 		}
 
 		agent.OnEpisodeEnded += LogEpisodeData; // Subscribe to custom event
@@ -38,7 +38,9 @@ public class RewardLogger : MonoBehaviour
 					   $"{agent.JumpCount}," +
 					   $"{jumpPenalty:F2}," +
 					   $"{agent.DashCount}," +
-					   $"{dashPenalty:F2}";
+					   $"{dashPenalty:F2}" +
+					   $"{agent.AverageSteps}" +
+                       $"{agent.AverageRewards}";
 
 		File.AppendAllText(filePath, entry + "\n");
 	}

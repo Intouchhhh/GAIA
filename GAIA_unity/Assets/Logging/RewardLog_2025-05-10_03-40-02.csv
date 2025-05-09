@@ -1,0 +1,4 @@
+Episode,Steps,Reward,CoinsCollected,TotalCoins,CheckpointsCollected,TotalCheckpoints,JumpCount,JumpPenalty,DashCount,DashPenalty
+1,2627,-246.62,1,151,1,43,1303,13.03,1350,27.00
+2,159,-12.09,1,151,0,43,79,0.79,85,1.70
+3,728,-49.49,1,151,1,43,349,3.49,339,6.78

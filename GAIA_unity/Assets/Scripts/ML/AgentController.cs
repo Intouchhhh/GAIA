@@ -29,7 +29,8 @@ public class AgentController : Agent
 	private int dashCount = 0;
 	private static int episodeCounter = 0;
 	private static int totalStepsAcrossEpisodes = 0;
-	private static int cumulativeDeaths = 0;
+    private static float totalRewardsAcrossEpisodes = 0;
+    private static int cumulativeDeaths = 0;
 
 	public event System.Action OnEpisodeEnded;
 	#endregion
@@ -44,7 +45,8 @@ public class AgentController : Agent
 	public RewardConfigSO Config => rewardConfigSO;
 	public int EpisodeNumber => episodeCounter;
 	public int AverageSteps => episodeCounter == 0 ? 0 : totalStepsAcrossEpisodes / episodeCounter;
-	public int DeathCount => cumulativeDeaths;
+    public float AverageRewards => episodeCounter == 0 ? 0 : totalRewardsAcrossEpisodes / episodeCounter;
+    public int DeathCount => cumulativeDeaths;
 
 	#endregion
 
@@ -190,8 +192,9 @@ public class AgentController : Agent
 	{
 		episodeCounter++;
 		totalStepsAcrossEpisodes += StepCount;
+        totalRewardsAcrossEpisodes += GetCumulativeReward();
 
-		if (playerManager.currentHealth <= 0 || transform == null)
+        if (playerManager.currentHealth <= 0 || transform == null)
 		{
 			cumulativeDeaths++;
 		}

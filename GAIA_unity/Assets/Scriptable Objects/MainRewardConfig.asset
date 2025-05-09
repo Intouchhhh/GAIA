@@ -12,12 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6175e98bd3d81f74ca2af345dfd8a1b5, type: 3}
   m_Name: MainRewardConfig
   m_EditorClassIdentifier: 
-  idlePenalty: -0.01
-  movingReward: 0.05
-  explorationReward: 0.2
-  coinReward: 1
-  checkpointReward: 5
+  idlePenalty: -0.1
+  movingReward: 0.1
+  explorationReward: 0.5
+  jumpPenalty: -0.15
+  dashPenalty: -0.25
+  coinReward: 5
+  checkpointReward: 15
   hazardPenalty: -3
-  enemyDamageReward: 1
-  enemyKillReward: 5
-  hitByEnemyPenalty: -2
+  enemyDamageReward: 5
+  enemyKillReward: 15
+  hitByEnemyPenalty: -3
+  coinCompletionBonus: 100
+  checkpointCompletionBonus: 100
+  jumpCountTax: 0.01
+  dashCountTax: 0.02
+  coinShapingWeight: 0.01
