@@ -139,11 +139,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \abstract
 
-This project focuses on the development of adaptive artificial intelligence (AI) for NPCs in video games, with an emphasis on creating reusable AI assets for indie developers. The goal is to design a scalable and efficient reinforcement learning (RL) system that can be applied across similar game environments, reducing the complexity and cost of integrating AI in game development. The project explores the use of deep reinforcement learning algorithms, specifically Proximal Policy Optimization (PPO) and Deep Q-Networks (DQN), to train AI agents capable of learning dynamic behaviors through interaction with the game environment.
-
-The primary objective of this project is to create a 2D platformer game in Unity, where two RL agents—the "player" and the "opponent"—learn to interact with each other and the environment. Both agents undergo training in a reinforcement learning setup using the Unity ML-Agents framework, with agents receiving rewards and penalties based on their performance. The project compares PPO and DQN algorithms in terms of training efficiency, stability, and performance to determine the most suitable approach for different game scenarios. A variety of evaluation metrics, both quantitative and qualitative, are used to assess the agents' learning progress, behavior, and generalization ability.
-
-The outcome of this research will provide valuable insights into the practical application of adaptive AI in games, offering reusable and scalable AI solutions for developers, particularly those with limited resources. The project also contributes to the broader field of AI in game development by addressing challenges related to agent generalization, learning speed, and performance evaluation. Ultimately, the developed AI assets aim to streamline the integration of adaptive NPCs, enabling indie developers to create more engaging and intelligent game experiences.
+In recent years, the application of artificial intelligence (AI) in game development has garnered significant attention, particularly in enhancing gameplay and automating testing processes. However, most existing AI systems are tailored for specific games or tasks, limiting their adaptability and reusability across different projects. This study proposes the development of an adaptive AI agent for 2D platformer games using reinforcement learning. The agent is trained within a Unity-based environment to learn essential player behaviors, such as movement, jumping, and obstacle avoidance. Leveraging the Proximal Policy Optimization (PPO) algorithm, the system is designed with modular components to promote flexibility, scalability, and ease of integration. By separating action execution from decision-making, the architecture facilitates the extension of the agent’s capabilities to support additional actions or mechanics. The trained AI model is packaged as a reusable Unity asset, intended for deployment in similar 2D games either as an intelligent NPC or an automated game tester. This approach aims to reduce development time and technical barriers for indie developers seeking to integrate intelligent behavior into their games. The results demonstrate the potential of reinforcement learning in constructing adaptable game agents and contribute toward making AI tools more accessible in the domain of game development.
 
 \begin{flushleft}
 \begin{tabular*}{\textwidth}{@{}lp{0.8\textwidth}}
@@ -225,89 +221,88 @@ RL & Reinforcement Learning \\
 
 \chapter{Introduction}
 
-\section{Background} 
+\section{Background}
 
-Artificial intelligence (AI) has become a crucial component of modern game development, particularly in controlling player and non-player characters (NPCs) that create dynamic and engaging gameplay experiences. While AI has traditionally been implemented using finite state machines or behavior trees, these methods often result in predictable and rigid behaviors that fail to adapt to different gameplay scenarios. As game design becomes increasingly sophisticated, there is a growing demand for AI that can dynamically learn and adapt, providing a more immersive and challenging experience.\par
+Platformer games, characterized by side-scrolling environments, obstacle navigation, and real-time player control, have long been a staple of the video game industry. From iconic titles like Super Mario Bros. to modern indie successes like Hollow Knight, 2D platformers remain popular due to their accessible gameplay and design flexibility. However, designing intelligent in-game agents—whether as controllable characters or non-player characters (NPCs)—continues to pose technical challenges, particularly for developers with limited resources.\par
 
-Reinforcement learning (RL) has emerged as a powerful technique for training AI in game environments. Unlike traditional AI models, which rely on predefined rules, RL agents learn through interaction with the environment, refining their strategies based on rewards and penalties. This allows AI to develop more nuanced and responsive behaviors, making it an attractive approach for modern game AI development.\par
+Artificial intelligence (AI) plays a pivotal role in creating engaging gameplay by simulating intelligent behavior. Traditional AI techniques in games, such as finite state machines or behavior trees, offer predictable and rule-based control systems that are effective but limited in adaptability. These approaches often struggle to scale across complex environments or accommodate emergent gameplay scenarios.\par
 
-However, implementing RL-based AI in games is highly resource-intensive, requiring substantial time, computational power, and specialized knowledge. This presents a significant challenge for indie developers who may not have the resources to train complex AI models from scratch. Additionally, most AI solutions are designed for specific games and cannot be easily transferred to new projects, forcing developers to repeatedly rebuild AI models from the ground up.\par
+Reinforcement learning (RL), a subfield of machine learning, provides a compelling alternative by enabling agents to learn behaviors through interactions with their environment. Unlike scripted AI, RL agents adapt to different contexts by optimizing their actions to maximize cumulative rewards. This trial-and-error learning paradigm has shown promising results in dynamic environments and is particularly well-suited for games that require exploration, timing, and coordination.\par
 
-To address this issue, this project focuses on developing reusable and adaptable pretrained AI models specifically designed for 2D platformer games. These AI models, including both player and enemy AI, will be packaged as a Unity asset, allowing developers to integrate intelligent agents into their games without requiring extensive knowledge of reinforcement learning. Furthermore, the AI system will be modular, enabling developers to customize and extend it by adding new mechanics, such as special attacks and double jumps, through predefined interfaces.\par
+Despite its promise, the use of RL in game development is largely constrained to research settings or high-budget projects. Training and deploying RL models demands expertise in both machine learning and software engineering, as well as significant computational resources. For small studios and independent developers, these requirements often place RL out of reach. Moreover, most existing RL agents are designed for specific game contexts, limiting their reuse across different projects or genres.\par
 
-Additionally, while the initial scope of this project is limited to 2D platformer games, the underlying framework and solutions developed here could serve as a foundation for future expansion into other game genres. By first focusing on platformers, we aim to refine a structured and scalable AI development approach that can later be extended to different types of games.\par
+This project proposes a reusable and modular AI framework for 2D platformer games using reinforcement learning. The system is implemented within Unity and designed to simulate core player behaviors—such as walking, jumping, dashing, and obstacle avoidance—through a flexible architecture. Its modular structure enables developers to extend the agent’s capabilities (e.g., adding special attacks or advanced mechanics) without modifying the core decision-making logic.\par
 
-\section{Problem Statements}
+Although the focus is on 2D platformers, the framework is built with generalizability in mind. It aims to establish a foundation for developing scalable, adaptable AI agents that can be integrated into a range of game genres. By doing so, it addresses the gap between academic RL research and practical AI deployment in commercial game development, especially within the indie development space.\par
 
-Despite advancements in AI for game development, there remains a significant gap in accessibility and scalability for small game developers. Most available AI solutions are built for specific games, making them difficult to reuse across multiple projects. Traditional approaches, such as finite state machines, provide limited adaptability, resulting in static behaviors that fail to meet modern expectations for dynamic and responsive gameplay.\par
+\section{Problem Statement}
 
-Indie game developers, who often operate with limited resources, struggle to implement advanced AI systems due to the high cost and complexity of training machine learning models. Furthermore, existing AI models require significant modifications when applied to new game environments, leading to inefficiencies and increased development time.\par
+While artificial intelligence has become a critical component in modern game development, many current AI systems suffer from poor adaptability, limited scalability, and a lack of reusability. These shortcomings are especially pronounced in the context of small or independent game studios, where technical expertise and computational resources are often constrained. Traditional game AI architectures—such as finite state machines and behavior trees—tend to produce rigid behaviors that are difficult to maintain or extend across new gameplay mechanics or level designs.\par
 
-This project aims to bridge this gap by providing pretrained AI assets for 2D platformers that are both reusable and customizable. By leveraging reinforcement learning, the AI models will learn to play and interact in platformer games efficiently, adapting to different mechanics and player behaviors. The system will be designed for easy integration, with clear documentation and support for additional custom mechanics. This will empower indie developers to implement sophisticated AI without the need for deep AI expertise. Furthermore, the structured approach taken in this project will help establish a framework that could be adapted to other game genres in the future, expanding its applicability beyond platformers.\par
+Reinforcement learning offers a powerful alternative by enabling agents to learn from interaction rather than relying on predefined rules. However, RL-based solutions are often developed for narrow use cases and are tightly coupled to specific game mechanics. Consequently, transferring such agents to new games or even slightly modified environments typically requires retraining, restructuring, or extensive fine-tuning. This process introduces significant overhead, reducing the feasibility of using RL for most developers.\par
+
+Moreover, the available RL frameworks often lack the modularity and documentation necessary for straightforward integration into existing projects. Pretrained agents, if available, are rarely reusable out-of-the-box and may not support features like modular action sets or customizable input pipelines. This restricts developers’ ability to adapt AI systems to their own design needs without substantial reengineering.\par
+
+To address these limitations, this project focuses on developing a generalizable RL-based AI agent for 2D platformer games. In this context, "solving" a game refers to the agent’s ability to complete platformer levels by performing fundamental actions—such as moving, jumping, avoiding hazards, and optionally collecting in-game items. The agent learns these behaviors autonomously through trial-and-error training within a custom-built Unity environment. Once trained, the model is packaged into a Unity-compatible asset that includes integration tools, modular behavior components, and clear extension points for future customization.\par
+
+By lowering the barrier to entry for reinforcement learning-based AI, this project aims to make intelligent agent development more accessible to indie developers. The outcome is not only a practical AI system for platformer games but also a scalable architectural framework that can be extended to a broader range of game genres and use cases.\par
 
 \section{Objectives}
-The primary objective of this project is to develop reusable, pretrained AI models for 2D platformer games that are easy to integrate, extend, and retrain. The key goals are as follows:
-\subsection{Develop Pretrained AI for Platformer Games}
+The primary objective of this project is to develop reusable, pretrained AI agents for 2D platformer games, packaged as a modular Unity asset that is easy to integrate, extend, and retrain. Specific objectives include:
+\subsection{Train Adaptive AI Agents for Platformer Mechanics}
 \begin{itemize}
-\item Train reinforcement learning-based AI agents capable of navigating 2D platformer environments, including movement, jumping, dashing, and avoiding hazards.
-\item Ensure that both player and enemy AI can generalize across different level designs and mechanics without requiring retraining from scratch.
+\item Train reinforcement learning (RL)-based agents capable of executing core platformer actions—walking, jumping, dashing, and hazard avoidance—within varied level designs.
+\item Enable both player and enemy AI to generalize across different gameplay scenarios without requiring full retraining.
 \end{itemize}
-\subsection{Create a Reusable Unity Package}
+\subsection{Develop a Modular and Reusable Unity Package}
 \begin{itemize}
-\item  Package the trained AI models as a Unity asset that developers can easily import into their projects.
-\item  Provide a modular framework that allows developers to tweak AI parameters and integrate new mechanics without modifying the core AI system.
+\item Package the trained AI models and supporting systems into a Unity-compatible asset for straightforward integration.
+\item Create a modular framework that allows developers to adjust AI behavior and insert new mechanics without modifying the core architecture.
 \end{itemize}
-\subsection{Enable Customization and Scalability}
+\subsection{Support Customization and Scalability}
 \begin{itemize}
-\item Develop an ActionModule system that allows developers to add custom actions, such as special attacks and new movement abilities, without requiring significant AI retraining.
-\item Ensure that the AI can be extended to accommodate different gameplay styles and mechanics.
+\item Implement an ActionModule system to facilitate the addition of new behaviors (e.g., double jump, special attack) through modular scripts.
+\item Ensure the system supports scalable AI behavior expansion for varying gameplay needs.
 \end{itemize}
-\subsection{Establish a Comprehensive AI Development Framework}
+\subsection{Establish a Generalizable AI Development Framework}
 \begin{itemize}
-\item Develop a structured framework that guides developers in integrating and expanding AI functionality within their games.
-\item Ensure the framework includes best practices for AI training, deployment, and customization.
-\item Design the AI architecture to allow easy modifications and enhancements for different platformer game mechanics and potential future genres.
+\item Provide a structured framework that outlines best practices for training, evaluating, and extending AI agents in Unity-based projects.
+\item Design the architecture for extensibility to future game genres beyond platformers.
 \end{itemize}
-\subsection{Support Automated Game Testing}
+\subsection{Deliver Comprehensive Documentation and Developer Resources}
 \begin{itemize}
-\item Explore the potential of using the AI models as automated playtesters to identify bugs and evaluate game balance.
-\item Provide tools for developers to analyze AI behavior and refine game design accordingly.
+\item Provide detailed documentation, including setup instructions, customization workflows, and example use cases.
+\item Include tutorials, troubleshooting guides, and retraining guidelines for developers of varying experience levels.
 \end{itemize}
-\subsection{Create Sophisticated Documentation and Developer Guides}
-\begin{itemize}
-\item Develop a detailed documentation set, including a README, setup guides, and step-by-step instructions for AI integration.
-\item Provide tutorials and examples to demonstrate AI customization and retraining processes.
-\item Ensure documentation includes troubleshooting guides and best practices for extending the AI model.
-\end{itemize}
+
 \section{Scope of Work}
+This project encompasses the design, development, training, and packaging of a reinforcement learning-based AI system for 2D platformer games. The scope includes:
 
-This project focuses on the design, development, and implementation of a modular AI system for 2D platformer games. The scope includes:
+\subsection{Development of Game Environment and AI Agents}
+\begin{itemize}
+\item Create a custom 2D platformer environment in Unity for training and evaluation of RL agents.
+\item Design and train player and enemy AI agents to effectively navigate, interact with, and respond to dynamic platforming challenges.
+\end{itemize}
 
-\subsection{Game Environment and AI Development}
+\subsection{Creation of a Modular Unity Asset Package}
 \begin{itemize}
-\item Create a 2D platformer game environment tailored for AI training and evaluation.
-\item Train reinforcement learning-based AI models to navigate and interact with the game world efficiently.
+\item Build a Unity package containing pretrained models, core AI scripts, and example integration scenes.
+\item Ensure compatibility with common Unity project structures to facilitate easy adoption.
 \end{itemize}
-\subsection{Unity Package Development}
+\subsection{Implementation of ActionModule System for Extensibility}
 \begin{itemize}
-\item Design and implement a structured Unity package that includes the pretrained AI models, necessary scripts, and example usage scenarios.
-\item Ensure seamless integration with existing Unity platformer projects.
+\item Develop a modular ActionModule interface that supports the addition of new player actions and enemy behaviors.
+\item Allow developers to extend gameplay mechanics without modifying existing AI logic.
 \end{itemize}
-\subsection{Customization and Extensibility}
+\subsection{Evaluation and Testing of AI Performance}
 \begin{itemize}
-\item Implement the ActionModule framework to allow developers to add new mechanics, such as double jumps or special attacks, without modifying the core AI logic.
-\item Provide clear guidelines for extending and retraining the AI for different game requirements.
+\item Evaluate AI generalization across multiple levels and configurations.
+\item Conduct automated testing using AI agents to identify game design flaws and assess balance.
 \end{itemize}
-\subsection{Evaluation and Testing}
+\subsection{Framework and Documentation Delivery}
 \begin{itemize}
-\item Assess AI performance across various level designs to ensure adaptability.
-\item Utilize AI agents for automated game testing to identify potential issues in game mechanics.
-\end{itemize}
-\subsection{Framework and Documentation Development}
-\begin{itemize}
-\item Establish a well-documented framework for integrating, training, and modifying AI models.
-\item Provide clear documentation, including integration instructions, customization guides, and best practices.
-\item Ensure the framework supports future AI expansions beyond platformers.
+\item Provide a structured, reusable framework for AI training, integration, and extension.
+\item Deliver comprehensive documentation, including step-by-step guides, API references, and example use cases to support both novice and experienced developers.
 \end{itemize}
 \section{Project Schedule}
 The Gantt chart below (Figure \ref{fig:Gantt Chart}) illustrates the planned timeline for the project.
@@ -781,20 +776,20 @@ Lastly, for this research, we apply Proximal Policy Optimization (PPO), a powerf
 
 \section{Introduction}
 
-This chapter presents the methodological approach and design principles employed in developing an adaptive artificial intelligence system for game development. Building upon the theoretical foundation established in Chapter 2, we explore the practical implementation of reinforcement learning within our project.\par
+This chapter outlines the methodology and design principles employed in the development of an adaptive artificial intelligence (AI) system tailored for 2D platformer games. The project integrates reinforcement learning into a modular AI framework, aiming to provide a reusable and easily extendable solution for game developers.\par
 
-The primary objective of this project is to create a reusable AI asset specifically designed for 2D platformer games, which can be easily integrated into different game projects with minimal modifications. To achieve this, the AI is designed with a modular architecture, allowing for customization and expansion based on specific game requirements. While the current scope focuses on platformers, the structured framework lays the groundwork for future expansion into other game genres.\par
+Building on the theoretical foundations established in the previous chapter, this section focuses on the practical aspects of system implementation. The goal is to bridge academic research in reinforcement learning with real-world game development tools and workflows. To achieve this, a structured, modular design was adopted to ensure flexibility, reusability, and compatibility across different 2D platformer projects.\par
 
 This chapter will outline the key components of our methodology, including:
 \begin{itemize}
-\item  \textbf{System Architecture:} How various components interact, including Unity, ML-Agents, and the training process.
-\item  \textbf{Game Environment Design:} The structure of the training environment and mechanics that influence AI learning.
-\item  \textbf{AI Algorithms and Models:} The implementation of reinforcement learning techniques.
-\item  \textbf{Training Process:} The workflow for training AI agents, including data collection and optimization.
-\item  \textbf{AI Integration and Packaging:} The process of incorporating AI into Unity and preparing it as a reusable asset.
+\item \textbf{System Architecture:} An overview of the core system components, including Unity, ML-Agents, and the communication pipeline between the training environment and learning algorithm.
+\item \textbf{Game Environment Design:} A description of the custom 2D platformer environment developed for training and evaluating AI behavior.
+\item \textbf{AI Algorithms and Models:} The selection and implementation of reinforcement learning techniques, specifically Proximal Policy Optimization (PPO).
+\item \textbf{Training Process and Optimization:} Details on training configuration, reward structure, curriculum learning considerations, and agent evaluation metrics.
+\item \textbf{AI Integration and Packaging:} The process of embedding the trained AI into a Unity-compatible asset and enabling modular extensibility through custom action modules.
 \end{itemize}
 
-By following this structured approach, this project aims to bridge the gap between theoretical AI advancements and practical game development while providing an accessible solution for indie developers seeking pretrained, adaptable AI for their platformers.\par
+By following this methodology, the project aims to deliver a robust AI development framework that not only supports player and enemy agent training but also provides an accessible entry point for indie developers to integrate, extend, and retrain AI agents for their own games.\par
 %Explain the design (how you plan to implement your work) of your project. Adjust the section titles below to suit the types of your work. Detailed physical design like circuits and source codes should be placed in the appendix.
 
 \section{System Architecture}
