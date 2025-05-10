@@ -10,6 +10,8 @@
 \usepackage{float}
 \usepackage{placeins}
 \usepackage{hyperref}
+\usepackage{listings}
+\usepackage{color}
 \setdefaultlanguage{english}
 \setotherlanguage{thai}
 \newfontfamily\thaifont[Script=Thai,Scale=1.23]{TH Sarabun New}
@@ -19,6 +21,55 @@
 %\XeTeXlinebreaklocale "th_TH"	
 %\XeTeXlinebreakskip = 0pt plus 1pt
 %\setmathfont(Digits)[Scale=1.0,LetterSpace=0,FakeStretch=1.0]{Times New Roman}
+\lstloadlanguages{C,C++,csh,Java}
+\definecolor{keywordcolor}{rgb}{0.1,0.3,0.6}
+\definecolor{stringcolor}{rgb}{0.2,0.4,0.2}
+\definecolor{commentcolor}{rgb}{0.4,0.4,0.4}
+\definecolor{identifiercolor}{rgb}{0.1,0.1,0.1}
+\definecolor{bgcolor}{rgb}{0.96,0.96,0.96}
+\definecolor{framecolor}{rgb}{0.85,0.85,0.85}
+\definecolor{captionbg}{rgb}{0.3,0.3,0.3}
+\definecolor{gray}{gray}{0.5}
+
+\lstset{
+  language=csh,
+  basicstyle=\footnotesize\ttfamily,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=5pt,
+  tabsize=2,
+  extendedchars=true,
+  breaklines=true,
+  frame=b,
+  stringstyle=\color{stringcolor}\ttfamily,
+  showspaces=false,
+  showtabs=false,
+  xleftmargin=17pt,
+  framexleftmargin=17pt,
+  framexrightmargin=5pt,
+  framexbottommargin=4pt,
+  commentstyle=\color{commentcolor}\itshape,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  showstringspaces=false,
+  morekeywords={
+    abstract, event, new, struct, as, explicit, null, switch,
+    base, extern, object, this, bool, false, operator, throw,
+    break, finally, out, true, byte, fixed, override, try,
+    case, float, params, typeof, catch, for, private, uint,
+    char, foreach, protected, ulong, checked, goto, public, unchecked,
+    class, if, readonly, unsafe, const, implicit, ref, ushort,
+    continue, in, return, using, decimal, int, sbyte, virtual,
+    default, interface, sealed, volatile, delegate, internal,
+    short, void, do, is, sizeof, while, double, lock, stackalloc,
+    else, long, static, enum, namespace, string
+  },
+  keywordstyle=\color{keywordcolor}\bfseries,
+  identifierstyle=\color{identifiercolor},
+  backgroundcolor=\color{bgcolor},
+  frame=single,
+  rulecolor=\color{framecolor}
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -787,7 +838,20 @@ By following this methodology, the project aims to deliver a robust AI developme
 
 \section{System Architecture}
 
-The system architecture of this project is designed to support the development, training, and deployment of an adaptive artificial intelligence (AI) system within a Unity-based 2D platformer game. The architecture integrates multiple interconnected components, enabling seamless communication between Unity and external machine learning frameworks. These components include the training environment, agent behaviors, environment parameters, and the communication interface with the Python-based reinforcement learning trainer. Figure \ref{fig:SystemDiagram} illustrates the relationships between these components.\par
+The system architecture developed for this project facilitates the training, evaluation, and deployment of adaptive AI agents within a Unity-based 2D platformer environment. It is designed to support modularity, enabling seamless integration with external reinforcement learning frameworks and reusability across multiple projects.\par
+
+The architecture consists of six core components:
+
+\begin{itemize}
+\item A Unity-based training environment for simulating gameplay interactions.
+\item AI agents (player and enemy) that perceive, decide, and act in response to environmental stimuli.
+\item Behavior modules that define the agent’s input-output processing pipeline.
+\item Environment parameters, which enable dynamic adjustment of gameplay variables during training.
+\item A Python-Unity communication interface (Communicator) for transmitting observations and actions.
+\item A Python-based trainer implementing the Proximal Policy Optimization (PPO) algorithm.
+\end{itemize}
+
+Figure \ref{fig:SystemDiagram} visualizes the architecture and interconnections between these components.\par
 
 \begin{figure}[!h]
 \centering
@@ -806,8 +870,8 @@ In this project, agents are categorized into two types:
 \item  \textbf{Player Agent:} The primary agent designed to complete platformer levels by efficiently navigating the environment. It learns to overcome obstacles, avoid hazards, collect objectives, and reach predefined goals. The player agent undergoes reinforcement learning to optimize movement patterns, timing of actions, and strategic decision-making.
 \item  \textbf{Enemy Agents:} Secondary agents that introduce dynamic challenges within the game. These agents exhibit various behaviors, such as patrolling, chasing, or attacking the player agent. Enemy agents contribute to the complexity of the game environment by enforcing strategic decision-making on the part of the player agent, thereby enhancing the training process.
 \end{itemize}
-Both types of agents undergo reinforcement learning, where their interactions with the environment influence their long-term behavior. The iterative training cycle ensures that agents develop effective strategies tailored to their specific roles.\par
-\subsubsection{Behaviors}
+Both agent types use reinforcement learning to optimize their strategies over time based on environmental feedback.\par
+\subsubsection{Behavior Modules}
 Behaviors define how an agent interprets its surroundings and responds to different stimuli within the game environment. A behavior module processes input observations, evaluates potential outcomes, and determines appropriate actions to achieve a predefined objective. In reinforcement learning, behaviors are continuously refined based on the received rewards, enabling the agent to develop adaptive and optimized responses over time.
 Each behavior module consists of the following key components:
 \begin{itemize}
@@ -824,6 +888,7 @@ The Communicator component is responsible for enabling seamless data exchange be
 \item  \textbf{Sending Observations to Python:} Unity collects environmental data and transmits it to the reinforcement learning algorithm.
 \item  \textbf{Processing Actions in Python:} The AI model processes the received observations, updates its policy, and determines the optimal action based on learned strategies.
 \item  \textbf{Returning Actions to Unity:} The chosen action is sent back to Unity, where it is executed by the corresponding agent.
+\item  \textbf{Logging data:} Values essential for training analysis such as rewards, episode counts, episode lengths, completion percentages are logged into CSV files.
 \end{itemize}
 This interaction is fundamental to reinforcement learning, as it allows agents to iteratively refine their behaviors based on real-time feedback from the game environment
 
@@ -831,35 +896,70 @@ This interaction is fundamental to reinforcement learning, as it allows agents t
 The Python API serves as the interface between Unity and the external machine learning framework responsible for training the AI models. It enables the execution of reinforcement learning algorithms, processes training data, and updates policy models based on collected experience.\par
 The Python Trainer is responsible for implementing the reinforcement learning algorithm used in this project. The selected approach is \textbf{Proximal Policy Optimization (PPO)}, a policy-gradient method that balances exploration and exploitation to optimize agent performance. The training process consists of the following stages:
 \begin{itemize}
-\item  \textbf{Data Collection:} The AI agent interacts with the game environment, accumulating experience in the form of state-action-reward sequences.
-\item  \textbf{Policy Optimization:} The collected data is used to update the agent’s decision-making policy, refining its action-selection strategy.
-\item  \textbf{Evaluation and Refinement:} The updated policy is tested, and further adjustments are made to improve performance.
+\item \textbf{Experience Collection:} The agent interacts with the Unity environment and logs state-action-reward sequences.
+\item \textbf{Policy Update:} PPO updates the agent’s policy using clipped objective functions and adaptive learning rates.
+\item \textbf{Performance Evaluation:} The updated policy is evaluated in simulated episodes and further refined.
 \end{itemize}
-Through iterative training cycles, the AI model progressively enhances its decision-making capabilities, leading to more intelligent and efficient gameplay strategies. The integration of the Python API and Trainer ensures a seamless connection between Unity and reinforcement learning frameworks, enabling scalable and efficient AI development.\par
+
+The modular connection between Unity and Python allows for scalability, facilitating future experimentation with other algorithms or hyperparameters.\par
+
 \section{Game Environment Design}
-The game environment serves as the primary medium through which the AI agent interacts with and learns from the world. Designing an effective environment is crucial for reinforcement learning (RL), as it defines the agent’s possible actions, objectives, challenges, and reward mechanisms. This section outlines the structural and functional aspects of the game world, detailing level composition, physics interactions, agent perception, and the reinforcement learning framework.
+The game environment constitutes the primary interactive space in which reinforcement learning (RL) agents are trained and evaluated. A well-structured environment is critical to effective agent learning, as it defines the sensory inputs, action possibilities, feedback mechanisms, and contextual challenges that guide behavioral adaptation. This section elaborates on the structure, components, and mechanics of the custom 2D platformer environment used for this study, with emphasis on level design, agent interaction capabilities, physics implementation, and system validation.
 \subsection{Level Structure and Composition}
-The environment is designed as a 2D platformer world, incorporating fundamental elements commonly found in platformer games, such as platforms, obstacles, hazards, collectibles, and enemies. The level is structured to balance exploration, platforming challenges, and enemy encounters, ensuring that the agent experiences a diverse range of situations during training.
-Key elements included:
+The environment is designed as a 2D platformer world, incorporating fundamental elements commonly found in platformer games, such as platforms, obstacles, hazards, collectibles, and enemies. The level is structured to balance exploration, platforming challenges, and enemy encounters, ensuring that the agent experiences a diverse range of situations during training.\par
 \subsubsection{Platforming and Terrain}
-The game world consists of various terrain types that influence agent movement and decision-making:
+The terrain system integrates a variety of platform types that influence agent decision-making and navigational strategies. Each terrain element contributes uniquely to the richness of the training experience:
 \begin{itemize}
-\item  \textbf{Solid Platforms:} Standard ground elements on which the agent can walk and jump.
-\item  \textbf{One-Way Platforms:} Platforms that can be landed on from above but allow the agent to jump through from below.
-\item  \textbf{Moving Platforms:} Dynamic platforms that require precise timing and positioning.
 \item  \textbf{Wall Surfaces:} Walls allow for interactions such as wall jumps or wall slides, affecting navigation strategies.
+\item  \textbf{Solid Platforms:} Standard ground elements on which the agent can walk and jump.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/SolidPlat.png}}
+\caption{The image shows solid wall and platform.}\label{fig:SolidPlat}
+\end{figure}
+\item  \textbf{One-Way Platforms:} Platforms that can be landed on from above but allow the agent to jump through from below.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/OneWayPlat.png}}
+\caption{The image highlights one-way platforms.}\label{fig:OneWayPlat}
+\end{figure}
+\item  \textbf{Moving Platforms:} Dynamic platforms that require precise timing and positioning.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/MovingPlat.png}}
+\caption{The image highlights moving platforms over obstacle.}\label{fig:MovingPlat}
+\end{figure}
 \end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%📷\textbf{Suggested Figure:} Include a labeled screenshot or illustration showing the different platform types (solid, one-way, moving, wall). Place this immediately below this subsection for clarity.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Interactive Elements}
+To enrich the environment's interactivity and encourage exploration, a range of functional objects are distributed throughout the level:
 \begin{itemize}
-\item  \textbf{Goals (Coins, Checkpoints):} Objects that incentivize exploration and progression.
-\item  \textbf{Hazards (Spikes, Traps, Pits):} Objects that penalize incorrect movement decisions and reinforce safe navigation.
-\item  \textbf{Enemies:} AI-controlled obstacles that introduce combat-based decision-making for the agent.
+\item  \textbf{Goals:} Objects such as coins or checkpoints that act as positive reinforcement signals for the agent.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/Goals.png}}
+\caption{The image highlights coins and checkpoint as goals.}\label{fig:Goals}
+\end{figure}
+\item  \textbf{Hazards:} Spikes, traps, or pits that impose penalties and help the agent learn avoidance behaviors.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/Hazards.png}}
+\caption{The image highlights player falling into hazard.}\label{fig:Hazards}
+\end{figure}
+\item  \textbf{Enemies:} Opponents with basic AI that introduce combat-related decisions and temporal awareness.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/Enemy.png}}
+\caption{The image highlights enemy chasing player.}\label{fig:Enemy}
+\end{figure}
 \end{itemize}
 These elements are strategically placed to guide the agent’s learning, providing a structured environment that encourages skill acquisition through reinforcement learning.
 \begin{figure}[!h]
 \centering
 \fbox{\includegraphics[width=10cm]{./Attachments/EnvironmentDesign.png}}
-\caption{Environment training ground for the Ai}\label{fig:EnvironmentDesign}
+\caption{Environment training ground for the AI}\label{fig:EnvironmentDesign}
 \end{figure}
 \subsection{Agent Actions}
 Table \ref{tbl:Agent Actions Table} outlines the available actions for Player and Enemy agents. These actions simulate the gameplay mechanics and ensure that the AI can engage with the environment and other agents meaningfully.
@@ -891,136 +991,459 @@ Actions & Walk and run & Walk and run \\
 %\item  \textbf{Crouch:} Enables traversal through tight spaces or avoidance of overhead obstacles.%
 \end{itemize}
 \subsection{Physics and Movement Constraints}
-The game environment adheres to a realistic 2D physics system that governs movement dynamics. The agent’s movement system follows industry-standard platformer mechanics, ensuring consistency with human gameplay expectations.
+The movement and interaction mechanics of the game are governed by Unity’s built-in 2D physics engine, facilitated by the Rigidbody2D component and customized through script-based motion logic. This configuration enables realistic yet controllable movement responses, ensuring that the AI agent operates under consistent physical constraints. These constraints are crucial for promoting transferable behavior and narrowing the simulation-to-reality gap in reinforcement learning.
+
 \subsubsection{Movement Mechanics}
+Movement in the platformer environment is handled through a centralized input-processing system defined in the \texttt{HandleInput()} method of the \texttt{BasicPlayerMovement.cs} script. This function maps user or agent decisions into stateful input variables that drive the player’s actions across update cycles. Input is only processed when \texttt{inputEnabled} is set to true, ensuring synchronization between AI control and gameplay flow. 
+
+\begin{lstlisting}[language={[Sharp]C}]
+private void HandleInput()
+{
+	if (!inputEnabled) return;
+
+	moveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+	moveDir = moveInput.x;
+	dropInput = moveInput.y;
+	jumpInput = Input.GetKeyDown(KeyCode.Space);
+	dashInput = Input.GetKeyDown(KeyCode.LeftShift);
+
+	if (jumpInput)
+	{
+		Jump();
+	}
+	
+	if (dashInput)
+	{
+		Dash();
+	}
+}
+\end{lstlisting}
+This method collects directional input using Unity's built-in \texttt{Input.GetAxisRaw()} system and stores it in the \texttt{moveDir} and \texttt{dropInput} variables. Action-based inputs such as jumping and dashing are mapped to boolean flags, \texttt{jumpInput} and \texttt{dashInput}, respectively. These are then passed to their corresponding methods (\texttt{Jump()} and \texttt{Dash()}) to initiate action events. This separation of input and behavior logic allows the system to be easily extended for reinforcement learning agents, which can override these inputs through scripted or neural decisions.
+
 \begin{itemize}
-\item  \textbf{Walking and Running:} The agent moves laterally within predefined speed limits.
-\item  \textbf{Jumping:} The agent can jump with variable force depending on input duration.
-\item  \textbf{Dashing:} A short burst movement in a direction, used for evasion or precise navigation.
-\item  \textbf{Wall Interactions:} The agent can cling to or slide down walls, enabling wall jumps for vertical traversal.
+\item  \textbf{Walking and Running:} Horizontal movement is applied using an acceleration-based force model. As shown in the \texttt{HandleMovement()} method which takes in one argument, \texttt{direction}, the lateral velocity is updated using player input and smoothed via velocity power with the following code snippet.
+\begin{lstlisting}[language={[Sharp]C}]
+private void HandleMovement(float direction)
+{
+	if (IsDashing) return;
+
+	if (playerAttack == null || !playerAttack.isAttacking)
+	{
+		if (direction > 0 && !IsFacingRight)
+			Flip();
+		else if (direction < 0 && IsFacingRight)
+			Flip();
+	}
+
+	float targetSpeed = direction * moveSpeed;
+	float speedDifference = targetSpeed - rb.linearVelocity.x;
+	float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? acceleration : decceleration;
+	float movement = Mathf.Pow(Mathf.Abs(speedDifference) * accelRate, velPower) * Mathf.Sign(speedDifference);
+
+	if (!IsWallJumping)
+	{
+		rb.AddForce(movement * Vector2.right);
+	}
+	else
+	{
+		rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, (new Vector2(direction * moveSpeed, rb.linearVelocity.y)), wallJumpLerp * Time.deltaTime);
+	}
+}
+\end{lstlisting}
+\item  \textbf{Jumping:} The \texttt{PerformJump()} and \texttt{HandleJump()} methods handle vertical jumping, including coyote time and jump buffering. When a jump is triggered, vertical velocity is reset and overridden:
+\begin{lstlisting}[language={[Sharp]C}]
+private void HandleJump()
+{
+	canJump = CanJump();
+	canWallJump = CanWallJump();
+
+	if (Time.time - lastJumpPressedTime <= jumpBufferTime)
+	{
+		if (canJump && !hasJumped)
+		{
+			PerformJump();
+			hasJumped = true;
+		}
+		else if (canWallJump && !hasWallJumped)
+		{
+			wallJumpDir = (IsOnRightWall) ? -1 : 1;
+			PerformWallJump(wallJumpDir);
+			hasWallJumped = true;
+		}
+	}
+}
+\end{lstlisting}
+\begin{lstlisting}[language={[Sharp]C}]
+private void PerformJump()
+{
+	lastGroundedTime = 0;
+	lastJumpPressedTime = 0;
+	lastJumpTime = Time.time;
+	rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+	rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+	isJumping = true;
+}
+\end{lstlisting}
+This guarantees consistent jump height and reduces variance in vertical behavior, which is beneficial for stable learning outcomes.
+\item  \textbf{Dashing:} Dash behavior is implemented via a coroutine in \texttt{PerformDash()}, where gravity is temporarily disabled and horizontal velocity is set explicitly which is handled by \texttt{HandleDash()}:
+\begin{lstlisting}[language={[Sharp]C}]
+private void HandleDash()
+{
+	if (CanDash() && lastDashPressedTime > lastDashTime)
+	{
+		StartCoroutine(PerformDash());
+	}
+}
+\end{lstlisting}
+\begin{lstlisting}[language={[Sharp]C}]
+private IEnumerator PerformDash()
+{
+	isDashing = true;
+	lastDashPressedTime = Time.time;
+	dashDirection = IsFacingRight ? Vector2.right : Vector2.left;
+	rb.gravityScale = 0;
+	rb.linearVelocity = dashDirection * dashSpeed;
+	yield return new WaitForSeconds(dashDuration);
+	rb.gravityScale = gravityScale;
+	isDashing = false;
+	lastDashTime = Time.time;
+}
+\end{lstlisting}
+This mechanic enables burst-based directional movement, adding timing complexity and escape strategies to the agent’s behavior model.
+\item  \textbf{Wall Interactions:} Wall detection and sliding are handled in \texttt{HandleWallDetection()} and \texttt{HandleWallSlide()}. When the agent is airborne and collides with a vertical surface, its vertical descent is controlled:
+
+\begin{lstlisting}[language={[Sharp]C}]
+private void HandleWallSlide()
+{
+	if (IsOnWall && !IsGrounded && rb.linearVelocity.y < 0)
+	{
+		rb.linearVelocity = new Vector2(rb.linearVelocity.x, -wallSlideSpeed);
+	}
+}
+\end{lstlisting}
+
+In addition, wall jumping is enabled through the \texttt{PerformWallJump()} method. When the agent is near a wall and a jump input is received, a directional impulse is applied, launching the agent away from the wall. The direction is based on wall contact (left or right) and is calculated as follows:
+\begin{lstlisting}[language={[Sharp]C}]
+	private void PerformWallJump(int dir)
+	{
+		if (isWallJumping || hasWallJumped) return;
+		
+		lastGroundedTime = 0;
+		lastJumpPressedTime = 0;
+		rb.linearVelocity = Vector2.zero;
+		Vector2 force = new Vector2(wallJumpForce.x, wallJumpForce.y);
+		force.x *= dir;
+		
+		if (Mathf.Sign(rb.linearVelocity.x) != Mathf.Sign(force.x))
+			force.x -= rb.linearVelocity.x;
+			
+		if (rb.linearVelocity.y < 0)
+		{
+			force.y -= rb.linearVelocity.y;
+		}
+		
+		rb.AddForce(force, ForceMode2D.Impulse);
+		isWallJumping = true;
+		hasWallJumped = true;
+	}
+\end{lstlisting}
+This mechanic increases vertical navigation flexibility and enables the agent to escape corners or ascend narrow shafts, enriching both player and AI-controlled movement strategies.
 \end{itemize}
 \subsubsection{Collision and Interaction System}
-The physics engine handles collisions and interactions between the agent and the environment using Unity’s built-in 2D physics system.
+Unity’s physics engine and collider components are used to detect and manage interactions between the agent and the environment. These interactions are monitored continuously and affect the agent’s internal state and eligibility to perform actions.
 \begin{itemize}
-\item  \textbf{Ground Detection:} Determines whether the agent is standing on a platform, affecting movement choices.
-\item  \textbf{Hazard Detection:} Triggers damage events when colliding with harmful objects.
-\item  \textbf{Enemy Interaction:} Enables combat-related decisions such as attacking or avoiding enemies.
+\item  \textbf{Ground and Wall Detection:} Performed via a box collider in \texttt{HandleGrounded()} and \texttt{HandleWallDetection}, these checks are used to determine whether the agent can initiate jumps, wall-jumps, or dash. The logic employs \texttt{Physics2D.OverlapBox()} and updates state variables accordingly:
+
+\begin{lstlisting}[language={[Sharp]C}]
+private void HandleGrounded()
+{
+	isGrounded = Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) != null;
+
+	if (isGrounded && !wasGrounded)
+	{
+		hasJumped = false;
+		hasWallJumped = false;
+		isJumping = false;
+		isWallJumping = false;
+	}
+
+	if (isGrounded && rb.linearVelocityY <= 0)
+	{
+		lastGroundedTime = Time.time;
+	}
+
+	wasGrounded = isGrounded;
+}
+\end{lstlisting}
+\begin{lstlisting}[language={[Sharp]C}]
+private void HandleWallDetection()
+{
+	if (IsGrounded)
+	{
+		isOnWall = isOnLeftWall = isOnRightWall = false;
+		return;
+	}
+
+	Transform leftCheck = IsFacingRight ? _wallCheckPointLeft : _wallCheckPointRight;
+	Transform rightCheck = IsFacingRight ? _wallCheckPointRight : _wallCheckPointLeft;
+
+	isOnLeftWall = Physics2D.OverlapBox(leftCheck.position, _wallCheckSize, 0, _wallLayer) != null;
+	isOnRightWall = Physics2D.OverlapBox(rightCheck.position, _wallCheckSize, 0, _wallLayer) != null;
+
+	isOnWall = IsOnLeftWall || IsOnRightWall;
+	isWallJumping = false;
+	hasWallJumped = false;
+}
+\end{lstlisting}
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/CollisionDetection.png}}
+\caption{Collision detection and attack zone used in the player movement system.}\label{fig:CollisionDetection}
+\end{figure}
+\item  \textbf{Hazard Detection:} hazard detection is structured to operate via layer-based triggers and collisions (e.g., spikes or traps). These interactions would typically result in episode termination or reward penalties, and can be expanded through \texttt{OnCollisionEnter2D()} or \texttt{OnTriggerEnter2D()} events.
+
+\begin{lstlisting}[language={[Sharp]C}]
+private void OnTriggerEnter2D(Collider2D collision)
+{
+    if (collision.CompareTag("Hazard"))
+    {
+	Debug.Log("Player hit the spike (trigger)!");
+	TakeDamage(maxHealth);
+    }
+}
+\end{lstlisting}
+
+\item  \textbf{Enemy Interaction:} Enemy detection and combat interactions are facilitated through the \texttt{PlayerAttack} script. These interactions allow for additional agent decision-making complexity, such as whether to evade or engage an enemy.
 \end{itemize}
-By enforcing a consistent movement and interaction model, the environment ensures that the agent learns within realistic constraints, improving the generalizability of the trained AI.
+To further refine physical realism and training consistency, additional systems manage vertical acceleration and friction:
+\begin{itemize}
+\item \textbf{Custom Gravity:} The \texttt{ApplyCustomGravity()} method applies varying gravity multipliers depending on the jump state and vertical velocity. This produces more nuanced motion:
+\begin{lstlisting}[language={[Sharp]C}]
+rb.gravityScale = gravityScale * fallMultiplier;
+\end{lstlisting}
+\item \textbf{Friction Handling:} Friction is manually applied when movement input ceases, reducing velocity over time using impulses:
+\begin{lstlisting}[language={[Sharp]C}]
+rb.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
+\end{lstlisting}
+\end{itemize}
+
+Through the combination of Unity physics components and finely tuned motion scripting, the agent operates within a physically constrained yet expressive movement model. This model serves as the foundation for learning transferable locomotion policies across varied level designs.
+
 \subsection{Environment Testing}
-Before integrating the reinforcement learning model, rigorous environment testing is conducted to ensure the platformer world is functionally sound, scalable, and optimized for training.
+Prior to integrating the reinforcement learning model, the platformer environment underwent systematic testing to ensure that it met the functional, performance, and scalability requirements necessary for stable agent training. These tests were essential for validating gameplay mechanics, maintaining frame rate stability, and ensuring compatibility with machine learning pipelines.
 \subsubsection{Functional Testing}
-Functional tests verify that core game mechanics operate as intended:
+Functional testing focused on verifying the correctness of the core gameplay systems. Using Unity’s play mode, scene inspector tools, and in-editor debugging outputs, the following aspects were evaluated:
 \begin{itemize}
-\item  \textbf{Movement Tests:} Ensuring the agent can walk, jump, dash, and interact with platforms correctly.
-\item  \textbf{Collision Tests:} Verifying that the agent properly detects and responds to ground, walls, hazards, and enemies.
-\item  \textbf{Camera Tests:} Confirming that the ML sprite system correctly renders simplified perception inputs.
-\end{itemize}
-\subsubsection{Performance Optimization}
-Since reinforcement learning requires high-frequency environment interaction, performance optimizations are applied:
-\begin{itemize}
-\item  \textbf{Physics Simplification:} Reducing unnecessary physics calculations to improve simulation speed.
-\item  \textbf{Memory Management:} Ensuring that ML sprite rendering and collision detection do not create excessive overhead.
-\item  \textbf{Frame Rate Stability:} Maintaining consistent simulation speed to ensure uniform training conditions.
+\item  \textbf{Movement Tests:} Confirmed that the agent could perform essential actions such as walking, jumping, dashing, and dropping through platforms, using the logic defined in the \texttt{BasicPlayerMovement} script.
+\item  \textbf{Collision Tests:} Verified accurate collision detection with ground surfaces, hazards, enemies, and walls using Unity’s \texttt{Physics2D.OverlapBox()}.
+\item  \textbf{Camera Tests:} Ensured the secondary ML-rendering camera captured a simplified, texture-free version of the environment to serve as the agent’s observation input.
 \end{itemize}
 \subsubsection{Scalability Testing}
-To ensure the environment remains adaptable for future projects, scalability tests evaluate:
+To ensure the environment’s reusability across future projects and training scenarios, a series of scalability tests were conducted:
 \begin{itemize}
-\item  \textbf{Level Size Variability:} Testing different map layouts to verify adaptability.
-\item  \textbf{Enemy and Obstacle Density:} Measuring the impact of increased AI-controlled elements on performance.
-\item  \textbf{Generalization Potential:} Ensuring that the AI can learn effectively in varied level designs without overfitting to a specific layout.
+\item  \textbf{Level Size Variability:} Different map sizes and segment arrangements were tested to validate agent adaptability across layouts.
+\item  \textbf{Enemy and Obstacle Density:} The performance and behavior of agents were evaluated under varying densities of enemies and environmental hazards.
+\item  \textbf{Generalization Potential:} Agents were tested in unseen level variants to assess their ability to transfer learned behaviors beyond a single map configuration.
 \end{itemize}
-This testing process ensured that the game environment aligned with the project's objective of creating robust and reusable AI assets for game development.
+Through these evaluations, the environment was confirmed to be reliable, efficient, and extensible—supporting the project’s objective of producing a robust, reusable AI training platform for 2D platformer games.
+
 \section{AI Algorithms and Models}
-The artificial intelligence (AI) system in this project is designed to function as a reinforcement learning (RL) agent, capable of autonomously learning and executing platforming mechanics. The primary objective is to develop an adaptive AI agent that improves its performance through iterative learning. This agent is implemented using Unity ML-Agents, and training is conducted within the custom-built platformer game environment.
+The artificial intelligence system developed for this project leverages reinforcement learning (RL) to train agents capable of navigating and interacting with a 2D platformer environment. Implemented using Unity ML-Agents, the AI model learns through trial-and-error to execute gameplay behaviors such as jumping, attacking, and collecting objectives. This section details the core aspects of the AI system, including the action space, observation model, reward system, and the algorithm used to drive learning.
 \subsection{Action Space and Decision-Making}
-The action space defines the possible decisions the AI agent can take at any given time.\par
-The following discrete actions are implemented in the platformer environment:\par
+The action space defines the set of discrete and continuous decisions the agent can make at any given time. These actions are interpreted and executed through the \texttt{PlayerActionModules} system, which acts as a modular interface between the AI model and the character controller components.
+The decision-making is handled inside \texttt{AgentController.cs} via the \texttt{OnActionReceived()} method:
+\begin{lstlisting}[language={[Sharp]C}]
+public override void OnActionReceived(ActionBuffers actions)
+{
+	float moveX = Mathf.Clamp(actions.ContinuousActions[0], -1f, 1f);
+	bool jumpAction = actions.DiscreteActions[0] == 1;
+	bool dashAction = actions.DiscreteActions[1] == 1;
+	bool attackAction = actions.DiscreteActions[2] == 1;
+	bool dropAction = actions.DiscreteActions[3] == 1;
+
+	playerActionModules.Move(moveX);
+	if (jumpAction)
+	{
+		AddReward(rewardConfigSO.jumpPenalty);
+		playerActionModules.Jump();
+		jumpCount++;
+	}
+	if (dashAction)
+	{
+		AddReward(rewardConfigSO.dashPenalty);
+		playerActionModules.Dash();
+		dashCount++;
+	}
+	if (attackAction) playerActionModules.Attack();
+	if (dropAction) playerActionModules.Drop();
+
+	EvaluateRewards();
+}
+\end{lstlisting}
+The following action set is available to the Player Agent:
 \begin{table}[!h]
 \caption{Action Space Table}\label{tbl:Action Space Table}
 \begin{tabular}{|l|l|} \hline
 \textbf{Action} & \textbf{Description} \\ \hline
 Move Left & Moves the agent left along the x-axis. \\ 
 Move Right & Moves the agent right along the x-axis. \\ 
-Jump & Initiates a jump if the agent is on solid ground. \\ 
+Jump & Initiates a jump if the agent's canJump state is \texttt{true}. \\ 
 Drop Down & Allows the agent to descend through one-way platforms. \\ 
 Dash & Performs a short burst movement in the selected direction. \\ 
 Attack & Executes a melee attack when enemies are in range. \\ \hline
 \end{tabular}
 \end{table}
-The decision-making process is handled by the AI model, which outputs a probability distribution over possible actions at each time step. The agent selects an action based on learned policies, with an emphasis on maximizing future rewards.
-\subsection{Reward and Penalty System}
-The reinforcement learning model requires a reward function to guide learning. This function assigns positive rewards for desirable actions and penalties for suboptimal behavior.
-\subsubsection{Player Agent Rewards and Penalties}
-The Player Agent is primarily focused on completing levels and maximizing performance. The rewards and penalties assigned to the Player Agent are designed to incentivize behaviors that contribute to level progression, combat efficiency, and overall success.\par
-\begin{table}[!h]
-\caption{Player Agent Reward Table}\label{tbl:Player Agent Reward Table}
-\begin{tabular}{|l|l|} \hline
-\textbf{Action} & \textbf{Rewards} \\ \hline
-Level Completion & +1000 \\ 
-Enemy Defeated & +100 \\ 
-Collecting Objective Items & +50 \\ 
-Interact with Objectives & +20 \\ 
-Exploring & +1 per new point reached \\ 
-Falling or Hitting Hazards & -50 \\ 
-Taking Damage from Enemy & -200 \\
-Eliminated & -1000 \\ \hline
-\end{tabular}
-\end{table}
-\subsubsection{Enemy Agent Rewards and Penalties}
-The Enemy Agents are designed to create challenges for the Player Agent. Their behavior is shaped by rewards and penalties that encourage actions which counter the Player Agent's progress.\par
-\begin{table}[!h]
-\caption{Enemy Agent Reward Table}\label{tbl:Enemy Agent Reward Table}
-\begin{tabular}{|l|l|} \hline
-\textbf{Action} & \textbf{Rewards} \\ \hline
-Player Damaged & +100  \\ 
-Chasing Player & +5  for every period of time chasing player \\ 
-Survival Time & +1 for every period of time survived \\
-Falling or Hitting Hazards & -50 \\ 
-Eliminated & -200 \\ \hline
-\end{tabular}
-\end{table}
-This reward system is fine-tuned iteratively to ensure that the AI develops efficient and strategic movement patterns without exploiting rewards through unintended behaviors.\par
+These actions are abstracted through \texttt{PlayerActionModules.cs}, allowing the AI to activate specific movement or combat features through calls like \texttt{Jump()}, \texttt{Dash()}, and \texttt{Attack()}.
+
+\subsection{Modular Action Handling via Action Modules}
+In reinforcement learning systems integrated into video games, the agent's decision-making logic must ultimately be translated into real-time gameplay actions. To maintain modularity and scalability, this project introduces an abstraction layer called the Action Module, implemented in the \texttt{PlayerActionModules.cs} script. This component acts as a bridge between the \texttt{AgentController} and the character's mechanical systems, such as movement and combat.
+
+\subsubsection{Purpose and Motivation}
+Rather than embedding low-level movement or attack logic within the agent class itself, \texttt{PlayerActionModules} exposes high-level behavior functions like \texttt{Move()}, \texttt{Jump()}, \texttt{Dash()}, \texttt{Drop()}, and \texttt{Attack()}. These functions internally route commands to specialized scripts like \texttt{BasicPlayerMovement} and \texttt{PlayerAttack}.
+This separation offers several advantages:
+\begin{itemize}
+\item \textbf{Modularity:} The AI logic remains independent of how each action is technically executed, enabling clean separation of concerns.
+\item \textbf{Reusability:} The Action Module system can be reused across different characters or AI types with minimal code duplication.
+\item \textbf{Scalability:} Additional abilities—such as ranged attacks, double jumps, or new movement types—can be integrated by extending this module without modifying the AgentController or retraining from scratch.
+\end{itemize}
+
+\subsubsection{Implementation Structure}
+Each public method in \texttt{PlayerActionModules} is responsible for delegating a discrete action:
+\begin{lstlisting}[language={[Sharp]C}]
+public void Move(float direction)
+{
+	if (basicPlayerMovement != null)
+		basicPlayerMovement.moveDir = direction;
+}
+
+public void Jump()
+{
+	if (basicPlayerMovement != null)
+		basicPlayerMovement.Jump();
+}
+\end{lstlisting}
+Likewise, the Dash, Attack, and Drop methods call respective functions in their subsystems, maintaining a centralized and standardized interface for decision execution.\par
+
+In \texttt{AgentController.cs}, these methods are invoked after the action decision is received from the RL model:
+\begin{lstlisting}[language={[Sharp]C}]
+playerActionModules.Move(moveX);
+if (jumpAction)
+{
+	AddReward(rewardConfigSO.jumpPenalty);
+	playerActionModules.Jump();
+	jumpCount++;
+}
+\end{lstlisting}
+This design ensures that all behavior can be routed through a consistent middleware, simplifying debugging, control testing, and future development.
+
+\subsubsection{Extensibility for New Actions}
+
+By adhering to this modular interface pattern, developers can create and register new actions by:
+
+\begin{itemize}
+\item Adding a new method to PlayerActionModules (e.g., \texttt{PerformSpecialAttack()})
+\item Updating the AgentController to include a new discrete action channel
+\item Binding the action within ML-Agents via the Action Spec definition
+\end{itemize}
+
+This method reduces integration complexity and supports the project's broader goal: producing a reusable, extensible AI system for platformer games.
+
 \subsection{Agent Perception and Observations}
-To facilitate intelligent decision-making, the AI agent perceives the environment through a structured observation space, eliminating reliance on raycasting and instead leveraging a dedicated agent camera with simplified ML sprites. This approach mirrors human vision-based gameplay and enhances the interpretability of learned behaviors.
-\subsubsection{Observation Space and State Representation}
-The agent receives structured inputs that define its state and surroundings:\par
-\textbf{Positional and Movement Awareness}
+
+The agent receives a series of structured numerical inputs via the CollectObservations() method. These observations are used by the neural network to infer context and predict optimal actions.
+
+\subsubsection{State Observations}
+
+To enable effective decision-making, the reinforcement learning agent relies on a structured observation vector that captures both its internal status and external context within the environment. These observations are collected in the \texttt{CollectObservations()} method of the \texttt{AgentController.cs} script, and are passed to the ML-Agents model at every decision step.
+\begin{lstlisting}[language={[Sharp]C}]
+// World Observations
+sensor.AddObservation(totalCheckpoints);
+sensor.AddObservation(totalCoins);
+sensor.AddObservation(collectedCheckpoints);
+sensor.AddObservation(collectedCoins);
+sensor.AddObservation(nearestCoin.transform.position.x);
+sensor.AddObservation(nearestCoin.transform.position.y);
+
+// Position
+sensor.AddObservation(transform.position.x);
+sensor.AddObservation(transform.position.y);
+
+// Movement States
+sensor.AddObservation(movement.IsGrounded ? 1f : 0f);
+sensor.AddObservation(movement.IsJumping ? 1f : 0f);
+sensor.AddObservation(movement.IsFacingRight ? 1f : 0f);
+sensor.AddObservation(movement.IsDashing ? 1f : 0f);
+sensor.AddObservation(movement.IsDropping ? 1f : 0f);
+sensor.AddObservation(movement.IsOnWall ? 1f : 0f);
+
+// Health
+sensor.AddObservation(playerManager.currentHealth);
+
+// Attacking States
+sensor.AddObservation(playerActionModules.playerAttack.isAttacking ? 1f : 0f);
+\end{lstlisting}
+The above code snippet shows how the values are gathered from various subsystems including \texttt{BasicPlayerMovement.cs}, \texttt{PlayerAttack.cs}, \texttt{PlayerManager.cs}, and the world state.\par
+The following features are observed:
+
+\paragraph{Stage Progress Observations}
 \begin{itemize}
-\item  \textbf{Current position} within the game world.
-\item  \textbf{Grounded status} \texttt{IsGrounded}  determines if the agent is standing on solid ground.
-\item  \textbf{Jumping status} \texttt{IsJumping}  determines if the agent is jumping or in mid air from the ground.
-\item  \textbf{Dashing status} \texttt{IsDashing}  determines if the agent is in the dashing state.
-\item  \textbf{Dropping status} \texttt{IsDropping}  determines if the agent is dropping from a one way platform.
-\item  \textbf{On-wall status} \texttt{IsOnWall}  determines if the agent is on the wall, available for wall related actions.
-\item  \textbf{Wall-jumping status} \texttt{IsWallJumping}  determines if the agent is jumping off from a wall.
-\item  \textbf{Facing direction} \texttt{IsFacingRight}  determines if the agent is facing right or left.
+\item Total number of checkpoints in the scene
+\item Total number of collectible coins in the scene
+\item Number of checkpoints collected during the episode
+\item Number of coins collected during the episode
 \end{itemize}
-\textbf{Environmental Awareness}
+
+\paragraph{Positional and Proximity Observations}
 \begin{itemize}
-\item  Proximity to enemies, hazards, or collectibles.
-\item  \textbf{Checkpoint status:} tracks progress within the level.
-\item  \textbf{Health and damage state:} monitors the agent’s survival status.
+\item Agent’s current position in 2D world space (x, y)
+\item Position (x, y) of the nearest active coin
 \end{itemize}
-\subsubsection{Camera-Based Perception and ML Sprite System}
-A unique aspect of this project is the decision to replace traditional raycasting techniques with a dedicated agent camera. This approach mimics human player perception, where decision-making is based on visible elements rather than invisible proximity checks or abstract sensor inputs.
+
+\paragraph{Movement and State Flags (from BasicPlayerMovement.cs)}
+\begin{itemize}
+\item \texttt{IsGrounded}: whether the agent is currently on solid ground
+\item \texttt{IsJumping}: whether the agent is ascending from a jump
+\item \texttt{IsDashing}: whether the agent is executing a dash move
+\item \texttt{IsDropping}: whether the agent is descending through a one-way platform
+\item \texttt{IsFacingRight}: the direction the agent is facing
+\item \texttt{IsOnWall}: whether the agent is in contact with a wall
+\item \texttt{IsWallJumping}: whether the agent is performing a wall jump
+\item \texttt{IsOnLeftWall / IsOnRightWall}: which side the wall contact occurs on
+\item \texttt{CanJumpVar}: whether the agent is allowed to jump
+\item \texttt{CanWallJumpVar}: whether wall jumping is currently allowed
+\item \texttt{HasJumped / HasWallJumped}: whether a jump or wall jump was recently executed
+\item \texttt{WasGrounded}: whether the agent was recently grounded before becoming airborne
+\end{itemize}
+
+\paragraph{Health and Combat Observations}
+\begin{itemize}
+\item Current health of the agent observed from \texttt{PlayerManager.cs}
+\item \texttt{isAttacking}: whether the agent is currently performing a melee attack observed from \texttt{PlayerAttack.cs}
+\end{itemize}
+
+This observation vector is designed to be compact yet sufficiently expressive to enable learning of high-level gameplay behavior. By focusing on logical state indicators rather than raw pixel data or overly detailed environmental encoding, the observation model enhances training efficiency and supports generalization to new levels.
+
+\subsubsection{Visual Perception: Dual-Camera ML View}
+
+In addition to numerical observations, a unique aspect of this project is the decision to replace traditional raycasting techniques with a dedicated agent camera. This approach mimics human player perception, where decision-making is based on visible elements rather than invisible proximity checks or abstract sensor inputs.
 To implement this, the game utilizes a dual-layer rendering system:
 \begin{itemize}
 \item  \textbf{Primary Camera (Player Perspective):}
 The main camera, which is responsible for rendering the actual game world as seen by the player. This includes fully detailed textures, lighting effects, UI elements, and all in-game objects categorized into specific layers such as Ground, Enemy, Prize, Checkpoint, etc.
-\begin{figure}[!h]
+\begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=10cm]{./Attachments/EnvironmentDesign.png}}
 \caption{Player perspective}\label{fig:PlayerPers}
 \end{figure}
 \item  \textbf{Agent Camera (AI Perspective):}
 A separate camera dedicated to the AI agent, rendering a simplified version of the game world. This camera ignores visual effects and detailed textures, instead utilizing a distinct ML sprite system composed of minimalistic geometric representations of in-game objects.
-\begin{figure}[!h]
+\begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=10cm]{./Attachments/AiPerspective.png}}
 \caption{AI perspective}\label{fig:AIPers}
 \end{figure}
 \end{itemize}
+
 \textbf{ML Sprite Classification System}\par
 Each object in the environment is assigned a secondary ML sprite, which is rendered exclusively for the agent camera. These ML sprites are categorized into distinct layer masks and follow a predefined color-coded classification system to provide the AI with structured, interpretable visual data.\par
 The classification scheme is as follows:\par
@@ -1038,6 +1461,85 @@ Gray & Ground (solid platforms) & \texttt{\#808080} \\ \hline
 \end{tabular}
 \end{table}
 Through this system, the agent perceives objects in an abstract yet structured manner, focusing only on relevant gameplay elements rather than unnecessary graphical details. This enables a highly extensible framework where additional layers or object categories can be introduced seamlessly by developers integrating this AI into their own projects.
+
+\subsection{Reward and Penalty System}
+
+The reward function is a critical component of reinforcement learning, used to guide agent behavior through positive and negative feedback. In this project, all reward values are externalized in the \texttt{RewardConfigSO ScriptableObject}, allowing fine-tuning without code changes.
+\begin{lstlisting}[language={[Sharp]C}]
+public class RewardConfigSO : ScriptableObject
+{
+	[Header("Movement")]
+	public float idlePenalty = -0.02f;
+	public float movingReward = 0.001f;
+	public float explorationReward = 0.05f;
+	public float jumpPenalty = -0.03f;
+	public float dashPenalty = -0.05f;
+
+	[Header("Goals")]
+	public float coinReward = 1.5f;
+	public float checkpointReward = 2.0f;
+
+	[Header("Hazards")]
+	public float hazardPenalty = -3.0f;
+
+	[Header("Enemy Interaction")]
+	public float enemyDamageReward = 0.5f;
+	public float enemyKillReward = 1.5f;
+	public float hitByEnemyPenalty = -2.5f;
+
+	[Header("Completion Rewards")]
+	public float coinCompletionBonus = 2.0f;
+	public float checkpointCompletionBonus = 2.0f;
+	public float jumpCountTax = 0.01f;
+	public float dashCountTax = 0.02f;
+
+	[Header("Behavior Shaping Weight")]
+	public float coinShapingWeight = 0.01f;
+}
+\end{lstlisting}
+\subsubsection{Player Agent Rewards and Penalties}
+The Player Agent is primarily focused on completing levels and maximizing performance. The rewards and penalties assigned to the Player Agent are designed to incentivize behaviors that contribute to level progression, combat efficiency, and overall success.\par
+\begin{table}[!h]
+\caption{Player Agent Reward and Penalty Table}
+\label{tbl:PlayerAgentRewardPenaltyTable}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event or Behavior} & \textbf{Type} & \textbf{Value} \\
+\hline
+Idle (no movement) & Penalty & −0.02 \\
+Movement (per unit distance) & Reward & +0.001 \\
+Exploration (new tile visited) & Reward & +0.05 \\
+Jumping & Penalty & −0.03 \\
+Dashing & Penalty & −0.05 \\
+Collecting a Coin & Reward & +1.5 \\
+Reaching a Checkpoint & Reward & +2.0 \\
+Touching Hazard & Penalty & −3.0 \\
+Damaging an Enemy & Reward & +0.5 \\
+Killing an Enemy & Reward & +1.5 \\
+Hit by an Enemy & Penalty & −2.5 \\
+Coin Completion Bonus (episode end) & Reward & +2.0 × (coin completion ratio) \\
+Checkpoint Completion Bonus (episode end) & Reward & +2.0 × (checkpoint completion ratio) \\
+Jump Count Tax (episode end) & Penalty & −0.01 × (jump count) \\
+Dash Count Tax (episode end) & Penalty & −0.02 × (dash count) \\
+Distance-Based Coin Shaping & Reward & +0.01 × (1 / distance to nearest coin) \\
+\hline
+\end{tabular}
+\end{table}
+\subsubsection{Enemy Agent Rewards and Penalties}
+The Enemy Agents are designed to create challenges for the Player Agent. Their behavior is shaped by rewards and penalties that encourage actions which counter the Player Agent's progress.\par
+\begin{table}[!h]
+\caption{Enemy Agent Reward Table}\label{tbl:Enemy Agent Reward Table}
+\begin{tabular}{|l|l|} \hline
+\textbf{Action} & \textbf{Rewards} \\ \hline
+Player Damaged & +100  \\ 
+Chasing Player & +5  for every period of time chasing player \\ 
+Survival Time & +1 for every period of time survived \\
+Falling or Hitting Hazards & -50 \\ 
+Eliminated & -200 \\ \hline
+\end{tabular}
+\end{table}
+This reward system is fine-tuned iteratively to ensure that the AI develops efficient and strategic movement patterns without exploiting rewards through unintended behaviors.\par
+
 \section{Training Process and Optimization}
 The training process of the AI agent follows a structured pipeline designed to optimize learning efficiency and ensure convergence towards an optimal policy. This process consists of data collection, policy network updates, curriculum learning strategies, and performance evaluation metrics. By leveraging reinforcement learning (RL) principles, particularly policy optimization methods, the AI progressively refines its ability to navigate the platformer environment.
 \subsection{Data Collection and Experience Buffer}
