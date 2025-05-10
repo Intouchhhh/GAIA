@@ -1,0 +1,2 @@
+Episode,Steps,Reward,CoinsCollected,TotalCoins,CheckpointsCollected,TotalCheckpoints,JumpCount,JumpPenalty,DashCount,DashPenalty,CumulativeAvgSteps,CumulativeAvgRewards
+1,2573,279.44,16,144,4,43,2,0.02,0,0.00,0,0

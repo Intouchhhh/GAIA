@@ -4990,8 +4990,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -537.55707, y: 2.4329894}
-  m_SizeDelta: {x: 786.4, y: 1026.6}
+  m_AnchoredPosition: {x: -537.55707, y: 218}
+  m_SizeDelta: {x: 786.4, y: 587.48}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &360249066
 MonoBehaviour:
@@ -61269,6 +61269,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1934632599883148301, guid: f7045d81ed75d2f4cb8b36e2db9bba48, type: 3}
+      propertyPath: DecisionPeriod
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1934632599883148301, guid: f7045d81ed75d2f4cb8b36e2db9bba48, type: 3}
+      propertyPath: TakeActionsBetweenDecisions
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3363386385997106607, guid: f7045d81ed75d2f4cb8b36e2db9bba48, type: 3}
       propertyPath: m_LocalPosition.x
       value: -46.5
@@ -61311,7 +61319,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3701323445218378788, guid: f7045d81ed75d2f4cb8b36e2db9bba48, type: 3}
       propertyPath: m_BehaviorType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3701323445218378788, guid: f7045d81ed75d2f4cb8b36e2db9bba48, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
@@ -68932,8 +68940,8 @@ Canvas:
   m_GameObject: {fileID: 793242806}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 1208158830}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -68944,7 +68952,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &793242810
 RectTransform:
@@ -75422,6 +75430,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b008319274743747a12cfcb5bb7daf4, type: 3}
+--- !u!20 &1208158830 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 9040829250660930976, guid: f7045d81ed75d2f4cb8b36e2db9bba48, type: 3}
+  m_PrefabInstance: {fileID: 432649456}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1209717962
 PrefabInstance:
   m_ObjectHideFlags: 0

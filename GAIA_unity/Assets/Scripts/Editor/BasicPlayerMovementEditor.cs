@@ -39,7 +39,8 @@ public class BasicPlayerMovementEditor : Editor
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpHangGravityMultiplier"));
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("fallMultiplier"));
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("maxFallSpeed"));
-		}
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpCooldown"));
+        }
 
 		showWallJumpSettings = EditorGUILayout.Foldout(showWallJumpSettings, "Wall Jump Settings");
 		if (showWallJumpSettings)
@@ -105,7 +106,12 @@ public class BasicPlayerMovementEditor : Editor
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("isDropping"));
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("isWallJumping"));
 			EditorGUILayout.PropertyField(serializedObject.FindProperty("isFacingRight"));
-		}
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("canJump"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("canWallJump"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("hasJumped"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("hasWallJumped"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("wasGrounded"));
+        }
 
 		serializedObject.ApplyModifiedProperties();
 	}

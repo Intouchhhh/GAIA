@@ -73,7 +73,9 @@ public class BasicPlayerMovement : MonoBehaviour
 	[SerializeField] private bool isDropping;
 	[SerializeField] private bool isWallJumping;
 	[SerializeField] private bool isFacingRight;
-	[SerializeField] private bool hasJumped = false;
+    [SerializeField] private bool canJump;
+    [SerializeField] private bool canWallJump;
+    [SerializeField] private bool hasJumped = false;
 	[SerializeField] private bool hasWallJumped = false;
 	[SerializeField] private bool wasGrounded = false;
 
@@ -90,7 +92,9 @@ public class BasicPlayerMovement : MonoBehaviour
 	public bool IsWallJumping => isWallJumping;
 	public bool IsFacingRight => isFacingRight;
 	public bool IsDropping => isDropping;
-	public bool HasJumped => hasJumped;
+    public bool CanJumpVar => canJump;
+    public bool CanWallJumpVar => canWallJump;
+    public bool HasJumped => hasJumped;
 	public bool HasWallJumped => hasWallJumped;
 	public bool WasGrounded => wasGrounded;
 	// Movement settings (Read-only)
@@ -108,9 +112,10 @@ public class BasicPlayerMovement : MonoBehaviour
 	public float JumpHangGravityMultiplier => jumpHangGravityMultiplier;
 	public float FallMultiplier => fallMultiplier;
 	public float MaxFallSpeed => maxFallSpeed;
+    public float JumpCooldown => jumpCooldown;
 
-	// Wall jump settings (Read-only)
-	public Vector2 WallJumpForce => wallJumpForce;
+    // Wall jump settings (Read-only)
+    public Vector2 WallJumpForce => wallJumpForce;
 	public float WallJumpLerp => wallJumpLerp;
 	public float WallSlideSpeed => wallSlideSpeed;
 	public LayerMask WallLayer => _wallLayer;
@@ -280,14 +285,17 @@ public class BasicPlayerMovement : MonoBehaviour
 
 	private void HandleJump()
 	{
+		canJump = CanJump();
+		canWallJump = CanWallJump();
+
 		if (Time.time - lastJumpPressedTime <= jumpBufferTime)
 		{
-			if (CanJump() && !hasJumped)
+			if (canJump && !hasJumped)
 			{
 				PerformJump();
 				hasJumped = true;
 			}
-			else if (CanWallJump() && !hasWallJumped)
+			else if (canWallJump && !hasWallJumped)
 			{
 				wallJumpDir = (IsOnRightWall) ? -1 : 1;
 				PerformWallJump(wallJumpDir);
@@ -302,9 +310,12 @@ public class BasicPlayerMovement : MonoBehaviour
 			   && !IsDashing
 			   && Time.time > lastJumpTime + jumpCooldown;
 	}
-	private bool CanWallJump() => IsOnWall && !IsGrounded && !IsWallJumping && !hasWallJumped;
+    private bool CanWallJump()
+    {
+        return IsOnWall && !IsGrounded && !IsWallJumping && !hasWallJumped;
+    }
 
-	private void PerformJump()
+    private void PerformJump()
 	{
 		lastGroundedTime = 0;
 		lastJumpPressedTime = 0;
@@ -448,6 +459,7 @@ public class BasicPlayerMovement : MonoBehaviour
 
 		isOnWall = IsOnLeftWall || IsOnRightWall;
 		isWallJumping = false;
+		hasWallJumped = false;
 	}
 
     private void OnTriggerEnter2D(Collider2D collision)

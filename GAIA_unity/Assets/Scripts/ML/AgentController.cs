@@ -160,8 +160,14 @@ public class AgentController : Agent
 			return;
 		}
 
-		// Position
-		sensor.AddObservation(transform.position.x);
+		// Stage Observations
+		sensor.AddObservation(totalCheckpoints);
+        sensor.AddObservation(totalCoins);
+        sensor.AddObservation(collectedCheckpoints);
+        sensor.AddObservation(collectedCoins);
+
+        // Position
+        sensor.AddObservation(transform.position.x);
 		sensor.AddObservation(transform.position.y);
 
 		// Movement States
@@ -172,9 +178,16 @@ public class AgentController : Agent
 		sensor.AddObservation(movement.IsDropping ? 1f : 0f);
 		sensor.AddObservation(movement.IsOnWall ? 1f : 0f);
 		sensor.AddObservation(movement.IsWallJumping ? 1f : 0f);
+		sensor.AddObservation(movement.IsOnLeftWall ? 1f : 0f);
+        sensor.AddObservation(movement.IsOnRightWall ? 1f : 0f);
+        sensor.AddObservation(movement.CanJumpVar ? 1f : 0f);
+        sensor.AddObservation(movement.CanWallJumpVar ? 1f : 0f);
+        sensor.AddObservation(movement.HasJumped ? 1f : 0f);
+        sensor.AddObservation(movement.HasWallJumped ? 1f : 0f);
+        sensor.AddObservation(movement.WasGrounded ? 1f : 0f);
 
-		// Health
-		sensor.AddObservation(playerManager.currentHealth);
+        // Health
+        sensor.AddObservation(playerManager.currentHealth);
 
 		// Attacking States
 		sensor.AddObservation(playerActionModules.playerAttack.isAttacking ? 1f : 0f);
