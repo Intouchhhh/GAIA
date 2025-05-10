@@ -1758,109 +1758,257 @@ What could be done in the future to make your projects better.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%% Appendix %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\appendix{First appendix title}
-\noindent{\large\bf Put appropriate topic here} \\
-
-This is where you put hardware circuit diagrams, detailed experimental data in tables or source codes, etc.. \\ \bigskip
-
+\appendix{Core Function Code}
+\setcounter{section}{0}
+\noindent{\large\bf Core Function Code} \\
+This appendix provides selected excerpts from the main scripts used in the development and training of the AI agents within the 2D platformer environment. The scripts include core functionalities for agent behavior, reward functions, environment interaction, and communication with the Unity ML-Agents framework. These code samples serve to illustrate key implementation details and support the methodological descriptions provided in the main body of the report.\par
+\section{PlayerManager script}
+This PlayerManager script in Unity is responsible for managing the player's core attributes and behavior in a 2D platformer game. It initializes the player’s spawn position by selecting a random point from a list of spawn points tagged as "Spawn" at the start of the game. The script also handles basic collision interactions: when the player enters a trigger collider tagged as "Hazard" (e.g., spikes), it logs a message and restarts the current scene, simulating player death. If the player collides with an object tagged as "Coins", the coin object is destroyed, representing coin collection. The script maintains and exposes health and damage values (though they're not actively used here), and it uses Unity’s Rigidbody2D and SceneManager systems for physics and scene management, respectively.\par
  \begin{figure}[!h]
-\caption{This is the figure x11 \href{https://www.google.com} {https://www.google.com}}\label{fig:x1}
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Playermanager.png}}
+\caption{PlayerManager Script.}\label{fig:PlayerM}
 \end{figure}
+\newpage
+\section{PlayerMovement }
+Everything necessary for managing an extensive list of 2D character movement behaviors is entered in this class section of BasicPlayerMovement. Variables are grouped using region for organization and clarity. It comprises movement speed settings, acceleration, jump settings, wall interaction mechanics, and dash parameters. For example, variables like `moveSpeed`, `acceleration`, and `frictionAmount` control horizontal movements, while `jumpForce`, `coyoteTime`, and `fallMultiplier` fine-tune the responsiveness and feel of the jump. Similarly, wall variables ensure wall sliding and wall jumping are possible, while dash variables determine dash speed, duration, and cooldown logic.\par
+It also specifies position checks for the environment, such as touching the ground or a wall, using Transform references and collision layers. Input-related variables like moveInput and jumpInput ensure the script can evaluate the player’s commands, whereas flags such as isGrounded and isDashing manage when to transition between movement states. Altogether, this block of variable declarations provides a base configuration and state management setup on which one could establish the advanced, responsive, and smooth character control of a 2D platformer.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=7cm]{./Attachments/Variables_PC.png}}
+\caption{BasicPlayerMovement variable section.}\label{fig:Var}
+\end{figure}
+\newpage
+This section sets up the core behavior of the player through Unity’s lifecycle methods. In Awake(), initial values are set to prevent accidental actions on the first frame, and key components like Rigidbody2D and PlayerAttack are retrieved. The Update() method handles player input and triggers jump and dash logic each frame. Meanwhile, FixedUpdate() manages physics-related behaviors, including movement, friction, wall detection, and gravity adjustments. Together, these methods ensure the player responds smoothly to input while maintaining consistent and stable physics.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/AUF.png}}
+\caption{BasicPlayerMovement Initialize section.}\label{fig:AUF}
+\end{figure}
+The HandleInput() method captures and processes the player's real-time input. If input is enabled, it reads horizontal and vertical axis values to determine movement and drop directions. It also checks for key presses related to jumping (Space) and dashing (Left Shift). When a jump or dash input is detected, the corresponding methods (Jump() and Dash()) are called immediately, supporting features like jump buffering and responsive dashing. This function acts as the main link between the player’s physical input and the in-game movement system.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=8cm]{./Attachments/PlayerMovement_Input.png}}
+\caption{BasicPlayerMovement Initialize section.}\label{fig:Input}
+\end{figure}
+\newpage
+This method, HandleMovement(), controls horizontal movement by adjusting the player's velocity based on input direction and current state. It first exits early if the player is dashing. If the player is not attacking, the character will flip its facing direction to match movement input. It then calculates the desired speed and applies acceleration or deceleration accordingly using a smoothed velocity formula for natural movement. If the player is not wall jumping, horizontal force is applied directly; otherwise, a smoothed transition using linear interpolation (Lerp) ensures stable control during wall jumps. This function ensures responsive and fluid horizontal movement across normal and wall-jumping states.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/PlayerMovement_walk.png}}
+\caption{BasicPlayerMovement walk section.}\label{fig:walk}
+\end{figure}
+This section implements both standard and wall jumping mechanics with added responsiveness through features like jump buffering and coyote time. The Jump() method logs the time when a jump is requested, or triggers a drop if the player is pressing downward. The HandleJump() method checks whether the player is allowed to jump within a short input buffer period, then prioritizes a regular jump if the player is on or near the ground, or a wall jump if clinging to a wall. Helper methods like CanJump() and CanWallJump() determine the player's eligibility for each type of jump. PerformJump() applies upward velocity for a normal jump, while PerformWallJump() calculates a directional force to push the player away from the wall. Together, these methods create a fluid and player-friendly jumping system suited for platformer gameplay.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=6cm]{./Attachments/PlayerMovement_jump.png}}
+\caption{BasicPlayerMovement jump section.}\label{fig:jump}
+\end{figure}
+\newpage
+This segment manages the player's dash ability, allowing for quick bursts of horizontal movement. The Dash() method records the time a dash is requested, but only if the cooldown period has passed. HandleDash() checks if a dash can currently be performed and whether a new dash input was recently made, then triggers the PerformDash() coroutine. PerformDash() temporarily disables gravity, sets the player's velocity in the facing direction, and holds this state for a short duration. Afterward, gravity is restored, the dash ends, and the cooldown timer is reset. This system ensures dashing feels fast and responsive while maintaining balance through cooldown control.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=8cm]{./Attachments/PlayerMovement_dash.png}}
+\caption{BasicPlayerMovement dash section.}\label{fig:dash}
+\end{figure}
+The HandleWallSlide() method controls the wall sliding mechanic, which activates when the player is airborne, touching a wall, and falling downward. Under these conditions, it limits the player’s vertical velocity to a fixed negative value, defined by wallSlideSpeed. This creates a slow, controlled descent along walls, giving players more time to react and preparing them for potential wall jumps. The mechanic enhances both movement precision and gameplay fluidity in platformer environments.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/PlayerMovement_wall.png}}
+\caption{BasicPlayerMovement wall slide section.}\label{fig:wall}
+\end{figure}
+\newpage
+The Drop() method enables the player to pass through one-way platforms by temporarily disabling collisions between the player and the platform layer. This action is only triggered when the player is grounded and pressing downward. By using Physics2D.IgnoreLayerCollision, it ensures a smooth drop-through mechanic commonly found in platformers, allowing for more dynamic navigation of vertical level design. The isDropping flag can be used elsewhere in the code to manage related behaviors or animations.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=12cm]{./Attachments/PlayerMovement_drop.png}}
+\caption{BasicPlayerMovement drop section.}\label{fig:drop}
+\end{figure}
+These methods are responsible for detecting the player's interaction with the ground and walls, as well as managing collisions with one-way platforms. HandleGrounded() checks whether the player is currently standing on the ground using a physics overlap box and updates relevant state variables like isJumping and isWallJumping. HandleWallDetection() similarly uses overlap checks to determine if the player is touching walls on either side, which is essential for enabling wall-jumping mechanics. The OnTriggerEnter2D() method temporarily disables collisions with one-way platforms when the player is jumping upwards, allowing upward movement through them. Conversely, OnTriggerExit2D() re-enables these collisions when the player finishes dropping through a platform, ensuring consistent platform behavior.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=12cm]{./Attachments/PlayerMovement_check.png}}
+\caption{BasicPlayerMovement check section.}\label{fig:check}
+\end{figure}
+\newpage
+The ApplyCustomGravity() method adjusts gravity based on the player's state to create a more natural and dynamic feel for jumping and falling. If the player is hanging after a jump (when vertical velocity is minimal), gravity is reduced to make the jump feel more controlled. Conversely, when falling, gravity is increased to make the descent faster, and a maximum fall speed is enforced to prevent excessive speed. If the player is not dashing, normal gravity is applied.The HandleFriction() method manages the player's deceleration when on the ground and not moving. It applies a frictional force to slow down the player gradually, based on the current velocity. This makes the movement feel more realistic by preventing abrupt stops and ensuring smoother transitions between movement states.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/PlayerMovement_physics.png}}
+\caption{BasicPlayerMovement physics section.}\label{fig:physics}
+\end{figure}
+The OnDrawGizmos() method is used for visual debugging in the Unity editor. It draws wireframe cubes at specific locations in the scene to represent the player's ground and wall detection areas. The green wireframe cube indicates the area where the player checks for ground, and the blue cubes represent the detection zones on either side of the player for wall detection. This helps visualize the range and orientation of the player's collision checks, making it easier to debug and fine-tune the movement and interaction mechanics during development.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/PlayerMovement_gizmos.png}}
+\caption{BasicPlayerMovement gizmos section.}\label{fig:gizmos}
+\end{figure}
+\newpage
+\section{PlayerAttack script}
+The initial section of the PlayerAttack script defines the core setup for managing attack behavior in the game. It includes serialized fields such as attackCooldown to control the delay between consecutive attacks, attackDamage to determine the amount of damage dealt, and enemyLayer to specify which objects can be damaged. The script also defines attackPoint as the origin for the attack hitbox and attackCapsuleSize along with capsuleDirection to shape the area of effect. A visual effect (attackVisual) can be shown when the player attacks. The PlayerManager reference is used to fetch the player's attack damage dynamically. A public property isAttacking tracks whether an attack is in progress, while attackInput and inputEnabled manage player input. In the Awake() method, the script initializes the PlayerManager reference and sets the attackDamage accordingly. Finally, the Update() method calls HandleInput() to check for attack input\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Playerattack_vai.png}}
+\caption{PlayerAttack variables and initialize section.}\label{fig:vai}
+\end{figure}
+This section handles player input for attacking. The HandleInput() method first checks whether input is currently enabled. If it is, it listens for a left mouse button click (Input.GetMouseButtonDown(0)) and sets attackInput accordingly. If an attack input is detected, it calls the PerformAttack() method to execute the attack logic. This design ensures that the player can only initiate attacks when allowed and that attack actions are triggered explicitly by user input.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Playerattack_input.png}}
+\caption{PlayerAttack input section.}\label{fig:input}
+\end{figure}
+\newpage
+The PerformAttack() method manages the player's attack execution while respecting the cooldown period. It begins by checking whether enough time has passed since the last attack; if not, it exits early. If the cooldown has elapsed, it updates lastAttackTime, marks the player as currently attacking by setting isAttacking to true, and optionally shows a visual indicator (attackVisual) for a brief moment. It then performs a hit detection using Physics2D.OverlapCapsuleAll centered on the attackPoint, using the specified capsule size and direction to identify all enemies within range. For each detected enemy, it retrieves the EnemyActionModule component and calls its TakeDamage() method, passing in the damage value and the player’s position for knockback calculation. A debug message is logged for each successful hit.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Playerattack_attack.png}}
+\caption{PlayerAttack perform attack section.}\label{fig:attack}
+\end{figure}
+The DisableAttackVisual() method resets the attack state after a short duration. It sets isAttacking to false and disables the attackVisual GameObject if it exists, effectively ending the visual and logical representation of an attack.
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Playerattack_disable.png}}
+\caption{PlayerAttack disable attack visual section.}\label{fig:disable}
+\end{figure}
+\newpage
+The OnDrawGizmos() method visually represents the player’s attack range in the Unity editor by drawing a capsule at the attackPoint position. It calculates the start and end points of the capsule based on its direction (horizontal or vertical), draws circles at both ends to represent the capsule's curves, and connects them with lines to complete the capsule shape. This helps developers see and adjust the attack hitbox during development.
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Playerattack_gizmos.png}}
+\caption{PlayerAttack gizmos section.}\label{fig:attkgizmos}
+\end{figure}
+\section{Agent Controller}
+The AgentController class inherits from Agent and integrates Unity ML-Agents with core gameplay components to enable intelligent behavior from the player character. It references two primary components via serialized fields: PlayerActionModules and PlayerManager, which likely handle character movement and overall state management, respectively. Additionally, it includes a list of spawnPointsList—a collection of potential spawn locations used to reset or relocate the agent. Internally, the class tracks the agent's last position and maintains a set called visitedAreas to record the discrete areas the agent has already explored, using Vector2Int for grid-based precision.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_fac.png}}
+\caption{AgentController fields and componenets section.}\label{fig:agentfac}
+\end{figure}
+\newpage
+The Initialize method is an overridden function from the Agent class, responsible for setting up the agent’s initial state when the simulation begins. It first ensures that the game time is running at a normal speed by setting Time.timeScale to 1. The method then checks if the playerActionModules and playerManager are assigned; if not, it attempts to fetch these components from the same GameObject. Finally, the method populates the spawnPointsList with all GameObjects tagged as "Spawn," utilizing GameObject.FindGameObjectsWithTag("Spawn") to gather a list of spawn locations across the scene.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_ini.png}}
+\caption{AgentController Initialization section.}\label{fig:agentini}
+\end{figure}
+The OnEpisodeBegin method is another overridden function from the Agent class, which resets the agent’s state at the beginning of each new training episode. It first ensures that the playerActionModules is assigned, and then proceeds to disable the player’s input by calling DisablePlayerInput. The method also resets the agent's velocity and position—if the basicPlayerMovement module is available, it sets the Rigidbody2D's velocity to zero. Additionally, the method saves the agent's starting position in the lastPosition variable and initializes a new HashSet<Vector2Int> for tracking visited areas. This ensures that the agent’s movement and environment interaction are properly reset at the beginning of the episode.The DisablePlayerInput method disables input processing for both the basicPlayerMovement and playerAttack modules by setting their inputEnabled flags to false. It checks if the necessary modules are already assigned and assigns them if needed, ensuring that no player input can be processed during training.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_eh.png}}
+\caption{AgentController Episode Handling section.}\label{fig:Epihand}
+\end{figure}
+\newpage
+The CollectObservations method is part of Unity's ML-Agents framework and is used to collect observations from the environment that the agent will use to make decisions. In this implementation, the method gathers a series of observations regarding the player's current state, which will be passed to the reinforcement learning model to help it learn how to act in the environment.\par
+First, the method checks if the basicPlayerMovement component is available. If not, it adds a fallback observation (0) and returns. If basicPlayerMovement is present, it proceeds to collect various observations. These observations include the player’s position (x and y coordinates), movement states (whether the player is grounded, jumping, facing right, dashing, dropping, on a wall, or wall-jumping), and the player’s current health.The method also collects information about the player's attack state, adding an observation that indicates whether the player is attacking. All these observations are added to the sensor, which is used by the agent to inform its decision-making during training.This method enables the reinforcement learning model to track the player's state, facilitating better decision-making based on these environmental factors.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=15cm]{./Attachments/Agentcontroller_observation.png}}
+\caption{AgentController Observation section.}\label{fig:observe}
+\end{figure}
+\newpage
+The OnActionReceived method in the AgentController script processes the actions received by the reinforcement learning agent. It first extracts continuous and discrete actions from the ActionBuffers parameter, interpreting the values to control various player behaviors. The continuous action, actions.ContinuousActions[0], represents the player's horizontal movement and is clamped to the range of -1f to 1f. The discrete actions correspond to jump, dash, attack, and drop, with a value of 1 indicating that the respective action should be performed. The method then delegates the appropriate actions to the playerActionModules, calling methods like Move(), Jump(), Dash(), Attack(), and Drop() based on the received input. Finally, it calls the EvaluateRewards() method to assess the agent's performance, which is crucial for the reinforcement learning model to determine the effectiveness of the actions and adjust accordingly.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_action.png}}
+\caption{AgentController Action section.}\label{fig:action}
+\end{figure}
+The EvaluateRewards method in the AgentController script is responsible for assigning rewards based on the agent's actions and progress within the game environment. The method first calculates the distance the agent has moved since the last update using Vector2.Distance. If the agent has moved a significant distance (greater than 0.1 units), it rewards the agent with a value proportional to the distance moved (0.05 times the distance). If the movement is negligible, it penalizes the agent with a small negative reward of -0.01. This encourages the agent to make meaningful progress rather than staying idle. The method then updates lastPosition to the current position of the agent.Next, the method checks if the agent has visited a new area. It converts the agent's position to a Vector2Int grid coordinate and checks if this position has been visited before using the visitedAreas set. If the agent has not visited the current grid position, it rewards the agent with 0.2 units and adds the grid position to the visitedAreas set to track exploration. This exploration reward encourages the agent to move to new areas and explore the environment.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_reward.png}}
+\caption{AgentController Reward section.}\label{fig:reward}
+\end{figure}
+\newpage
+The OnTriggerEnter2D method in the AgentController script is responsible for handling the agent's interactions with different colliders during the game. When the agent collides with an object tagged with a specific label, the method uses a switch statement to determine the type of object and apply appropriate rewards or penalties. If the agent collides with an object tagged as "Coins", it rewards the agent with 1.0 unit, encouraging it to collect coins. If the agent collides with an object tagged as "Hazard", it penalizes the agent with -3.0 units and ends the current episode, indicating that a hazard results in a significant penalty and failure. If the agent encounters an "Enemy", it applies a moderate penalty of -2.0 units, discouraging contact with enemies. Lastly, if the agent reaches a "Checkpoint", it rewards the agent with a significant 5.0 unit, incentivizing progress through the game. This method helps guide the agent's behavior by providing feedback based on its interactions with key game elements.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_collision.png}}
+\caption{AgentController Collision section.}\label{fig:collision}
+\end{figure}
+\newpage
+The Heuristic method in the AgentController script provides a manual control scheme for the agent using player input, primarily for testing and debugging in the Unity Editor. This method overrides the default Heuristic function from the ML-Agents framework and populates the actionsOut parameter with values derived from player input. It first accesses both the ContinuousActions and DiscreteActions buffers. The ContinuousActions[0] is set using Input.GetAxisRaw("Horizontal"), which captures left or right movement from keyboard inputs like the arrow keys or A/D. Then, the DiscreteActions are assigned as follows: discreteActions[0] activates when the spacebar is pressed, triggering a jump; discreteActions[1] activates when the Left Shift key is pressed, initiating a dash; discreteActions[2] triggers an attack when the left mouse button is clicked; and discreteActions[3] becomes true when the S key is held down, initiating a drop-through platform action. This method allows the developer to control and test the agent manually, bypassing the AI’s decision-making during training or demonstrations.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_heuristic.png}}
+\caption{AgentController Heuristic section.}\label{fig:heuristic}
+\end{figure}
+\section{Enemy Script}
+The Enemy class represents a basic enemy character in the game, managing its health, invincibility state, and reactions to damage. It begins with serialized fields for maxHealth, a damageCooldown duration during which the enemy becomes invincible after being hit, and a knockbackForce that defines how strongly it is pushed upon taking damage. The currentHealth tracks the enemy's remaining life points, while isInvincible and invincibilityTimer control temporary immunity to repeated attacks. In Awake(), the enemy initializes its health and retrieves its Rigidbody2D and associated EnemyActionModule if not already set.\par
+In the Update() loop, if the enemy is currently invincible, it decrements the timer until invincibility wears off. The TakeDamage() method handles damage intake—it only processes if the enemy isn't invincible. Upon being hit, the enemy reduces its health, triggers invincibility, applies knockback using the source of the attack, and checks if it should die. The ApplyKnockback() method calculates a direction vector away from the attacker and applies an impulse force to the Rigidbody2D to push the enemy back. Finally, if the enemy’s health drops to zero or below, it calls Die(), which invokes the Die() function from the action module and destroys the game object.\par
+\newpage
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Enemy.png}}
+\caption{Enemy Scripts.}\label{fig:Enemy}
+\end{figure}
+\newpage
+\section{Enemy Action Module}
+The EnemyActionModule class acts as an intermediary that handles the enemy's interaction with the reinforcement learning agent (AgentController) and delegates core combat functionality to the associated Enemy component. In Awake(), it ensures the enemyCombat reference is assigned, typically pointing to the same game object’s Enemy component.The TakeDamage() method is called when the enemy is struck. Before delegating the damage logic to enemyCombat, it locates an AgentController in the scene and rewards the agent with +1.0 reward, reinforcing the behavior of attacking enemies. After that, it calls the TakeDamage() method of the Enemy class to apply damage, knockback, and health management.The Die() method is responsible for handling enemy death events. When invoked, it also finds the AgentController and rewards it with +5.0, incentivizing successful eliminations. Then it calls the Die() function of the Enemy class to destroy the enemy object.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=10cm]{./Attachments/Enemyactionmodule.png}}
+\caption{Enemy Action Module Scripts.}\label{fig:Enemyactionmodule}
+\end{figure}
+\newpage
+\section{Enemy State Machine}
+This script defines the basic structure for an Enemy State Machine in Unity, which controls how an enemy behaves based on different conditions. The EnemyStateMachine class includes three defined states: Patrol, Idle, and Chase, managed by an enum called EnemyState. For patrolling, the enemy moves between a series of waypoints (patrolPoints) at a given speed. The chase behavior activates when the player enters a specified detectionRange, causing the enemy to move faster (chaseSpeed) toward the player (playerPosition). The state machine uses references to the player’s movement script (BasicPlayerMovement) and a Rigidbody2D component for motion control. A sprite GameObject is also included, likely for visual adjustments such as flipping the sprite direction.
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=13cm]{./Attachments/ESM_var.png}}
+\caption{Enemy State Machine variables section.}\label{fig:ESMvar}
+\end{figure}
+\newpage
+This section of the EnemyStateMachine script sets up the enemy's runtime behavior and updates its state each frame. In the Start() method, the enemy's Rigidbody2D is initialized, and rotation is frozen to prevent unwanted spinning. It also locates the player object using FindFirstObjectByType<BasicPlayerMovement>() and assigns the player's Transform to playerPosition, which is crucial for the chase logic. A warning is logged if no patrol points are provided, helping developers catch setup issues early.
+The Update() method acts as the core of the state machine. It checks the current state of the enemy (Patrol, Chase, or Idle) and executes the appropriate behavior. In Patrol, the enemy follows a set of points and also checks if the player has entered detection range. In Chase, the enemy actively pursues the player and continuously checks if the player has moved out of range to potentially return to patrolling. In the Idle state, the enemy remains stationary by setting its velocity to zero. This structure ensures that each behavior is clearly separated and triggered based on state conditions.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=13cm]{./Attachments/ESM_ini.png}}
+\caption{Enemy State Machine initialization section.}\label{fig:ESMini}
+\end{figure}
+\newpage
+This part of the EnemyStateMachine script defines how the enemy moves during both patrol and chase behaviors, as well as how it visually responds to direction changes.
+The Patrol() method is responsible for basic waypoint navigation. The enemy moves toward the current patrol point by calculating the normalized direction vector and applying horizontal velocity using the patrol speed. When the enemy is close enough to a patrol point (within 0.2 units), it cycles to the next point using modulo arithmetic to loop through the array. The sprite is then flipped to face the movement direction using the FlipSprite() method.The ChasePlayer() method operates similarly, but instead of heading toward patrol points, the enemy calculates direction based on the player's position. It moves using a faster chaseSpeed to give the player a sense of urgency when detected. Again, the sprite is flipped to face the direction of movement for visual consistency.FlipSprite(float moveDirection) ensures the enemy's sprite visually faces the direction it's moving. It checks the horizontal movement direction and inverts the local scale’s x-axis if needed—this prevents the enemy from moonwalking or moving backward visually while chasing or patrolling.\par 
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=15cm]{./Attachments/ESM_sm.png}}
+\caption{Enemy State Machine State machine logic section.}\label{fig:ESMsm}
+\end{figure}
+\newpage
+These two methods—CheckForPlayer() and CheckForPlayerOutOfRange()—control the transitions between the patrol and chase states in the EnemyStateMachine by monitoring the distance between the enemy and the player.CheckForPlayer() is used during the patrol state to detect when the player enters the enemy's detection range. If the player’s distance from the enemy is less than or equal to the defined detectionRange, the enemy enters the Chase state. Optionally, a visual indicator (like an exclamation mark or alert icon stored in the detected GameObject) is activated to signal the change in behavior.On the other hand, CheckForPlayerOutOfRange() is called during the chase state to determine when the player has moved far enough away that they are no longer considered a target. If the player moves beyond the detection range, the alert indicator is turned off and the enemy returns to the Patrol state.Together, these methods allow the enemy to dynamically switch between patrolling and actively chasing the player based on proximity, enabling more reactive and engaging AI behavior.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=12cm]{./Attachments/ESM_checkplayer.png}}
+\caption{Enemy State Machine check player section.}\label{fig:ESMcp}
+\end{figure}
+This OnCollisionEnter2D method handles the interaction between the enemy and the player when a physical collision occurs.When the enemy collides with another object, the method checks if the object has the "Player" tag using CompareTag("Player"). If it does, the method attempts to retrieve the PlayerManager component from the player GameObject. If the component exists, it calls playerManager.Die(), triggering whatever logic is implemented in the player's death function—typically ending the level, restarting from a checkpoint, or triggering a death animation.This mechanic is useful for enemies that deal instant or contact-based damage, like spikes, patrolling robots, or charging creatures. It makes the enemy more threatening and reinforces the need for players to avoid direct contact.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=12cm]{./Attachments/ESM_collision.png}}
+\caption{Enemy State Machine collision check section.}\label{fig:ESMcolli}
+\end{figure}
+\newpage
+\section{Moving Platform script}
+The MovingPlatform script defines a simple back-and-forth movement system for a platform in Unity, typically used in 2D platformer games. The platform moves smoothly between two specified points, pointA and pointB, using Vector3.MoveTowards at a given speed (moveSpeed). When the platform reaches one point, it switches its target to the other, allowing for continuous oscillation.\par
+Additionally, the script handles player interactions: when the player collides with the platform (OnCollisionEnter2D), the player’s transform is parented to the platform, making the player move along with it seamlessly. This prevents the player from sliding off due to physics. At the same time, it disables Rigidbody interpolation for smoother motion syncing. Once the player leaves the platform (OnCollisionExit2D), the parent is reset to null, and interpolation is re-enabled to maintain physics consistency during free movement.\par
+ \begin{figure}[!h]
+ \centering
+ \fbox{\includegraphics[width=12cm]{./Attachments/movingplatform.png}}
+\caption{Moving Platform script.}\label{fig:movplat}
+\end{figure}
+\newpage
 
-This appendix describes two static allocation methods for fGn (or fBm)
-traffic. Here, $\lambda$ and $C$ are respectively the traffic arrival
-rate and the service rate per dimensionless time step. Their unit are
-converted to a physical time unit by multiplying the step size
-$\Delta$. For a fBm self-similar traffic source,
-Norros~\cite{norros95} provides its EB as
-\begin{equation}\label{eq:norros}
-  C = \lambda + (\kappa(H)\sqrt{-2\ln\epsilon})^{1/H}a^{1/(2H)}x^{-(1-H)/H}\lambda^{1/(2H)}
-\end{equation}
-where $\kappa(H) = H^H(1-H)^{(1-H)}$. Simplicity in the calculation is
-the attractive feature of (\ref{eq:norros}).
-
-The MVA technique developed in~\cite{kim01} so far provides the most
-accurate estimation of the loss probability compared to previous
-bandwidth allocation techniques according to simulation results.
-Consider a discrete-time queueing system with constant service rate
-$C$ and input process $\lambda_n$ with $\mathbb{E}\{\lambda_n\} =
-\lambda$ and $\mathrm{Var}\{\lambda_n\} = \sigma^2$.  Define $X_n \equiv
-\sum_{k=1}^n \lambda_k - Cn$.  The loss probability due to the MVA
-approach is given by
-\begin{equation}\label{eq:loss_mva}
-  \varepsilon \approx \alpha e^{-m_x/2}
-\end{equation}
-where
-\begin{equation}\label{eq:mx}
-m_x = \min_{n \geq 0} \frac{((C-\lambda)n + B)^2}{\mathrm{Var}\{X_n\}} =
-\frac{((C-\lambda)n^\ast + B)^2}{\mathrm{Var}\{X_{n^{\ast}}\}}
-\end{equation} 
-and 
-\begin{equation}\label{eq:alpha}
-  \alpha =
-  \frac{1}{\lambda\sqrt{2\pi\sigma^2}}\exp\left(\frac{(C-\lambda)^2}{2\sigma^2}\right)
-  \int_C^\infty (r-C)\exp\left(\frac{(r-\lambda)^2}{2\sigma^2}\right)\, dr
-\end{equation}
-For a given $\varepsilon$, we numerically solve for $C$ that satisfies
-(\ref{eq:loss_mva}). Any search algorithm can be used to do the task.
-Here, the bisection method is used.  
-
-Next, we show how $\mathrm{Var}\{X_n\}$ can be determined.  Let
-$C_{\lambda}(l)$ be the autocovariance function of $\lambda_n$.  The
-MVA technique basically approximates the input process $\lambda_n$
-with a Gaussian process, which allows $\mathrm{Var}\{X_n\}$ to be
-represented by the autocovariance function.  In particular, the
-variance of $X_n$ can be expressed in terms of $C_{\lambda}(l)$ as
-\begin{equation}
-  \mathrm{Var}\{X_n\} = nC_{\lambda}(0) + 2\sum_{l=1}^{n-1} (n-l)C_{\lambda}(l)
-\end{equation} 
-Therefore, $C_{\lambda}(l)$ must be known in the MVA technique, either
-by assuming specific traffic models or by off-line analysis in case of
-traces.  In most practical situations, $C_{\lambda}(l)$ will not be
-known in advance, and an on-line measurement algorithm developed
-in~\cite{eun01} is required to jointly determine both $n^\ast$ and
-$m_x$. For fGn traffic, $\mathrm{Var}\{X_n\}$ is equal to $\sigma^2
-n^{2H}$, where $\sigma^2 = \mathrm{Var}\{\lambda_n\}$, and we can find
-the $n^\ast$ that minimizes (\ref{eq:mx}) directly. Although $\lambda$
-can be easily measured, it is not the case for $\sigma^2$ and $H$.
-Consequently, the MVA technique suffers from the need of prior
-knowledge traffic parameters.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% The 2nd appendix %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\appendix{Second appendix title}
-\noindent{\large\bf Put appropriate topic here} \\
 
 
- \begin{figure}[!h]
-\caption{This is the figure x11 \href{https://www.google.com} {https://www.google.com}}\label{fig:x1}
-\end{figure}
 
-Next, we show how $\mathrm{Var}\{X_n\}$ can be determined.  Let
-$C_{\lambda}(l)$ be the autocovariance function of $\lambda_n$.  The
-MVA technique basically approximates the input process $\lambda_n$
-with a Gaussian process, which allows $\mathrm{Var}\{X_n\}$ to be
-represented by the autocovariance function.  In particular, the
-variance of $X_n$ can be expressed in terms of $C_{\lambda}(l)$ as
-\begin{equation}
-  \mathrm{Var}\{X_n\} = nC_{\lambda}(0) + 2\sum_{l=1}^{n-1} (n-l)C_{\lambda}(l)
-\end{equation} 
 
-\noindent{\large\bf Add more topic as you need} \\
 
-Therefore, $C_{\lambda}(l)$ must be known in the MVA technique, either
-by assuming specific traffic models or by off-line analysis in case of
-traces.  In most practical situations, $C_{\lambda}(l)$ will not be
-known in advance, and an on-line measurement algorithm developed
-in~\cite{eun01} is required to jointly determine both $n^\ast$ and
-$m_x$. For fGn traffic, $\mathrm{Var}\{X_n\}$ is equal to $\sigma^2
-n^{2H}$, where $\sigma^2 = \mathrm{Var}\{\lambda_n\}$, and we can find
-the $n^\ast$ that minimizes (\ref{eq:mx}) directly. Although $\lambda$
-can be easily measured, it is not the case for $\sigma^2$ and $H$.
-Consequently, the MVA technique suffers from the need of prior
-knowledge traffic parameters. 
+
+
 
 
 

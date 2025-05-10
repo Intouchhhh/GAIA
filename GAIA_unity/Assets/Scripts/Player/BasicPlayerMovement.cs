@@ -293,13 +293,7 @@ public class BasicPlayerMovement : MonoBehaviour
 	{
 		lastGroundedTime = 0;
 		lastJumpPressedTime = 0;
-
-		//rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-
-		//rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-
 		rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-
 		isJumping = true;
 	}
 
@@ -320,17 +314,6 @@ public class BasicPlayerMovement : MonoBehaviour
 		}
 
 		rb.AddForce(force, ForceMode2D.Impulse);
-
-		//Vector2 newVelocity = new Vector2(wallJumpForce.x * dir, wallJumpForce.y);
-
-		//if (rb.linearVelocity.y < 0)
-		//{
-		//	newVelocity.y = Mathf.Max(newVelocity.y, rb.linearVelocity.y + wallJumpForce.y);
-		//}
-
-		//Debug.LogWarning("WallJump Velocity: " + rb.linearVelocity);
-		//rb.linearVelocity = newVelocity;
-
 		isWallJumping = true;
 	}
 

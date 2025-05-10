@@ -32,8 +32,4 @@ public class EnemyActionModule : MonoBehaviour
 		if (enemyCombat != null)
 			enemyCombat.Die();
 	}
-
-	// For future extension:
-	// public void MoveTo(Vector2 position)
-	// public void Attack()
 }
