@@ -24,6 +24,7 @@ public class AgentController : Agent
 	private HashSet<GameObject> visitedCheckpoints;
 	private List<GameObject> allCoins;
 	private List<GameObject> allEnemies;
+	private GameObject nearestCoin;
 
 	private int jumpCount = 0;
 	private int dashCount = 0;
@@ -53,7 +54,7 @@ public class AgentController : Agent
 	#region Initialization
 	public override void Initialize()
 	{
-		Time.timeScale = 1;
+		Time.timeScale = 2;
 
 		if (playerActionModules == null)
 			playerActionModules = GetComponent<PlayerActionModules>();
@@ -76,7 +77,9 @@ public class AgentController : Agent
 			Debug.LogError("Max Step Reached !!!");
 			CompleteEpisode();
 		}
-	}
+
+        nearestCoin = GetNearestCoin();
+    }
 
 	#region Episode Handling
 	public override void OnEpisodeBegin()
@@ -165,6 +168,8 @@ public class AgentController : Agent
         sensor.AddObservation(totalCoins);
         sensor.AddObservation(collectedCheckpoints);
         sensor.AddObservation(collectedCoins);
+		sensor.AddObservation(nearestCoin.transform.position.x);
+        sensor.AddObservation(nearestCoin.transform.position.y);
 
         // Position
         sensor.AddObservation(transform.position.x);
@@ -270,7 +275,6 @@ public class AgentController : Agent
 			visitedAreas.Add(gridPos);
 		}
 
-		var nearestCoin = GetNearestCoin();
 		if (nearestCoin != null)
 		{
 			float distance = Vector2.Distance(transform.position, nearestCoin.transform.position);
