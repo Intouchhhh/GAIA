@@ -1846,7 +1846,7 @@ This real-time overlay aids in identifying abnormal behaviors, reward stagnation
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=9cm]{./Attachments/RewardTrackerUIExample.png}}
-\caption{Live training statistics overlay using RewardTrackerUI.cs}
+\caption{Real-time agent statistics during training, visualized through \texttt{RewardTrackerUI} using overlay}
 \label{fig:RewardTrackerUIExample}
 \end{figure}
 
@@ -1904,110 +1904,266 @@ These logs are used to generate training graphs, reward curves, and behavior ana
 
 %Reward values are also exposed via the RewardConfigSO ScriptableObject, allowing live tweaking between training sessions without changing core code.
 
+\section{Packaging, Deployment, and Reusability}
+The successful deployment of a trained AI agent within a game development environment requires a structured approach to integration, optimization, and packaging. This process ensures that the AI agent operates efficiently within the Unity-based platformer while remaining modular and reusable for future applications. A key objective of this project is to produce an AI framework that can be seamlessly transferred to other 2D platformer projects with minimal overhead and high configurability.\par
 
-\section {Packaging and Delivering}
-The successful deployment of the trained AI model within a game development environment necessitates a structured approach to integration, optimization, and packaging. This process ensures that the AI agent functions efficiently within the Unity-based platformer while also being modular and reusable for future projects. Additionally, the AI system is designed to be packaged as a standalone asset that developers can easily integrate into similar games without requiring extensive modifications.\par
-This section outlines the methodology for embedding the AI model into the game engine, optimizing its execution, setting up a dual-rendering system for enhanced perception, and packaging it as a shareable Unity asset.\par
+Following successful training, the AI model is transitioned from a learning system to a deployable module capable of real-time inference. The following subsections detail the methodology for embedding the AI model into the Unity engine, implementing a dual-rendering system for visual perception, designing a modular AI architecture for extensibility, and packaging the entire system as a distributable Unity asset.\par
 \subsection{Integration of the Trained AI Model}
-After the reinforcement learning model has been trained and validated, it is integrated into the Unity project for real-time inference. The AI must be able to process environmental inputs and execute actions effectively while maintaining computational efficiency.
+Once training has converged to a satisfactory policy, the model is integrated into the Unity environment for inference-based execution. This integration must ensure that the AI agent can process observations, make decisions, and interact with the environment in real time without performance degradation.
 \subsubsection{Loading and Utilizing the Trained Model}
-The trained model is exported as a \texttt{.onnx} file, a format compatible with Unity’s ML-Agents inference system.\par The steps for incorporating the model into the game are as follows:\par
+The trained policy is exported as an ONNX-format model file (\texttt{.onnx}), which is compatible with Unity’s ML-Agents inference engine. Integration involves the following steps:\par
 \begin{itemize}
-\item  \textbf{Model Importion}
+\item \textbf{Model Importing:}
 \begin{itemize}
-\item  The \texttt{.onnx} model file is placed into the Unity project’s Assets directory.
-\item  Unity’s Behavior Parameters component is configured to reference the model.
+\item The \texttt{.onnx} file is placed within the Unity project’s \texttt{Assets} directory.
+\item The \texttt{Behavior Parameters} component is configured to reference the imported model.
 \end{itemize}
-\item  \textbf{Agent Configuration}
+\item \textbf{Agent Configuration:}
 \begin{itemize}
-\item  The AI agent is modified to switch from training mode to inference mode.
-\item  The model receives observations from the environment and produces action outputs in real time.
+\item The AI agent is transitioned from training mode to inference mode.
+\item Real-time observations from the game environment are routed into the model, which outputs the corresponding action vector.
 \end{itemize}
-\item  \textbf{Testing and Validation}
+\item \textbf{Testing and Validation:}
 \begin{itemize}
-\item  The AI’s performance is validated within a controlled game scenario.
-\item  Debugging tools are used to monitor decision-making processes and adjust parameters as needed.
+\item The agent is tested within a sandbox scene to ensure inference stability.
+\item Debugging tools such as \texttt{RewardTrackerUI.cs} and custom inspectors are used to monitor agent behavior.
 \end{itemize}
 \end{itemize}
 \subsection{Dual-Rendering System for Agent Perception}
-To enhance the AI’s perception of the game environment, a dual-rendering system is implemented, allowing the agent to interpret its surroundings using a dedicated perception layer distinct from the player's visual representation. This approach improves object recognition and state representation, optimizing learning efficiency and decision-making accuracy.
+To optimize visual-based learning and inference, a dual-camera rendering architecture is employed. This system separates the player-visible graphics from the AI’s perceptual input, enabling the agent to receive a structured and minimalistic version of the game environment.
 \subsubsection{Design and Implementation}
 \begin{itemize}
-\item  \textbf{Primary Camera (Player View)}
+\item \textbf{Primary Camera (Player View):}
 \begin{itemize}
-\item  This camera renders the standard game environment for the player.
-\item  Traditional visual element layers, including textures, lighting, and UI elements, are rendered with this camera.
+\item Renders the game world with standard textures, effects, and UI layers.
+\item Intended for player visualization and human gameplay.
 \end{itemize}
-\item  \textbf{Secondary Camera (Agent Perception View)}
+\item \textbf{Secondary Camera (Agent Perception View):}
 \begin{itemize}
-\item  A separate, hidden camera renders a simplified version of the environment specifically for the AI.
-\item  Objects are color-coded as provided in the table \ref{tbl:Sprite Color Code Table} instead of textured, reducing unnecessary complexity.
-\item  Dynamic elements such as enemies and hazards are highlighted distinctly.
+    \item Hidden from the player and used exclusively by the AI agent.
+    \item Renders simplified ML sprites that represent game objects using flat, color-coded geometries.
+    \item Applies no lighting, shaders, or post-processing to maintain interpretability.
 \end{itemize}
-\item  \textbf{Integration with ML-Agents}
+
+\item \textbf{ML-Agents Integration:}
 \begin{itemize}
-\item  The AI model receives input from the perception camera rather than the full game scene.
-\item  Observation preprocessing converts the camera feed into a structured tensor representation.
+    \item ML-Agents receives visual observations from the agent camera.
+    \item These observations are transformed into tensors and used by the neural network for decision-making.
 \end{itemize}
 \end{itemize}
 \subsubsection{Advantages of the Dual-Rendering System}
 \begin{itemize}
-\item  \textbf{Reduces Unnecessary Complexity:} The AI perceives only relevant elements, improving training efficiency.
-\item  \textbf{Standardizes Input Data:} Ensures consistency across different game levels or environments.
-\item  \textbf{Optimizes Learning Speed:} Simplifies object recognition, allowing the model to generalize more effectively.
+\item \textbf{Reduced Visual Complexity:} AI focuses only on game-relevant entities such as platforms, hazards, and goals.
+\item \textbf{Standardized Input:} Visual consistency across levels and environments enhances generalization.
+\item \textbf{Accelerated Learning:} Simplified visuals improve convergence rate during training.
 \end{itemize}
 \subsection{Modular AI System for Reusability}
-To ensure adaptability across multiple projects, the AI system follows a modular design, enabling easy integration with different platformer environments. The key components include:
+To maximize flexibility and reuse, the AI system is architected in modular components, each responsible for a distinct layer of functionality. This structure allows developers to easily adapt, extend, or replace behaviors without altering the core inference logic.
 \begin{itemize}
-\item  \textbf{ActionModule:} Centralizes AI interactions with the game, allowing for customization of available actions (e.g., jumping, attacking).
-\item  \textbf{Customizable Observations:} The AI’s input space can be modified based on environmental conditions.
-\item  \textbf{Configurable Reward System:} Developers can fine-tune rewards to optimize learning outcomes.
-\item  \textbf{Flexible Behavior Parameters:} AI response time, exploration rate, and decision frequency can be adjusted dynamically.
+\item \textbf{PlayerActionModules:} Serves as the centralized interface between the agent and gameplay scripts, such as \texttt{BasicPlayerMovement.cs} and \texttt{PlayerAttack.cs}.
+\item \textbf{Observation Encapsulation:} All observable states are gathered in a controlled and extensible method via \texttt{CollectObservations()}.
+\item \textbf{RewardConfigSO:} Stores all reward parameters in a ScriptableObject, allowing dynamic tuning without modifying logic code.
+\item \textbf{Behavior Configuration:} The \texttt{BehaviorParameters} component permits external adjustment of inference frequency, action type, and network linkage.
 \end{itemize}
+
+This modularity supports expansion to new environments, additional abilities (e.g., ranged attacks, double jump), and future agent roles such as adversaries or allies.
+
 \subsection{Packaging the AI as a Reusable Unity Asset}
-To facilitate widespread adoption, the AI system is packaged as a Unity asset bundle, allowing developers to easily import and configure the AI within their own projects. The packaging process follows structured guidelines to ensure compatibility and ease of use.
+
+To distribute the AI system for use in other Unity-based projects, the entire framework is bundled into a Unity asset package with comprehensive documentation and versioning.
+
 \subsubsection{Asset Bundling and Exportation}
+
 \begin{itemize}
-\item  The AI scripts, model files, and configuration settings are structured into a self-contained Unity package.
-\item  Dependencies such as ML-Agents are documented to streamline integration.
-\item  A standardized folder structure is maintained to enhance clarity.
+\item All core AI scripts (e.g., \texttt{AgentController.cs}, \texttt{PlayerActionModules.cs}), model files, configuration assets, and ML sprite prefabs are grouped into a structured folder.
+\item The package excludes scene-specific elements, allowing developers to integrate the AI system into custom levels.
+\item ML-Agents package dependencies and Unity version requirements are clearly documented.
 \end{itemize}
+
 \subsubsection{Documentation and User Guide}
+
 \begin{itemize}
-\item  A \texttt{README.md} file provides quick-start instructions.
-\item  A detailed PDF manual explains AI setup, customization, and troubleshooting.
-\item  Code examples illustrate how to modify AI behaviors for specific game mechanics.
+\item A \texttt{README.md} file provides an overview, installation steps, and quick-start guidance.
+\item A PDF manual offers detailed explanations of the AI architecture, action mapping, reward customization, and known integration tips.
+\item Code examples demonstrate common use cases, such as adding new movement types or adjusting camera layers.
 \end{itemize}
+
 \subsubsection{Version Control and Distribution}
+
 \begin{itemize}
-\item  The AI package is versioned, with changelogs detailing improvements.
-\item  Distribution options include GitHub, Unity Asset Store, and private repositories.
-\item  Developers are encouraged to contribute enhancements to ensure long-term maintainability.
+\item The AI system is maintained under semantic versioning to support iterative improvements.
+\item Changelogs detail updates, fixes, and compatibility notes.
+\item Distribution channels include GitHub repositories, private asset sharing, or submission to the Unity Asset Store (future scope).
+\item Community contributions and extensions are encouraged to promote long-term reusability and scalability.
 \end{itemize}
+
+\subsection{Summary}
+This packaging and deployment framework transforms the trained agent from a research asset into a production-ready AI module. Its modular, extensible, and fully documented structure supports both technical adoption and creative expansion, making it suitable for integration into a wide array of 2D platformer projects.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% Experiments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Results and Current AI Capabilities}
-This chapter presents the current state of the AI system in the wake of training and implementation. In-depth consideration is given to the performance of the AI within the established environment in terms of ability to navigate, interact with the game elements, and make decisions through the reinforcement learning framework. The results portray the present-day functionality of the system without speculation regarding future developments or improvements.
-\section{Overview of Accomplishments}
+\chapter{Results and Discussion}
+This chapter presents an in-depth analysis of the AI agent’s performance following reinforcement learning training within the custom 2D platformer environment. The primary aim is to assess the extent to which the agent can autonomously navigate, interact with the environment, and make decisions aligned with its training objectives. Evaluation includes both quantitative metrics and qualitative observations derived from training logs, real-time visual monitoring, and gameplay demonstrations.
+
+The results are examined in the context of the project’s overarching goal: to develop a reusable, modular AI capable of learning and performing fundamental platforming behaviors. The chapter is structured into five main parts: qualitative behavioral observations, evaluation metrics, experimental setup, result visualizations, and interpretive analysis.
+
+\section{Qualitative Behavioral Observations}
 \subsection{Movement and Navigation}
-After carefully training for an extensive period using the PPO reinforcement learning algorithm, the AI agent has become capable of fully controlling itself in the platformer's environment. With a reliably functioning walking, jumping, and descent mechanism, the agent can drop straight from one-way platforms. As a result of iterative reinforcement learning, the model knows the optimal paths of movement by which he could traverse efficiently without much delay, avoid an obstruction, and come to certain destinations within the level. The AIs keep both exploration and efficient across-the-board movement and minimizing downside-avoiding turns while remaining adaptive to different terrains.
-\begin{figure}[!h]
+
+After extensive training using the Proximal Policy Optimization (PPO) algorithm, the AI agent demonstrates reliable and consistent control over core platforming mechanics. The agent successfully performs locomotion actions such as walking, jumping, and descending through one-way platforms. Through repeated reinforcement learning episodes, it has developed an effective movement strategy, capable of navigating platforms, gaps, and varying terrain structures without human intervention.
+
+The trained model exhibits path optimization by preferring direct traversal routes, minimizing redundant movement, and prioritizing high-reward areas. Additionally, the AI adjusts its horizontal momentum and timing of jumps to clear gaps or avoid low-clearance hazards. These behaviors are not explicitly hardcoded but are instead learned as a function of the reward feedback loop.
+
+\begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=10cm]{./Attachments/AiJump.png}}
-\caption{AI bot hopping from ground to another.}\label{fig:AIJump}
+\caption{The AI agent traversing terrain by hopping from one platform to another.}
+\label{fig:AIJump}
 \end{figure}
-\newpage
+
 \subsection{Interaction with Collectibles and Obstacles}
-The AI agent acquired knowledge in the interaction of collecting objects and environmental obstacles. It has also learned to identify and prioritize collecting objects, such as coins, adjust its movement to them, and optimize the reward received from them. The improvement of avoidance by hazardous events has demonstrated the ability to recognize penalty-inducing-threshold objects and determine trajectory modification. The ability to run these behaviors accurately signifies that the AI can consistently complete test runs in the environment without failing in excess.
-\begin{figure}[!h]
+
+The AI also demonstrates a learned capacity to identify and interact with goal-related elements such as collectibles and to avoid hazards. During training, the reward function explicitly shaped the agent's prioritization of coin collection and checkpoint completion. The resulting behavior shows that the AI can adjust its path dynamically to intercept these objects when detected within its observation range.
+
+Furthermore, the agent effectively recognizes and avoids penalty-triggering environmental elements such as spikes or pits. By learning to minimize negative rewards and episode terminations, the AI developed an internal strategy to adapt its trajectory away from hazards while still pursuing progress.
+
+\begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=10cm]{./Attachments/AiInteract.png}}
-\caption{AI bot interacting collectible and obstacles.}\label{fig:AIInt}
+\caption{The AI agent interacting with coins and avoiding environmental hazards.}
+\label{fig:AIInt}
 \end{figure}
+
 \subsection{Combat and Adaptive Behavior}
-As a consequence, the developmental capacities of AI now depend on movement and interaction with other worlds; combat mechanics have not been integrated into the reinforcement learning architecture as yet, and AI does not know how to perform attack sequences or enemy encounters. As a result, the present section does not contain any results for adversarial behavior or combat-related decision-making. The existing implementation continues to be focused on traversal and interactions with the environment as currently foundation lines for future use extensions in terms of functionalities.
-\section{Training Performance Metrics}
+
+In addition to movement and object interaction, the AI agent has been trained to engage in close-range combat using a melee attack system. The reinforcement learning model has successfully learned to detect enemy presence, approach them strategically, and execute melee attacks at appropriate distances. This behavior is triggered through the discrete action space and routed via the PlayerActionModules system, which interfaces with the \texttt{PlayerAttack} script to initiate attacks.
+
+Through reinforcement signals based on enemy damage and kill rewards as defined in the \texttt{RewardConfigSO} the AI has developed basic combat strategies such as:
+
+\begin{itemize}
+\item Approaching hostile agents while maintaining movement awareness.
+\item Executing attacks only when the enemy is within effective range.
+\item Retreating or repositioning after engagement to minimize risk.
+\end{itemize}
+
+The reward structure penalizes being hit by enemies and incentivizes successful hits or eliminations, which has shaped a combat pattern that favors proactive and efficient engagements. While still basic in complexity, these combat behaviors demonstrate the extensibility of the AI’s decision-making model and serve as a strong foundation for future adversarial learning setups involving co-trained enemy agents.
+
+%\begin{figure}[H]
+%\centering
+%\fbox{\includegraphics[width=10cm]{./Attachments/AiCombat.png}}
+%\caption{AI agent engaging in a melee attack against an enemy.}
+%\label{fig:AICombat}
+%\end{figure}
+
+This combat capability validates the system's modular design, where adding new skills (e.g., special attacks) to the \texttt{PlayerActionModules} and extending the reward function can guide the agent to learn new behaviors without architectural overhaul. This demonstrates the project's goal of creating a reusable and extensible AI system for 2D platformer environments.
+
+\section{Evaluation Metrics}
+To evaluate the performance of the reinforcement learning agent, a set of quantitative metrics is used throughout the training and testing phases. These metrics provide insight into the agent’s behavior, learning progression, and goal-oriented performance. All metrics are tracked automatically through custom Unity scripts (\texttt{RewardLogger.cs} and \texttt{RewardTrackerUI.cs}) and ML-Agents logging systems.
+The following metrics are used to evaluate the trained AI agent:
+
+\subsection{Episode Length (Steps)}
+Episode length refers to the number of steps the agent takes before the episode terminates, either due to success, failure, or reaching the maximum step limit. It reflects the agent's efficiency and survivability. Shorter episodes may indicate rapid success or premature failure, whereas longer episodes can reflect sustained navigation or indecisiveness.
+
+\subsection{Cumulative Reward}
+The cumulative reward collected during each episode is a key indicator of the agent’s overall performance. It encapsulates short-term actions (e.g., moving, jumping) and long-term goals (e.g., collecting coins, reaching checkpoints) into a single value. This value is continuously monitored through the ML-Agents environment and logged via RewardLogger.
+
+\subsection{Goal Completion Ratio}
+Goal-related metrics include:
+
+\begin{itemize}
+\item \textbf{Coin Collection Ratio:} The ratio of collected coins to the total coins available in the level.
+\item \textbf{Checkpoint Completion Ratio:} The ratio of visited checkpoints to the total checkpoints present.
+\end{itemize}
+
+These ratios indicate how thoroughly the agent explores and interacts with the level’s objective elements.
+
+\subsection{Action Efficiency}
+Action usage efficiency is tracked to monitor unnecessary or excessive behavior:
+
+\begin{itemize}
+\item \textbf{Jump Count} and \textbf{Dash Count} are recorded for each episode.
+\item Penalties are applied post-episode for excessive usage to encourage minimal and strategic use of each skill.
+\end{itemize}
+
+These metrics help determine whether the agent learns to optimize movement for efficiency and reward maximization.
+
+\subsection{Combat Performance}
+
+For episodes involving enemy agents, the following combat metrics are tracked:
+
+\begin{itemize}
+\item \textbf{Enemy Damage Events:} Number of successful melee hits.
+\item \textbf{Enemy Eliminations:} Count of enemies defeated per episode.
+\item \textbf{Damage Taken:} Times the agent is hit by an enemy or hazard.
+\end{itemize}
+
+These values offer insight into how well the agent engages in close-quarters combat and whether it prioritizes safe engagement strategies.
+
+\subsection{Mortality Rate}
+Deaths per episode are recorded to identify unsafe behaviors or failure conditions. A high mortality rate may indicate poor obstacle avoidance, insufficient exploration, or ineffective combat strategies. This is tracked cumulatively in \texttt{DeathCount}.
+
+\subsection{Learning Trends (TensorBoard Metrics)}
+
+During training, Unity ML-Agents’ built-in logging with TensorBoard provides the following metrics over time:
+
+\begin{itemize}
+\item \textbf{Average Episode Reward}
+\item \textbf{Episode Length (Smoothed)}
+\item \textbf{Policy Entropy and Loss}
+\item \textbf{Reward Signal Strength}
+\end{itemize}
+
+These graphs are used to validate convergence, detect reward hacking, and assess the consistency of training progress.
+
+\section{Experiments}
+
+To validate the effectiveness of the proposed reinforcement learning framework, a series of iterative experiments were conducted using Unity ML-Agents. The experiments focused exclusively on training the player agent within a handcrafted 2D platformer environment, while enemy agents operated using predefined state machine behaviors. This section outlines the training setup, experimental procedure, and environment dynamics used during training and evaluation.
+
+\subsection{Training Sessions and Iterative Runs}
+
+Over the course of development, approximately 30 independent training runs were conducted. Each run was configured with the PPO algorithm and executed between 1 million to 2 million training steps. After each run, results were analyzed using cumulative reward trends, performance metrics, and in-game behavior. This iterative process enabled fine-tuning of:
+
+\begin{itemize}
+\item Reward values and shaping penalties (via \texttt{RewardConfigSO})
+\item PPO hyperparameters (e.g., learning rate, batch size)
+\item Observation normalization and action mappings
+\item Spawn logic and episode termination conditions
+\end{itemize}
+
+These adjustments were made to improve sample efficiency, stabilize learning, and eliminate unintended exploitative behaviors (e.g., repeated jumping or idling for reward).
+
+\subsection{Environment Configuration}
+
+All experiments were conducted within a single handcrafted 2D platformer level that includes:
+
+\begin{itemize}
+\item Static and moving platforms
+\item Collectible items (coins, checkpoints)
+\item Hazardous elements (spikes, pits)
+\item Melee enemies controlled by state machines
+\end{itemize}
+
+To prevent memorization of fixed obstacle patterns, a dynamic episode reset system was used. After each death or episode termination, the player’s spawn point was randomized from a predefined list. Simultaneously, all environment elements—coins, checkpoints, enemies were reset to their initial state. This strategy ensured that the agent learned generalizable skills rather than memorizing deterministic paths.
+
+\subsection{Evaluation Protocol}
+
+Agent performance was periodically evaluated during and after training in inference mode. In this phase:
+
+\begin{itemize}
+\item The environment was reset using the same randomization logic.
+\item No exploration noise or entropy was applied; the trained policy operated deterministically.
+\item Metrics such as episode reward, steps taken, coin collection rate, and death count were tracked using \texttt{RewardLogger.cs} and TensorBoard.
+\end{itemize}
+
+By comparing evaluation performance across runs, the experiments revealed the impact of reward modifications, observation tweaks, and PPO settings on learned behavior quality.
+
+\subsection{Focus on Player Agent}
+
+Due to time constraints, the current experiments focused exclusively on training the player agent. Enemy agents operated with scripted state machines and were used to test obstacle avoidance, navigation under pressure, and combat timing. Future iterations aim to train enemy agents using a similar PPO-based setup, treating the trained player agent as a fixed adversary.
+
+
+%%%%%%%%%%%%%%%%%%%%
 \subsection{The Reward Functions Performing}
 The Reinforcement learning algorithms have exhibited good and stable trends of reward acquisition from one training cycle to the next. History shows improvements in increments of reward as occurrences of sub-optimal or penalty behavior decline. Thus, the agent has managed to utilize positive reinforcement, indicating the successful design of the reward function to facilitate movement and interaction optimally.
 \subsection{Convergence and Stability}
