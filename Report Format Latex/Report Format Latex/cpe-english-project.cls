@@ -564,7 +564,7 @@
               & \disstitletwo \\
 \fi
 Credits & \disscredit \\
- Member(s) & \dissauthor \\
+Author(s) & \dissauthor \\
 \ifx \titleempty\dissauthortwo \else
               & \dissauthortwo \\
 \fi
