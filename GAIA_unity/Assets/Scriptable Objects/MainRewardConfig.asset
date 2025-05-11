@@ -15,8 +15,8 @@ MonoBehaviour:
   idlePenalty: -0.1
   movingReward: 0.1
   explorationReward: 0.5
-  jumpPenalty: -0.15
-  dashPenalty: -0.25
+  jumpPenalty: -0.3
+  dashPenalty: -0.6
   coinReward: 5
   checkpointReward: 15
   hazardPenalty: -3

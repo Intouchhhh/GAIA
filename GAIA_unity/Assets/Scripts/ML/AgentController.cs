@@ -54,7 +54,7 @@ public class AgentController : Agent
 	#region Initialization
 	public override void Initialize()
 	{
-		Time.timeScale = 2;
+		Time.timeScale = 1;
 
 		if (playerActionModules == null)
 			playerActionModules = GetComponent<PlayerActionModules>();
