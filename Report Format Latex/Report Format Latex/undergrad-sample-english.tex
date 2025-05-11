@@ -416,11 +416,11 @@ With the rise of digital storefronts and indie game platforms, the market is flo
 Many indie developers work on tight deadlines, often needing to finish a game within a limited period to avoid budget overruns or loss of momentum.
 \end{itemize}
 \subsubsection{The Increasing Demand for Adaptive and Dynamic Gameplay}
-Players today expect more than static, predictable game experiences. They want games to react to their choices in real-time, creating a more dynamic and immersive experience. This demand has led to the integration of more advanced AI systems that can adapt and respond to player behavior in meaningful ways.\par
-Games like \emph{The Witcher 3} and \emph{Horizon Zero Dawn} offer NPCs that respond realistically to the player’s actions, creating a sense of a living world. This trend toward dynamic and reactive gameplay is challenging for developers, especially smaller teams with limited resources, as it often requires implementing sophisticated AI and adaptive systems that can learn and evolve.
+Players today expect more than static, predictable game experiences. They want games to react to their choices in real-time, creating a more dynamic and immersive experience\cite{apnews_ai_npc}. This demand has led to the integration of more advanced AI systems that can adapt and respond to player behavior in meaningful ways.\par
+Games like \emph{The Witcher 3}\cite{medium_witcher3_ai} and \emph{Horizon Zero Dawn}\cite{aiandgames_horizon} offer NPCs that respond realistically to the player’s actions, creating a sense of a living world. This trend toward dynamic and reactive gameplay is challenging for developers, especially smaller teams with limited resources, as it often requires implementing sophisticated AI and adaptive systems that can learn and evolve.
 
 \subsection{Artificial Intelligence}
-Artificial Intelligence (AI) in gaming refers to the simulation of human-like intelligence and decision-making processes in game entities. It plays a vital role in enhancing the interactivity and immersion of games by enabling non-player characters (NPCs) to exhibit responsive and believable behaviors. AI in games can range from simple rule-based systems to sophisticated machine learning models that adapt and evolve over time.
+Artificial Intelligence (AI) \cite{fpgainsights_adaptive_ai}in gaming refers to the simulation of human-like intelligence and decision-making processes in game entities. It plays a vital role in enhancing the interactivity and immersion of games by enabling non-player characters (NPCs) to exhibit responsive and believable behaviors. AI in games can range from simple rule-based systems to sophisticated machine learning models that adapt and evolve over time.
 \subsubsection{Types of AI in Game Development}
 \begin{itemize}
 \item  \textbf{Finite State Machines (FSMs):}
@@ -488,7 +488,7 @@ Unsupervised learning models analyze unlabeled data to discover hidden patterns 
 \end{itemize}
 
 \subsubsection{Reinforcement Learning}
-Reinforcement learning allows an agent to learn by interacting with an environment to achieve a specific goal. Mimicking trial-and-error learning, RL optimizes actions using rewards for goal-oriented behaviors and penalties for undesirable actions. This iterative process helps the agent refine its strategy to maximize cumulative rewards.
+Reinforcement learning\cite{mathworks_rl} allows an agent to learn by interacting with an environment to achieve a specific goal. Mimicking trial-and-error learning, RL optimizes actions using rewards for goal-oriented behaviors and penalties for undesirable actions. This iterative process helps the agent refine its strategy to maximize cumulative rewards.
 
 Key Components of RL:
 \begin{itemize}
@@ -508,7 +508,7 @@ Source:
 In game development, RL is particularly useful for training adaptive AI that can learn and evolve based on player interactions. This enables the creation of NPCs with more dynamic and challenging behaviors, as well as automated game testing agents that evaluate game mechanics and balance.
 \subsection{Reinforcement Learning}
 Reinforcement learning (RL) focuses on training agents to make sequences of decisions by interacting with an environment. The agent learns to optimize a long-term reward by observing states, taking actions, and receiving feedback in the form of rewards or penalties. This section explores key RL algorithms relevant to game development and their applications.
-\subsubsection{Q-Learning}
+\subsubsection{Q-Learning}\cite{datacamp_q_learning}
 Q-Learning is one of the simplest RL algorithms that builds a Q-value table to represent the expected future rewards for every state-action pair.\par
 \textbf{Mathematical Foundation} \\
 The Bellman Equation updates the Q-value for a given state-action pair iteratively
@@ -549,7 +549,7 @@ Training AI for grid-based games like Snake or Pac-Man.\par
 \EndFor
 \end{algorithmic}
 \end{algorithm}
-\subsubsection{Deep Q-Learning (DQN)}
+\subsubsection{Deep Q-Learning (DQN)}\cite{pytorch_dqn_tutorial}
 DQN scales Q-Learning to environments with continuous or high-dimensional state spaces by approximating the Q-function using a deep neural network.\par
 \textbf{Enhancements over Q-Learning:}
 \begin{itemize}
@@ -588,7 +588,7 @@ Training agents in platformers, complex strategy games, or visual navigation tas
 \EndFor
 \end{algorithmic}
 \end{algorithm}
-\subsubsection{Policy Gradient Methods}
+\subsubsection{Policy Gradient Methods}\cite{PGA}
 Policy gradient methods optimize the policy directly by maximizing the expected reward.\par
 \textbf{Policy Representation} \\
 The policy is parameterized as $\pi_{\theta}(a|s)$, where $\theta$ are the weights of the model. \\
@@ -616,7 +616,7 @@ Training agents in games requiring smooth control, such as racing or flight simu
 \EndFor
 \end{algorithmic}
 \end{algorithm}
-\subsubsection{Proximal Policy Optimization (PPO)}
+\subsubsection{Proximal Policy Optimization (PPO)}\cite{datacamp_ppo_tutorial}
 PPO improves policy gradient methods by introducing a clipped objective to ensure stable updates.\par
 \textbf{Objective Function}
 \begin{equation}
