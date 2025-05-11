@@ -634,7 +634,7 @@ Robust AI for large-scale multi-agent systems or highly variable environments.\p
 \begin{algorithm}
 \caption{Proximal Policy Optimization}\label{alg:PPO}
 \begin{algorithmic}
-\For{\texttt{each iteration}}
+\For{\texttt{iteration=1, 2, ...}}
 \State Collect trajectories using current policy
 \State Compute advantages using value function
 \State Update policy network using clipped surrogate objective
@@ -930,9 +930,6 @@ The terrain system integrates a variety of platform types that influence agent d
 \caption{The image highlights moving platforms over obstacle.}\label{fig:MovingPlat}
 \end{figure}
 \end{itemize}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%📷\textbf{Suggested Figure:} Include a labeled screenshot or illustration showing the different platform types (solid, one-way, moving, wall). Place this immediately below this subsection for clarity.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Interactive Elements}
 To enrich the environment's interactivity and encourage exploration, a range of functional objects are distributed throughout the level:
 \begin{itemize}
@@ -951,19 +948,19 @@ To enrich the environment's interactivity and encourage exploration, a range of 
 \item  \textbf{Enemies:} Opponents with basic AI that introduce combat-related decisions and temporal awareness.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=5cm]{./Attachments/Enemy.png}}
-\caption{The image highlights enemy chasing player.}\label{fig:Enemy}
+\fbox{\includegraphics[width=5cm]{./Attachments/EnemyPic.png}}
+\caption{The image highlights enemy chasing player.}\label{fig:EnemyPic}
 \end{figure}
 \end{itemize}
 These elements are strategically placed to guide the agent’s learning, providing a structured environment that encourages skill acquisition through reinforcement learning.
-\begin{figure}[!h]
+\begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=10cm]{./Attachments/EnvironmentDesign.png}}
 \caption{Environment training ground for the AI}\label{fig:EnvironmentDesign}
 \end{figure}
 \subsection{Agent Actions}
 Table \ref{tbl:Agent Actions Table} outlines the available actions for Player and Enemy agents. These actions simulate the gameplay mechanics and ensure that the AI can engage with the environment and other agents meaningfully.
-\begin{table}[!h]
+\begin{table}[H]
 \caption{Agent Actions Table}\label{tbl:Agent Actions Table}
 \begin{tabular}{|l|l|l|} \hline
 & \textbf{Player Agent} & \textbf{Enemy Agent} \\ \hline
@@ -1247,7 +1244,7 @@ To ensure the environment’s reusability across future projects and training sc
 \end{itemize}
 Through these evaluations, the environment was confirmed to be reliable, efficient, and extensible—supporting the project’s objective of producing a robust, reusable AI training platform for 2D platformer games.
 
-\section{AI Algorithms and Models}
+\section{AI Agents Development}
 The artificial intelligence system developed for this project leverages reinforcement learning (RL) to train agents capable of navigating and interacting with a 2D platformer environment. Implemented using Unity ML-Agents, the AI model learns through trial-and-error to execute gameplay behaviors such as jumping, attacking, and collecting objectives. This section details the core aspects of the AI system, including the action space, observation model, reward system, and the algorithm used to drive learning.
 \subsection{Action Space and Decision-Making}
 The action space defines the set of discrete and continuous decisions the agent can make at any given time. These actions are interpreted and executed through the \texttt{PlayerActionModules} system, which acts as a modular interface between the AI model and the character controller components.
@@ -1301,6 +1298,7 @@ In reinforcement learning systems integrated into video games, the agent's decis
 \subsubsection{Purpose and Motivation}
 Rather than embedding low-level movement or attack logic within the agent class itself, \texttt{PlayerActionModules} exposes high-level behavior functions like \texttt{Move()}, \texttt{Jump()}, \texttt{Dash()}, \texttt{Drop()}, and \texttt{Attack()}. These functions internally route commands to specialized scripts like \texttt{BasicPlayerMovement} and \texttt{PlayerAttack}.
 This separation offers several advantages:
+
 \begin{itemize}
 \item \textbf{Modularity:} The AI logic remains independent of how each action is technically executed, enabling clean separation of concerns.
 \item \textbf{Reusability:} The Action Module system can be reused across different characters or AI types with minimal code duplication.
@@ -1499,7 +1497,7 @@ public class RewardConfigSO : ScriptableObject
 \end{lstlisting}
 \subsubsection{Player Agent Rewards and Penalties}
 The Player Agent is primarily focused on completing levels and maximizing performance. The rewards and penalties assigned to the Player Agent are designed to incentivize behaviors that contribute to level progression, combat efficiency, and overall success.\par
-\begin{table}[!h]
+\begin{table}[H]
 \caption{Player Agent Reward and Penalty Table}
 \label{tbl:PlayerAgentRewardPenaltyTable}
 \begin{tabular}{|l|l|l|}
@@ -1538,10 +1536,14 @@ Falling or Hitting Hazards & -50 \\
 Eliminated & -200 \\ \hline
 \end{tabular}
 \end{table}
-This reward system is fine-tuned iteratively to ensure that the AI develops efficient and strategic movement patterns without exploiting rewards through unintended behaviors.\par
+These reward system is fine-tuned iteratively to ensure that the AI develops efficient and strategic movement patterns without exploiting rewards through unintended behaviors.\par
 
-\section{Training Process and Optimization}
-The training process of the AI agent follows a structured pipeline designed to optimize learning efficiency and ensure convergence towards an optimal policy. This process consists of data collection, policy network updates, curriculum learning strategies, and performance evaluation metrics. By leveraging reinforcement learning (RL) principles, particularly policy optimization methods, the AI progressively refines its ability to navigate the platformer environment.
+\section{AI Algorithm Implementation}
+This project utilizes Proximal Policy Optimization (PPO) as the reinforcement learning algorithm for training both player and enemy agents. PPO is selected due to its compatibility with Unity ML-Agents and its proven performance in continuous and discrete action environments. While theoretical aspects of PPO are covered in Chapter 2, this section focuses on the practical integration and usage of the algorithm within the custom 2D platformer project.
+\subsection{Behavior Configuration and Trainer Setup}
+
+Training is orchestrated using Unity’s ML-Agents toolkit, which enables direct integration between Unity and an external Python-based PPO trainer. Each trainable agent in the environment is assigned a Behavior Name via the Behavior Parameters component. A corresponding YAML configuration file defines the training hyperparameters.
+
 \subsection{Data Collection and Experience Buffer}
 During training, the AI agent interacts with the environment and records state-action-reward sequences. These experiences are stored in a replay buffer, which helps the agent learn by analyzing past interactions.\par
 \subsubsection{Experience Replay and Data Storage}
