@@ -77,7 +77,7 @@
 % The ones that are optional can be left blank. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % First line of title
-\def\disstitleone{Generalizable Artificial Intelligence Agent in Game Development}   
+\def\disstitleone{Adaptive Artificial Intelligence Agent in Game Development}   
 % Second line of title
 \def\disstitletwo{}   
 % Your first name and lastname
@@ -192,6 +192,7 @@
 
 In recent years, the application of artificial intelligence (AI) in game development has garnered significant attention, particularly in enhancing gameplay and automating testing processes. However, most existing AI systems are tailored for specific games or tasks, limiting their adaptability and reusability across different projects. This study proposes the development of an adaptive AI agent for 2D platformer games using reinforcement learning. The agent is trained within a Unity-based environment to learn essential player behaviors, such as movement, jumping, and obstacle avoidance. Leveraging the Proximal Policy Optimization (PPO) algorithm, the system is designed with modular components to promote flexibility, scalability, and ease of integration. By separating action execution from decision-making, the architecture facilitates the extension of the agent’s capabilities to support additional actions or mechanics. The trained AI model is packaged as a reusable Unity asset, intended for deployment in similar 2D games either as an intelligent NPC or an automated game tester. This approach aims to reduce development time and technical barriers for indie developers seeking to integrate intelligent behavior into their games. The results demonstrate the potential of reinforcement learning in constructing adaptable game agents and contribute toward making AI tools more accessible in the domain of game development.
 
+
 \begin{flushleft}
 \begin{tabular*}{\textwidth}{@{}lp{0.8\textwidth}}
 \textbf{Keywords}: & Game Development / Artificial Intelligence / Enemy AI / Reusable Assets / Non-Player Characters / Adaptive AI / Reinforcement Learning / Procedural Learning / Game AI Training / AI Assets
@@ -211,6 +212,7 @@ In recent years, the application of artificial intelligence (AI) in game develop
 
 ในช่วงไม่กี่ปีที่ผ่านมา การประยุกต์ใช้ปัญญาประดิษฐ์ (AI) ในการพัฒนาเกมได้รับความสนใจอย่างมาก โดยเฉพาะในด้านการยกระดับประสบการณ์การเล่นเกมและการทดสอบระบบแบบอัตโนมัติ อย่างไรก็ตาม ระบบ AI ส่วนใหญ่ในปัจจุบันมักถูกออกแบบมาเพื่อใช้กับเกมหรือภารกิจเฉพาะเจาะจง ทำให้ขาดความยืดหยุ่นและไม่สามารถนำกลับมาใช้ซ้ำในโครงการอื่นได้อย่างมีประสิทธิภาพ งานวิจัยนี้นำเสนอการพัฒนาเอเจนต์ AI ที่สามารถปรับตัวได้สำหรับเกมแนวแพลตฟอร์มแบบ 2 มิติ โดยใช้เทคนิคการเรียนรู้เสริม (Reinforcement Learning) โดยเอเจนต์จะถูกฝึกในสภาพแวดล้อมที่พัฒนาบน Unity เพื่อเรียนรู้พฤติกรรมพื้นฐานของผู้เล่น เช่น การเคลื่อนที่ การกระโดด และการหลบหลีกสิ่งกีดขวาง ระบบนี้ใช้โครงข่ายนโยบายแบบ Proximal Policy Optimization (PPO) และออกแบบเชิงโมดูล เพื่อเพิ่มความยืดหยุ่น ขยายขอบเขตการใช้งาน และความสะดวกในการบูรณาการเข้ากับระบบอื่น โดยแยกกระบวนการตัดสินใจออกจากการดำเนินการ ทำให้สามารถต่อยอดเพื่อรองรับพฤติกรรมหรือกลไกเพิ่มเติมได้ง่ายขึ้น โมเดล AI ที่ผ่านการฝึกฝนแล้วจะถูกจัดทำเป็น Unity Asset ที่สามารถนำกลับมาใช้ซ้ำได้ในเกม 2 มิติที่มีลักษณะคล้ายกัน ไม่ว่าจะเป็นในบทบาทของตัวละคร NPC ที่มีความชาญฉลาด หรือเครื่องมือสำหรับการทดสอบเกมแบบอัตโนมัติ ซึ่งแนวทางนี้มีเป้าหมายเพื่อลดระยะเวลาในการพัฒนาและลดอุปสรรคทางเทคนิคสำหรับนักพัฒนาเกมอิสระที่ต้องการผสานพฤติกรรมอัจฉริยะเข้าสู่เกมของตน โดยผลการวิจัยแสดงให้เห็นถึงศักยภาพของการเรียนรู้เสริมในการสร้างเอเจนต์เกมที่สามารถปรับตัวได้ และสนับสนุนการเข้าถึงเครื่องมือ AI อย่างแพร่หลายในวงการพัฒนาเกม
 
+
 \begin{flushleft}
 \begin{tabular*}{\textwidth}{@{}lp{0.8\textwidth}}
  & \\
@@ -227,6 +229,15 @@ In recent years, the application of artificial intelligence (AI) in game develop
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \preface
 Acknowledge your advisors and thanks your friends here..
+\quad This research project, Adaptive Artificial Intelligence Agent in Game Development, was conducted as part of the academic curriculum of the Department of Computer Engineering, King Mongkut’s University of Technology Thonburi (KMUTT). The work presented in this report is the result of a collaborative effort between the authors, Mr. Intouch Yuso and Mr. Tanatanee Ponark, who have contributed equally to the research, design, and development of the system.\par
+
+\quad We would first like to express our deepest gratitude to our advisor, \textbf {Assoc. Prof. Natasha Dejdumrong, D. Tech. Sci.,} for her exceptional guidance, continuous support, and insightful feedback throughout the entire project. Her expertise in artificial intelligence and game development served as a critical foundation for our research. Her mentorship not only helped shape the technical scope of the project but also encouraged us to pursue innovative and practical solutions.\par
+
+\quad We would also like to extend our sincere thanks to our project committee members: \textbf {Asst. Prof. Nuttanart Muansuwan, Ph.D.,}, \textbf {Asst. Prof. Phond Phunchongharn, Ph.D.,} and \textbf {Dr. Jaturon Harnsomburana}, for their thoughtful evaluations, constructive criticisms, and valuable suggestions that greatly improved the overall quality of our work. Their diverse academic perspectives challenged us to think critically and approach the problem with greater depth and precision.\par
+
+\quad We are grateful to the Department of Computer Engineering at KMUTT for providing the necessary infrastructure, software tools, and academic support that facilitated our experimentation and development processes. The collaborative environment and access to technical resources played a vital role in enabling us to execute our ideas effectively.\par
+
+\quad Lastly, we would like to thank our families, friends, and classmates who offered their encouragement and moral support throughout the duration of the project. Their patience and motivation helped us stay focused and resilient, especially during difficult phases of development.To all who contributed to the success of this project directly or indirectly we offer our sincerest appreciation.\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%% ToC, List of figures/tables %%%%%%%%%%%%%%%%
@@ -2028,10 +2039,18 @@ The AI system is now competent in the movement, navigation, and interaction of a
 \chapter{Conclusions}
 This work presents a method encompassing the modeling of adaptive artificial intelligence (AI) agents for 2D platformers under a reinforcement learning paradigm, specifically PPO. By designing a flexible and extensible game environment in Unity, we allowed for the creation and training of Player and Enemy agents that behave intelligently and dynamically in complex scenarios.Through iterative training methods, the Player Agent was able to learn to traverse various levels, avoid hazards, and achieve goals. At the same time, the Enemy Agent developed methods of aggression to best or challenge the Player Agent. Our results illustrate that PPO is a viable option for training agents in environments with ever-changing discrete actions and delayed rewards. A further contribution of the work is reusable AI assets usable for disparate games or situations, presenting a reduction in time and effort for indie developers. Through the integration of machine learning tools with Unity's game engine environment and the establishment of modularity in environment design, we have given a start to scalable AI solutions for general application in game development.
 \section{Problems and Solutions}
-State your problems and how you fixed them.
-
+\subsection{Sparse Reward Feedback}
+One of the initial challenges encountered during training was the sparse nature of the reward signals, particularly in the early episodes. Agents were often required to complete multiple steps before receiving any meaningful feedback, which slowed the learning process and made it difficult for them to associate actions with outcomes. To address this, a reward shaping strategy was implemented. Intermediate rewards were introduced for behaviors such as moving toward the goal, avoiding hazards, or exploring new areas. This helped guide the agents toward desired behaviors and significantly improved training efficiency in early stages.\par
+\subsection{Repetitive or Deterministic Behavior}
+As the agents began to converge on successful policies, they often developed overly deterministic behavior repeating the same paths or actions across episodes. This reduced their ability to adapt when small changes were introduced in the environment. To encourage more exploration and robustness, we adjusted the entropy regularization parameter in the PPO algorithm. This helped prevent premature convergence and ensured a better balance between exploiting known strategies and exploring new ones.\par
+\subsection{Long Training Times on Complex Levels}
+As the complexity of the environment increased—such as the addition of moving platforms, traps, and multiple objectives—the training time grew substantially. Agents required more episodes to learn effective policies in these challenging settings. To alleviate this, we introduced a curriculum learning-inspired level progression, where simpler levels were used at the start of training and more complex ones were gradually introduced. This stepwise exposure helped agents build foundational skills before tackling harder tasks, reducing convergence time overall.\par
+\subsection{Debugging and Behavior Tracking}
+Analyzing and debugging agent behavior in a multi-agent reinforcement learning setup proved to be time-consuming and occasionally opaque. With multiple agents interacting in real-time, it was difficult to isolate the cause of failures or suboptimal decisions. This was addressed by implementing visual debugging tools and logging systems within Unity and the Python training scripts. These included trajectory visualizations, reward graphs, and decision heatmaps, which allowed for deeper insights into agent behavior and facilitated more effective tuning.\par
+\section{Limitations}
+The project is still limited by a number of constraints. While PPO did give a robust foundation for the learning, the training time still increased given that environmental changes happened very often or in adversarial interactions. Agents had a limited level of generalization when faced with largely different level layouts without some form of retraining, suggesting that they needed to see more experiences, or at least subjected to some procedural training method. Moreover, the system currently only works in offline learning mode, meaning that it cannot adapt-to-user behavior or emergent gameplay patterns in real-time. Lastly, scalability to full game production environments might require further abstraction of the AI components into plug-and-play modules, so they require virtually no integration overhead at all.
 \section{Future Works}
-What could be done in the future to make your projects better.
+This work, however, opens the opportunities to explore different promising directions: first, implementing curriculum learning algorithms to select the training environment adaptively according to the skill level of the agent, thereby improving the efficiency of learning and generalization. Second, online learning capabilities could be used so that the AI agent changes its strategies as it learns from player behavior or unanticipated events occurring in the game. And finally, multi-agent cooperative scenarios, where agents are working together to achieve objectives, might broaden the framework to genres other than platformers, such as puzzle or survival.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% Bibliography %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
