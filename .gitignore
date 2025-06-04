@@ -70,7 +70,7 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
-Report Format Latex/Report Format Latex/undergrad-sample-english.pdf
-Report Format Latex/Report Format Latex/undergrad-sample-english.synctex.gz
-Report Format Latex/Report Format Latex/undergrad-sample-english.pdf
-Report Format Latex/Report Format Latex/undergrad-sample-english.synctex.gz
+
+*/undergrad-sample-english.pdf
+*/undergrad-sample-english.synctex.gz
+
