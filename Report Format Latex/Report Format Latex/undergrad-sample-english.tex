@@ -2175,8 +2175,36 @@ Training convergence was evidenced by the stabilization of cumulative reward tre
 Training efficiency was gauged through improvements in policy performance and reductions in redundant behaviors. The agent initially exhibited inefficient movement patterns but progressively optimized its strategy. Hyperparameter tuning and strategic reward shaping contributed to focused learning and computational effectiveness.
 
 \subsection{Agent Performance Summary}
+The agent’s learning progress is illustrated in Figure~\ref{fig:reward_progress}, which presents the cumulative average reward over 1000 training episodes. At the beginning of training, the agent exhibited poor performance with an average reward of approximately -250 per episode, often failing to collect coins or avoid hazards effectively. However, a steady and consistent improvement is observed as training progresses.The turning point occurred around episode 150, where the cumulative reward crossed into positive territory. From that point onward, the agent continued to refine its policy, achieving a peak average reward of approximately +48 by around episode 850. A slight decline toward the final episodes suggests the possibility of mild overfitting or exploration variability, which is a common occurrence in reinforcement learning.
 
-Figure~\ref{fig:agent_performance} presents the performance metrics from the best training session. This figure illustrates episode-wise progression in cumulative reward, reduced death count, and consistent coin acquisition, validating the training pipeline and PPO setup.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=10cm]{./Attachments/Result_Graph.png}}
+\caption{ presents the performance metrics from the best training session.}
+\label{fig:reward_progress}
+\end{figure}
+
+Further insights into performance metrics from the best training session are summarized in Table~\ref{tab:performance_summary}. These include key gameplay factors such as survival duration, reward consistency, and efficiency in task completion.
+
+\begin{table}[h]
+\centering
+\caption{Agent Performance Summary from Best Training Run}
+\label{tab:performance_summary}
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Metric} & \textbf{Result (Avg)} \\
+\hline
+Steps per Episode & 450–600 \\
+\hline
+Coin Collection Rate & Increased steadily from −100 to +40 over training \\
+\hline
+Average Reward per Episode & 80–90\% completion \\
+\hline
+Hazard Avoidance Rate & Significantly improved (survived longer per episode) \\
+\hline
+\end{tabular}
+\end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% Conclusions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
