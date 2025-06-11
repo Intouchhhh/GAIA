@@ -656,6 +656,10 @@ Unity ML-Agents Toolkit is an open-source plugin that enables reinforcement lear
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%CONTINATION%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{C\#}
 C\# is Unity's primary programming language, offering an optimal balance of performance, ease of use, and flexibility. It is instrumental in implementing game mechanics and AI behaviors.
@@ -1811,24 +1815,6 @@ During training, statistics are logged via the ML-Agents TensorBoard system:
 
 These logs are used to generate training graphs, reward curves, and behavior analysis.
 
-%\subsection{Multi-Agent Support and Role Specialization}
-
-%Although this project focuses primarily on the player agent, the system architecture and PPO trainer support multi-agent training. Future work will introduce adversarial agents, e.g., enemies that learn to challenge the player agent. These agents will have:
-
-%\begin{itemize}
-%\item Independent reward functions and behavior names
-%\item Separate PPO configurations and trainers
-%\item Inter-agent dynamics (chasing, evading, interfering)
-%\end{itemize}
-
-%This adversarial setup encourages co-evolution and leads to emergent gameplay behaviors, making it especially valuable for automated playtesting and enemy AI development
-
-%\subsection{Hyperparameter Adjustment and Curriculum Design (Future Scope)}
-
-%Although this project uses a single static environment, the system is designed to support Curriculum Learning in future work. By incrementally increasing difficulty (e.g., platform complexity, enemy count), agents can learn progressively and improve robustness.
-
-%Reward values are also exposed via the RewardConfigSO ScriptableObject, allowing live tweaking between training sessions without changing core code.
-
 \section{Packaging, Deployment, and Reusability}
 The successful deployment of a trained AI agent within a game development environment requires a structured approach to integration, optimization, and packaging. This process ensures that the AI agent operates efficiently within the Unity-based platformer while remaining modular and reusable for future applications. A key objective of this project is to produce an AI framework that can be seamlessly transferred to other 2D platformer projects with minimal overhead and high configurability.\par
 
@@ -2041,76 +2027,94 @@ During training, Unity ML-Agents’ built-in logging with TensorBoard provides t
 
 These graphs are used to validate convergence, detect reward hacking, and assess the consistency of training progress.
 
-\section{Experiments}
+\section{Experiments and Results}
 
 To validate the effectiveness of the proposed reinforcement learning framework, a series of iterative experiments were conducted using Unity ML-Agents. The experiments focused exclusively on training the player agent within a handcrafted 2D platformer environment, while enemy agents operated using predefined state machine behaviors. This section outlines the training setup, experimental procedure, and environment dynamics used during training and evaluation.
 
 \subsection{Training Sessions and Iterative Runs}
 
-Over the course of development, approximately 30 independent training runs were conducted. Each run was configured with the PPO algorithm and executed between 1 million to 2 million training steps. After each run, results were analyzed using cumulative reward trends, performance metrics, and in-game behavior. This iterative process enabled fine-tuning of:
+Throughout development, approximately 30 independent training runs were conducted. Each run utilized the PPO (Proximal Policy Optimization) algorithm and executed between 1 to 2 million training steps. Post-run evaluations involved analyzing cumulative reward trends, behavioral metrics, and in-game performance. This iterative cycle facilitated fine-tuning of:
 
 \begin{itemize}
-\item Reward values and shaping penalties (via \texttt{RewardConfigSO})
+\item Reward values and shaping penalties (configured via \texttt{RewardConfigSO})
 \item PPO hyperparameters (e.g., learning rate, batch size)
 \item Observation normalization and action mappings
 \item Spawn logic and episode termination conditions
 \end{itemize}
 
-These adjustments were made to improve sample efficiency, stabilize learning, and eliminate unintended exploitative behaviors (e.g., repeated jumping or idling for reward).
+Adjustments targeted improvements in sample efficiency, stabilization of learning, and elimination of unintended exploitative behaviors (e.g., reward farming through idling or repetitive jumping).
 
 \subsection{Environment Configuration}
 
-All experiments were conducted within a single handcrafted 2D platformer level that includes:
+All training and evaluation occurred within a single handcrafted 2D platformer level comprising:
 
 \begin{itemize}
-\item Static and moving platforms
+\item Static and dynamic platforms
 \item Collectible items (coins, checkpoints)
 \item Hazardous elements (spikes, pits)
-\item Melee enemies controlled by state machines
+\item Melee enemies controlled by FSM-based logic
 \end{itemize}
 
-To prevent memorization of fixed obstacle patterns, a dynamic episode reset system was used. After each death or episode termination, the player’s spawn point was randomized from a predefined list. Simultaneously, all environment elements, coins, checkpoints, enemies were reset to their initial state. This strategy ensured that the agent learned generalizable skills rather than memorizing deterministic paths.
+To prevent memorization of fixed obstacle patterns, a dynamic episode reset system was deployed. Upon death or episode termination, the agent's spawn point was randomized, and all environment elements were reset to their initial configurations. This strategy promoted generalizable policy learning over rote memorization.
 
 \subsection{Evaluation Protocol}
 
-Agent performance was periodically evaluated during and after training in inference mode. In this phase:
+Agent performance was periodically assessed both during and after training in inference mode. Key elements of the evaluation setup included:
 
 \begin{itemize}
-\item The environment was reset using the same randomization logic.
-\item No exploration noise or entropy was applied; the trained policy operated deterministically.
-\item Metrics such as episode reward, steps taken, coin collection rate, and death count were tracked using \texttt{RewardLogger.cs} and TensorBoard.
+\item Environment resets using the same randomized initialization logic
+\item Deterministic policy execution without exploration noise or entropy
+\item Metric tracking via \texttt{RewardLogger.cs} and TensorBoard, including episode reward, step count, coin collection rate, and death count
 \end{itemize}
 
-By comparing evaluation performance across runs, the experiments revealed the impact of reward modifications, observation tweaks, and PPO settings on learned behavior quality.
+Comparative analysis across training runs demonstrated the impact of different reward functions, observation schemas, and PPO configurations on behavioral quality.
 
 \subsection{Focus on Player Agent}
 
-Due to time constraints, the current experiments focused exclusively on training the player agent. Enemy agents operated with scripted state machines and were used to test obstacle avoidance, navigation under pressure, and combat timing. Future iterations aim to train enemy agents using a similar PPO-based setup, treating the trained player agent as a fixed adversary.
+Due to time constraints, the experiments exclusively trained the player agent. Enemy agents followed scripted FSM behaviors, enabling reliable assessment of obstacle avoidance, stress navigation, and combat responses. Future extensions will involve PPO-based training for enemy agents using the trained player as a fixed adversary.
 
+\subsection{Reward Function Effectiveness}
 
-%%%%%%%%%%%%%%%%%%%%
-\subsection{The Reward Functions Performing}
-The Reinforcement learning algorithms have exhibited good and stable trends of reward acquisition from one training cycle to the next. History shows improvements in increments of reward as occurrences of sub-optimal or penalty behavior decline. Thus, the agent has managed to utilize positive reinforcement, indicating the successful design of the reward function to facilitate movement and interaction optimally.
+The agent exhibited stable improvement in reward acquisition over training epochs. Penalty-driven behaviors declined consistently, while positively reinforced actions—such as coin collection and obstacle navigation—became dominant. The reward configuration effectively directed the agent toward goal-oriented interactions within the environment.
+
 \subsection{Convergence and Stability}
-Evidence of training convergence has been through stabilization in performance over many episodes. The first few phases of training revealed very high variance in agent behavior performance in making decisions and severe penalties. However, the learning model, after training over a sufficient number of epochs, has reduced the performance fluctuation, indicating stable learning and lesser dependence on exploratory randomness. The convergence of the policy indicates a successful imprinting of an optimal decision-making structure within the agent by the training process.
+
+Training convergence was evidenced by the stabilization of cumulative reward trends and behavioral consistency across episodes. Initial phases showed erratic behavior and frequent penalties. However, after sufficient training steps, the model displayed reduced performance variance, indicating decreased reliance on exploration and increased policy robustness.
+
 \subsection{Evaluation of Training Efficiency}
-The evaluation of training efficiency was through policy improvement rate and reduction of superfluous movements. The learning curve of the AI clearly indicates the improvement as it refrained from making unnecessary movements early on before improving the strategy. Other training efficiencies have been enhanced by tuning hyperparameters and distributing rewards, making learning focused and effective in computational use.
-\section{AI Behavior in Environment training ground}
-\subsection{Behavior Under Different Level Designs}
-Varieties of platform layouts offered opportunity to review generalization properties of the AI model. Test results illustrate the versatility of the trained policy across structurally similar environments. High navigation and interaction performances are sustained. The AI can adapt to different setups without retraining as long as the key level design principles stay within the threshold defined by the training environment.
-\subsection{Response to Dynamic Obstacles}
-The AI shows a degree of flexibility in interacting with moving obstacles or hazards in the environment, whereby learned avoidance allows the agent to detect and circumvent moving threats with adjustments to time and trajectory accordingly. The steady successful performance on avoidance would suggest that reinforcement learning has encoded a decisional process for hazard avoidance. 
-\subsection{Efficacy in Collectible Acquisition}
-In tasks where collectible objects were tested in the environment, the AI was observed to optimize paths when seeking maximal reward. This reliance was mostly without detours as the agent preferred the path of least resistance toward collectible objects, following the decision patterns as defined by the reinforcement structure. Thus, the AI's consistent behavior in achieving successful item collection while avoiding hazards proves its risky behavior and reward calculations in a game.
-\section{Implementation and Integration of AI}
-\subsection{AI Integration in the Unity Environment}
-The integrated AI model works fully in the Unity platformer game in real time. Transitioning from simulated training environments to real-time execution appeared completely uneventful, with the AI behaving exactly as it was supposed to, following the learned patterns from training data. This has been made possible by synchronization using the ML-Agents package in Unity so that the AI decision-making can continuously interact with the physics of the game and the game world.
-\subsection{AI Perception and a Dual-Render Environment Setup}
-The dual-render environment setup allows the AI perception system to distinguish between the in-game elements. It enables the agent to structure information on the environment so that the decision-making mechanism correctly identifies relevant objects, such as the platform, obstacles, and collectibles. A rendering-based system increases the spatial awareness of the AI and hence the contextually relevant actions that can be taken.
-\subsection{Modularity and Reusability in Implementation}
-The AI system is designed as a modular system to promote reusability across projects. Movement controllers, reward functions, and decision- making modules are key components that can be adjusted to new environments in the implementation without requiring extensive reconfiguration. Thus, this modular approach enhances the AI's suitability to even more varied platformer game projects, which are intended to become an AI reusable asset.
-\section{Summary of Current AI Capabilities}
-The AI system is now competent in the movement, navigation, and interaction of a platformer game. It has shown convergence in learning which is stable, effective awareness of its environment, and generalized behavior across different level designs. Although combat is not yet in use, the current implementation offers a firm groundwork for extended AI development in platformer games. The reinforcement-learning framework has fostered agent behavior that is conducive to the free navigation and interaction of game elements in a structured and goal-directed manner.
+
+Training efficiency was gauged through improvements in policy performance and reductions in redundant behaviors. The agent initially exhibited inefficient movement patterns but progressively optimized its strategy. Hyperparameter tuning and strategic reward shaping contributed to focused learning and computational effectiveness.
+
+\subsection{Agent Performance Summary}
+The agent’s learning progress is illustrated in Figure~\ref{fig:reward_progress}, which presents the cumulative average reward over 1000 training episodes. At the beginning of training, the agent exhibited poor performance with an average reward of approximately -250 per episode, often failing to collect coins or avoid hazards effectively. However, a steady and consistent improvement is observed as training progresses.The turning point occurred around episode 150, where the cumulative reward crossed into positive territory. From that point onward, the agent continued to refine its policy, achieving a peak average reward of approximately +48 by around episode 850. A slight decline toward the final episodes suggests the possibility of mild overfitting or exploration variability, which is a common occurrence in reinforcement learning.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=10cm]{./Attachments/Result_Graph.png}}
+\caption{ presents the performance metrics from the best training session.}
+\label{fig:reward_progress}
+\end{figure}
+
+Further insights into performance metrics from the best training session are summarized in Table~\ref{tab:performance_summary}. These include key gameplay factors such as survival duration, reward consistency, and efficiency in task completion.
+
+\begin{table}[h]
+\centering
+\caption{Agent Performance Summary from Best Training Run}
+\label{tab:performance_summary}
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Metric} & \textbf{Result (Avg)} \\
+\hline
+Steps per Episode & 450–600 \\
+\hline
+Coin Collection Rate & Increased steadily from −100 to +40 over training \\
+\hline
+Average Reward per Episode & 80–90\% completion \\
+\hline
+Hazard Avoidance Rate & Significantly improved (survived longer per episode) \\
+\hline
+\end{tabular}
+\end{table}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2124,7 +2128,7 @@ One of the initial challenges encountered during training was the sparse nature 
 \subsection{Repetitive or Deterministic Behavior}
 As the agents began to converge on successful policies, they often developed overly deterministic behavior repeating the same paths or actions across episodes. This reduced their ability to adapt when small changes were introduced in the environment. To encourage more exploration and robustness, we adjusted the entropy regularization parameter in the PPO algorithm. This helped prevent premature convergence and ensured a better balance between exploiting known strategies and exploring new ones.\par
 \subsection{Long Training Times on Complex Levels}
-As the complexity of the environment increased, such as the addition of moving platforms, traps, and multiple objectives, the training time grew substantially. Agents required more episodes to learn effective policies in these challenging settings. To alleviate this, we introduced a curriculum learning-inspired level progression, where simpler levels were used at the start of training and more complex ones were gradually introduced. This stepwise exposure helped agents build foundational skills before tackling harder tasks, reducing convergence time overall.\par
+As the complexity of the environment increased—such as the addition of moving platforms, traps, and multiple objectives—the training time grew substantially. Agents required more episodes to learn effective policies in these challenging settings. To alleviate this, we introduced a curriculum learning-inspired level progression, where simpler levels were used at the start of training and more complex ones were gradually introduced. This stepwise exposure helped agents build foundational skills before tackling harder tasks, reducing convergence time overall.\par
 \subsection{Debugging and Behavior Tracking}
 Analyzing and debugging agent behavior in a multi-agent reinforcement learning setup proved to be time-consuming and occasionally opaque. With multiple agents interacting in real-time, it was difficult to isolate the cause of failures or suboptimal decisions. This was addressed by implementing visual debugging tools and logging systems within Unity and the Python training scripts. These included trajectory visualizations, reward graphs, and decision heatmaps, which allowed for deeper insights into agent behavior and facilitated more effective tuning.\par
 \section{Limitations}
