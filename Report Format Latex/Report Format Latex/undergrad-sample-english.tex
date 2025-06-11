@@ -630,74 +630,56 @@ In the context of this project, PPO is used to train adaptive agents for 2D plat
 
 \section{Development Tools}
 
-\subsection{Unity Game Engine}
-Unity is a widely adopted cross-platform game engine known for its real-time rendering capabilities, visual editing tools, and support for both 2D and 3D games. This project uses Unity as the central development platform to create, train, and test reinforcement learning agents in a custom 2D platformer environment.
+\subsection{Unity}
+Unity is a widely-used game engine known for its support of both 2D and 3D game development, offering an extensive suite of tools for scene design, animation, physics, and cross-platform deployment. It provides a modular component-based architecture, enabling rapid prototyping and flexible gameplay development. Unity's support for custom scripting, asset import pipelines, and a rich ecosystem of packages makes it particularly well-suited for game AI experimentation and deployment. The Unity Editor also includes built-in visualization, profiler, and debugging tools that facilitate game iteration and performance tuning.
 
+\subsection{ML-Agents Toolkit}
+The Unity ML-Agents Toolkit is an open-source machine learning library designed to bridge Unity and modern reinforcement learning algorithms. It allows game developers to embed intelligent behavior into their games using machine learning, particularly reinforcement learning (RL). The toolkit includes:
 \begin{itemize}
-\item \textbf{2D Platformer Development:} Unity’s native 2D systems—Tilemap Editor, Rigidbody2D physics, BoxCollider2D, and Animation system, enable rapid prototyping of movement, hazards, and level layout.
-\item \textbf{Scene Management:} Unity's visual editor simplifies environment creation, allowing real-time adjustments to platform layouts, spawn points, and camera logic.
-\item \textbf{Real-Time Rendering and UI:} Unity's built-in rendering pipeline supports layered camera views and overlays.
+\item A Python training backend that integrates with libraries such as PyTorch for model training.
+\item A set of Unity-side C\# components to define agents, behaviors, and sensors.
+\item Support for both visual and vector-based observations, discrete and continuous action spaces, and reward signal configuration.
+\item Export capabilities to convert trained models into ONNX format for inference inside Unity runtime.
 \end{itemize}
-
-%\begin{figure}[!h]
-%\centering
-%\fbox{\includegraphics[width=10cm]{./Attachments/UnityLogo.png}}
-%\caption{Unity Logo}\label{fig:UnityLogo}
-%\end{figure}
-
-\subsection{Unity ML-Agents Toolkit}
-Unity ML-Agents Toolkit is an open-source plugin that enables reinforcement learning inside Unity environments. It provides seamless integration between game scenes and Python-based training scripts.
-
-\begin{itemize}
-\item \textbf{Agent API:} Built-in C\# components such as Agent, BehaviorParameters, and DecisionRequester abstract away low-level control and allow for simple configuration of action and observation spaces.
-\item \textbf{Flexible Perception:} ML-Agents supports both vector observations and visual observations from dedicated agent cameras.
-\item \textbf{Multiple Agents and Parallel Training:} The toolkit supports training multiple agents in parallel within a single environment to accelerate data collection and learning.
-\item \textbf{ONNX Inference:} Trained models are exported to the ONNX format and loaded directly into Unity for runtime inference.
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%CONTINATION%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{C\#}
-C\# is Unity's primary programming language, offering an optimal balance of performance, ease of use, and flexibility. It is instrumental in implementing game mechanics and AI behaviors.
-\begin{itemize}
-\item  \textbf{Performance Optimization:} C\# enables efficient scripting for real-time calculations, game events, and AI logic. Its clean syntax and extensive libraries ensure that resource-intensive tasks, such as agent movement and obstacle detection, run efficiently.
-\item  \textbf{Custom Gameplay Features:} Using C\#, developers can create custom gameplay mechanics, such as pathfinding, player interactions, and dynamic environmental elements. Unity's scripting API provides precise control over agents and game objects, offering flexibility that extends beyond built-in tools.
-\end{itemize}
+The toolkit is highly extensible and supports training with multiple agents simultaneously in a shared or parallelized environment.
 
 \subsection{Python}
-Python is a widely-used programming language in machine learning and AI development, known for its simplicity, flexibility, and extensive ecosystem of libraries. In this project, Python plays a critical role in developing and training AI models.
+Python is a high-level programming language widely used in scientific computing, machine learning, and automation. In this context, Python serves as the main language for configuring, executing, and managing the training process of reinforcement learning agents. Key reasons for its use include:
 \begin{itemize}
-\item  \textbf{Machine Learning Development:} Python, in combination with PyTorch, is used to implement reinforcement learning algorithms (e.g., Deep Q-Networks, Proximal Policy Optimization) for training AI agents. Its high-level syntax accelerates experimentation and prototyping, making it ideal for AI development.
-\item  \textbf{Data Processing:} Libraries like NumPy and Pandas are used for pre-processing and analyzing training data, enabling efficient monitoring of agent performance and model behavior.
-\item  \textbf{Integration with Unity:} 
-Trained models developed in Python can be exported (e.g., using ONNX) and integrated into Unity, where they control agent behavior within the game environment.
+\item Compatibility with ML-Agents' training pipeline.
+\item Integration with machine learning libraries such as PyTorch for neural network optimization.
+\item Access to data processing tools like NumPy and Pandas, which are useful for monitoring and evaluating model performance.
+\item TensorBoard support for visualizing training metrics, including rewards, episode length, and loss trends.
 \end{itemize}
 
-\subsection{PyTorch}
-PyTorch is an open-source machine learning library widely used for deep learning and reinforcement learning. It plays a crucial role in this project for developing, training, and fine-tuning AI models to operate within the Unity environment.
+\subsection{C\#}
+C\# is the primary programming language used within Unity for developing game logic, agent control scripts, UI systems, and custom components. Its integration into Unity's scripting API allows developers to:
 \begin{itemize}
-\item  \textbf{Reinforcement Learning Compatibility:}
-PyTorch supports key reinforcement learning algorithms such as Deep Q-Networks (DQN) and Proximal Policy Optimization (PPO). These algorithms are integral to training AI agents, enabling them to interact with and learn from the game environment by adapting strategies based on feedback and rewards.
-\item  \textbf{GPU Acceleration:}
-PyTorch’s GPU acceleration significantly reduces training time for neural networks. This allows for faster iteration and experimentation, facilitating efficient model development and parameter tuning.
-\item  \textbf{Integration with Unity:}
-Although PyTorch is Python-based, trained models can be exported in ONNX or other compatible formats for integration into Unity. This ensures that machine learning models seamlessly control in-game agents during gameplay, bridging the gap between AI development and deployment.
+\item Control gameplay mechanics and interactions between objects.
+\item Define behavior parameters for ML agents, including state tracking, sensor input, and action execution.
+\item Implement physics-based movement, animation controllers, and in-game event handling.
+\item Interface with Unity's MonoBehaviour system to manage game loop events such as initialization, updates, and collisions.
 \end{itemize}
+C\# provides a balance of performance and expressiveness, making it well-suited for real-time game development.
 
-\subsection{GitHub}
-GitHub is a version control and collaboration platform that facilitates the management of source code and assets throughout the project's development.
+\subsection{ONNX Runtime}
+ONNX (Open Neural Network Exchange) is an open standard format for representing machine learning models. After training reinforcement learning agents using the ML-Agents toolkit, the resulting models are exported in ONNX format. Unity supports ONNX model inference through the Barracuda inference engine, enabling:
 \begin{itemize}
-\item  \textbf{Version Control:}
-GitHub enables efficient version tracking, allowing developers to monitor changes to the codebase and revert to previous versions when necessary. This ensures stability and helps maintain control over the evolving project.
-\item  \textbf{Collaboration:}
-GitHub supports team collaboration by allowing multiple developers to work simultaneously on different parts of the project. The platform's branching and pull request features ensure an organized and efficient development workflow, enabling seamless merging of contributions.
-\item  \textbf{Backup and Deployment:} 
-The repository serves as a secure backup for all project files and assets. Additionally, GitHub Actions can automate tasks such as deployment and testing, streamlining development and ensuring smooth continuous integration.
+\item Embedding trained models directly into game builds for real-time AI decision-making.
+\item Hardware-agnostic execution across different platforms (Windows, macOS, WebGL, etc.).
+\item Seamless deployment without requiring Python or ML libraries at runtime.
 \end{itemize}
+ONNX provides a robust and portable way to integrate learning-based AI into production Unity games.
+
+\subsection{Development Environment}
+The development workflow combines multiple software tools to streamline programming, training, and testing:
+\begin{itemize}
+\item \textbf{Visual Studio:} Used for writing and debugging C\# scripts in Unity.
+\item \textbf{Python Environment:} Managed through Anaconda or virtual environments to isolate dependencies required for ML-Agents.
+\item \textbf{Git:} Used for version control, backup, and collaborative development.
+\item \textbf{Unity Editor Tools:} Includes physics simulators, asset organization tools, and visual debugging aids.
+\end{itemize}
+These tools contribute to a structured and maintainable development pipeline from prototyping to deployment.
 
 \section{Related research}
 
@@ -764,83 +746,60 @@ This chapter outlines the methodology and design principles employed in the deve
 Building on the theoretical foundations established in the previous chapter, this section focuses on the practical aspects of system implementation. The goal is to bridge academic research in reinforcement learning with real-world game development tools and workflows. To achieve this, a structured, modular design was adopted to ensure flexibility, reusability, and compatibility across different 2D platformer projects.\par
 
 This chapter will outline the key components of our methodology, including:
+
 \begin{itemize}
-\item \textbf{System Architecture:} An overview of the core system components, including Unity, ML-Agents, and the communication pipeline between the training environment and learning algorithm.
+\item \textbf{System Architecture:} An overview of the core system components, including Unity, ML-Agents, and the communication pipeline between the training environment and the reinforcement learning algorithm.
 \item \textbf{Game Environment Design:} A description of the custom 2D platformer environment developed for training and evaluating AI behavior.
-\item \textbf{AI Algorithms and Models:} The selection and implementation of reinforcement learning techniques, specifically Proximal Policy Optimization (PPO).
-\item \textbf{Training Process and Optimization:} Details on training configuration, reward structure, curriculum learning considerations, and agent evaluation metrics.
-\item \textbf{AI Integration and Packaging:} The process of embedding the trained AI into a Unity-compatible asset and enabling modular extensibility through custom action modules.
+\item \textbf{AI Agents Development:} The structure and modular design of the player agent, including its perception setup, action abstraction, and behavior controls.
+\item \textbf{AI Algorithms and Models:} The selection and application of Proximal Policy Optimization (PPO) as the learning algorithm.
+\item \textbf{Training Process and Optimization:} Training setup, reward shaping strategies, curriculum learning stages, and monitoring tools.
+\item \textbf{AI Integration and Packaging:} The deployment of the trained model into Unity for inference, along with steps for packaging and delivering it as a reusable Unity asset.
 \end{itemize}
 
-By following this methodology, the project aims to deliver a robust AI development framework that not only supports player and enemy agent training but also provides an accessible entry point for indie developers to integrate, extend, and retrain AI agents for their own games.\par
+By following this methodology, the project aims to deliver a robust AI development framework that supports intelligent agent behavior, simplifies the adoption of reinforcement learning in indie projects, and lays the groundwork for future scalability and customization.
 %Explain the design (how you plan to implement your work) of your project. Adjust the section titles below to suit the types of your work. Detailed physical design like circuits and source codes should be placed in the appendix.
 
 \section{System Architecture}
 
-The system architecture developed for this project facilitates the training, evaluation, and deployment of adaptive AI agents within a Unity-based 2D platformer environment. It is designed to support modularity, enabling seamless integration with external reinforcement learning frameworks and reusability across multiple projects.\par
-
-The architecture consists of six core components:
-
-\begin{itemize}
-\item A Unity-based training environment for simulating gameplay interactions.
-\item AI agents (player and enemy) that perceive, decide, and act in response to environmental stimuli.
-\item Behavior modules that define the agent’s input-output processing pipeline.
-\item Environment parameters, which enable dynamic adjustment of gameplay variables during training.
-\item A Python-Unity communication interface (Communicator) for transmitting observations and actions.
-\item A Python-based trainer implementing the Proximal Policy Optimization (PPO) algorithm.
-\end{itemize}
-
-Figure \ref{fig:SystemDiagram} visualizes the architecture and interconnections between these components.\par
+The architecture of this project is designed to support modular, trainable reinforcement learning agents within a Unity-based 2D platformer game. It integrates Unity ML-Agents, a dual-camera perception system, custom action middleware, and a structured feedback loop for learning. The primary goal is to provide a scalable and adaptable framework that can be reused across various platformer game scenarios. Figure \ref{fig:TrainingArchitecture} illustrates the complete learning system.
 
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=10cm]{./Attachments/SystemDiagram.png}}
-\caption{System Architecture Diagram, drawn on draw.io}\label{fig:SystemDiagram}
+\fbox{\includegraphics[width=14cm]{./Attachments/SystemDiagramNew.png}}
+\caption{System Architecture and Reinforcement Learning Training Loop}\label{fig:TrainingArchitecture}
 \end{figure}
-\FloatBarrier
-\subsection{Training Environment}
-The training environment is a controlled simulation where AI agents interact, learn, and refine their decision-making abilities through reinforcement learning. It is structured within a Unity scene that replicates typical platformer game scenarios, including various obstacles, enemies, and interactive elements. By defining key training parameters, such as agent actions, observations, and reward structures, the system ensures an effective learning process, guiding the agents toward optimal gameplay strategies.
 
-\subsubsection{Agents}
-Agents are entities in the environment that actively interact with their surroundings. Each agent observes the current state of the game environment using provided sensors, make decisions based on the information, and perform actions accordingly. These actions influence the environment and the agent's progression toward its assigned goals.\par
-Agents are also subject to a reward system, where positive or negative feedback is assigned based on the outcomes of their actions. This feedback mechanism enables agents to learn and adapt their behavior over time, aligning their actions with the objectives of the game.\par
-In this project, agents are categorized into two types:
-\begin{itemize}
-\item  \textbf{Player Agent:} The primary agent designed to complete platformer levels by efficiently navigating the environment. It learns to overcome obstacles, avoid hazards, collect objectives, and reach predefined goals. The player agent undergoes reinforcement learning to optimize movement patterns, timing of actions, and strategic decision-making.
-\item  \textbf{Enemy Agents:} Secondary agents that introduce dynamic challenges within the game. These agents exhibit various behaviors, such as patrolling, chasing, or attacking the player agent. Enemy agents contribute to the complexity of the game environment by enforcing strategic decision-making on the part of the player agent, thereby enhancing the training process.
-\end{itemize}
-Both agent types use reinforcement learning to optimize their strategies over time based on environmental feedback.\par
-\subsubsection{Behavior Modules}
-Behaviors define how an agent interprets its surroundings and responds to different stimuli within the game environment. A behavior module processes input observations, evaluates potential outcomes, and determines appropriate actions to achieve a predefined objective. In reinforcement learning, behaviors are continuously refined based on the received rewards, enabling the agent to develop adaptive and optimized responses over time.
-Each behavior module consists of the following key components:
-\begin{itemize}
-\item  \textbf{Input Observations:} The agent perceives relevant environmental data, such as the position of obstacles, enemy movements, collectible items, and the agent’s current state (e.g., velocity, health, and platform contact).
-\item  \textbf{Decision Processing:} The AI model evaluates possible actions based on the received observations and selects the most optimal response according to the learned policy.
-\item  \textbf{Action Execution:} The agent performs an action within the game environment, influencing its surroundings and affecting future observations.
-\end{itemize}
-By iteratively refining behaviors through reinforcement learning, the AI system ensures that agents develop intelligent, context-aware decision-making processes.
-\subsubsection{Environment Parameters}
-Environment Parameters are configurable settings within the game that can be adjusted during runtime. These parameters can control elements like the difficulty level, enemy behavior, or platform properties. Through Side Channels, Python can send updates to Unity to modify these parameters, while Unity can also send data back to Python for analysis. This two-way communication enables dynamic adjustments, precise control over agent training, and scalability for creating varied scenarios.
-\subsubsection{Communicator}
-The Communicator component is responsible for enabling seamless data exchange between Unity and external Python-based reinforcement learning processes. It establishes real-time communication channels for transmitting agent observations, receiving policy updates, and executing AI-driven decisions within the game environment.
-\begin{itemize}
-\item  \textbf{Sending Observations to Python:} Unity collects environmental data and transmits it to the reinforcement learning algorithm.
-\item  \textbf{Processing Actions in Python:} The AI model processes the received observations, updates its policy, and determines the optimal action based on learned strategies.
-\item  \textbf{Returning Actions to Unity:} The chosen action is sent back to Unity, where it is executed by the corresponding agent.
-\item  \textbf{Logging data:} Values essential for training analysis such as rewards, episode counts, episode lengths, completion percentages are logged into CSV files.
-\end{itemize}
-This interaction is fundamental to reinforcement learning, as it allows agents to iteratively refine their behaviors based on real-time feedback from the game environment
+\subsection{Component Overview}
 
-\subsection{Python API and Trainer}
-The Python API serves as the interface between Unity and the external machine learning framework responsible for training the AI models. It enables the execution of reinforcement learning algorithms, processes training data, and updates policy models based on collected experience.\par
-The Python Trainer is responsible for implementing the reinforcement learning algorithm used in this project. The selected approach is \textbf{Proximal Policy Optimization (PPO)}, a policy-gradient method that balances exploration and exploitation to optimize agent performance. The training process consists of the following stages:
 \begin{itemize}
-\item \textbf{Experience Collection:} The agent interacts with the Unity environment and logs state-action-reward sequences.
-\item \textbf{Policy Update:} PPO updates the agent’s policy using clipped objective functions and adaptive learning rates.
-\item \textbf{Performance Evaluation:} The updated policy is evaluated in simulated episodes and further refined.
+\item \textbf{Environment:} The game world is created using Unity’s 2D tools, featuring platformer elements such as platforms, hazards, coins, and checkpoints. The environment continuously updates based on the agent’s actions and physics rules.
+
+\item \textbf{Agent:} The agent acts as the decision-making entity. It receives environmental states or camera observations and interacts with the world through a policy network trained using PPO. Its action requests are routed through a modular Action Requester layer.
+
+\item \textbf{Sensor and Camera:} The agent receives observations via attached sensors. In visual training scenarios, a secondary camera renders a simplified, color-coded version of the environment exclusively for the agent. This visual feed is passed as input to the model to guide decision-making.
+
+\item \textbf{Action Requester:} This middleware abstracts the communication between the model’s outputs and the actual in-game behaviors. It converts action indices into commands (e.g., jump, dash) and delegates them to appropriate character controller components. The character controller then executes the received commands, updating the agent's position, animation, and interaction within the game environment.
+
+\item \textbf{Reward System:} A reward handler observes events like reaching goals, collecting items, taking damage, or idling. These trigger scalar feedback signals that are sent back to the model to guide future learning.
+
+\item \textbf{Episode Feedback Loop:} The ML-Agents framework calculates the cumulative reward per episode. At the end of each episode, the agent's performance is logged, and training resets begin from a new randomized state.
+
+\item \textbf{PPO Trainer:} Training occurs on an external Python environment using Unity ML-Agents. The PPO trainer optimizes the policy parameters to improve the agent’s decision-making over time.
+
+\item \textbf{ONNX Model Export:} Once trained, the resulting neural policy is exported in ONNX format and deployed back into Unity for inference. This makes the model reusable across different platformer environments without additional training.
 \end{itemize}
 
-The modular connection between Unity and Python allows for scalability, facilitating future experimentation with other algorithms or hyperparameters.\par
+\subsection{System Highlights}
+
+This architecture emphasizes:
+\begin{itemize}
+\item Decoupled design for modularity and extensibility
+\item Real-time reward feedback for adaptive learning
+\item Dual-camera support for efficient agent perception
+\item Seamless transition between training and inference modes
+\end{itemize}
+
+The structured pipeline facilitates experimentation, debugging, and deployment, ensuring that the agent can be reused and adapted in other projects by indie developers or game designers without machine learning expertise.
 
 \section{Game Environment Design}
 The game environment constitutes the primary interactive space in which reinforcement learning (RL) agents are trained and evaluated. A well-structured environment is critical to effective agent learning, as it defines the sensory inputs, action possibilities, feedback mechanisms, and contextual challenges that guide behavioral adaptation. This section elaborates on the structure, components, and mechanics of the custom 2D platformer environment used for this study, with emphasis on level design, agent interaction capabilities, physics implementation, and system validation.
@@ -895,12 +854,12 @@ These elements are strategically placed to guide the agent’s learning, providi
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=10cm]{./Attachments/EnvironmentDesign.png}}
-\caption{Environment training ground for the AI}\label{fig:EnvironmentDesign}
+\caption{Environment Training Ground for the AI}\label{fig:EnvironmentDesign}
 \end{figure}
 \subsection{Agent Actions}
 Table \ref{tbl:Agent Actions Table} outlines the available actions for Player and Enemy agents. These actions simulate the gameplay mechanics and ensure that the AI can engage with the environment and other agents meaningfully.
 \begin{table}[H]
-\caption{Agent Actions Table}\label{tbl:Agent Actions Table}
+\caption{Agent Actions Table}\label{tbl:Agent Actions and Capabilities}
 \begin{tabular}{|l|l|l|} \hline
 & \textbf{Player Agent} & \textbf{Enemy Agent} \\ \hline
 Actions & Walk and run & Walk and run \\ 
@@ -1165,6 +1124,91 @@ rb.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
 
 Through the combination of Unity physics components and finely tuned motion scripting, the agent operates within a physically constrained yet expressive movement model. This model serves as the foundation for learning transferable locomotion policies across varied level designs.
 
+\subsection{Curriculum Learning Stages}
+
+To improve training efficiency and agent generalization, a curriculum learning strategy is implemented. The idea is to start with simpler tasks and environments, gradually increasing complexity as the agent gains proficiency. This approach enables the reinforcement learning agent to learn fundamental behaviors incrementally rather than attempting to master all mechanics at once. The curriculum consists of four distinct stages, each introducing new gameplay concepts while building on previously acquired skills.
+
+\subsubsection{Stage 1 – Basic Movement and Item Collection}
+
+The initial stage introduces flat, single-layer environments designed to teach basic movement and reward-seeking behavior. The agent learns to:
+
+\begin{itemize}
+\item Move horizontally toward visible goals.
+\item Collect coins or other positive-reward objects.
+\item Avoid hazards such as spikes (present since this stage).
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/Stage1.png}}
+\caption{Stage 1 – Basic Movement and Item Collection}\label{fig:Stage1}
+\end{figure}
+
+\subsubsection{Stage 2 – Advanced Navigation (Multi-layer Platforms)}
+
+Once the agent consistently performs basic movement, multi-level environments are introduced. These levels feature vertical traversal requiring jumping. The agent learns to:
+
+\begin{itemize}
+\item Jump to elevated platforms and move vertically through the level.
+\item Optimize paths through layered terrain to reach rewards.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/Stage2.png}}
+\caption{Stage 2 – Advanced Navigation with Multi-layered Platforms}\label{fig:Stage2}
+\end{figure}
+
+\subsubsection{Stage 3 – One-Way Platform Introduction}
+
+One-way platforms are added to introduce a new navigational rule. These platforms can be jumped onto from below and dropped through from above. The agent must learn to:
+
+\begin{itemize}
+\item Recognize one-way platforms as passable terrain.
+\item Drop down through platforms when needed to reach goals or avoid hazards.
+\item Adapt navigation strategy dynamically based on vertical positioning.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/Stage3.png}}
+\caption{Stage 3 – Introduction of One-Way Platforms}\label{fig:Stage3}
+\end{figure}
+
+\subsubsection{Stage 4 – Enemy Introduction and Combat Awareness}
+
+In the final curriculum stage, basic enemy characters are introduced. These enemies follow simple state machine behavior (e.g., patrolling), and the agent must engage with or avoid them. New learning objectives include:
+
+\begin{itemize}
+\item Attacking enemies using melee actions.
+\item Avoiding enemy attacks and contact.
+\item Prioritizing combat versus avoidance depending on context.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=5cm]{./Attachments/Stage4.png}}
+\caption{Stage 4 – Enemy Introduction and Combat Interaction}\label{fig:Stage4}
+\end{figure}
+
+\subsubsection{Full-Scale Platformer Environment}
+
+After completing all curriculum stages, the agent is transitioned to a large, hand-crafted platformer level designed to emulate real-world gameplay. This map includes all previously introduced mechanics—multi-layered platforms, one-way platforms, collectibles, hazards, and enemies—distributed throughout a complex and varied layout. This final training/testing stage serves to:
+
+\begin{itemize}
+\item Evaluate the agent’s ability to generalize behaviors learned from smaller curriculum stages.
+\item Assess performance in realistic, high-difficulty scenarios involving dynamic decision-making.
+\item Train on longer episodes with diverse routes, reward opportunities, and hazards.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=12cm]{./Attachments/EnvironmentDesign.png}}
+\caption{Full-Scale Environment for Final Training and Evaluation}\label{fig:FullLevel}
+\end{figure}
+
+This full environment is used for both extended training (with reward shaping) and testing the transferability of the agent’s skills. The layout simulates the kind of level design seen in commercial 2D platformer games, making it ideal for benchmarking the agent’s practical capabilities.
+
 \subsection{Environment Testing}
 Prior to integrating the reinforcement learning model, the platformer environment underwent systematic testing to ensure that it met the functional, performance, and scalability requirements necessary for stable agent training. These tests were essential for validating gameplay mechanics, maintaining frame rate stability, and ensuring compatibility with machine learning pipelines.
 \subsubsection{Functional Testing}
@@ -1181,8 +1225,9 @@ To ensure the environment’s reusability across future projects and training sc
 \item  \textbf{Enemy and Obstacle Density:} The performance and behavior of agents were evaluated under varying densities of enemies and environmental hazards.
 \item  \textbf{Generalization Potential:} Agents were tested in unseen level variants to assess their ability to transfer learned behaviors beyond a single map configuration.
 \end{itemize}
-Through these evaluations, the environment was confirmed to be reliable, efficient, and extensible, supporting the project’s objective of producing a robust, reusable AI training platform for 2D platformer games.
 
+This environment not only provides a stable foundation for reinforcement learning but also supports our broader goal of creating reusable AI agents capable of generalizing across platformer-level variants.
+	
 \section{AI Agents Development}
 The artificial intelligence system developed for this project leverages reinforcement learning (RL) to train agents capable of navigating and interacting with a 2D platformer environment. Implemented using Unity ML-Agents, the AI model learns through trial-and-error to execute gameplay behaviors such as jumping, attacking, and collecting objectives. This section details the core aspects of the AI system, including the action space, observation model, reward system, and the algorithm used to drive learning.
 \subsection{Action Space and Decision-Making}
@@ -1232,7 +1277,14 @@ Attack & Executes a melee attack when enemies are in range. \\ \hline
 These actions are abstracted through \texttt{PlayerActionModules.cs}, allowing the AI to activate specific movement or combat features through calls like \texttt{Jump()}, \texttt{Dash()}, and \texttt{Attack()}.
 
 \subsection{Modular Action Handling via Action Modules}
-In reinforcement learning systems integrated into video games, the agent's decision-making logic must ultimately be translated into real-time gameplay actions. To maintain modularity and scalability, this project introduces an abstraction layer called the Action Module, implemented in the \texttt{PlayerActionModules.cs} script. This component acts as a bridge between the \texttt{AgentController} and the character's mechanical systems, such as movement and combat.
+In reinforcement learning systems integrated into video games, the agent's decision-making logic must ultimately be translated into real-time gameplay actions. To maintain modularity and scalability, this project introduces an abstraction layer called the Action Module, implemented in the \texttt{PlayerActionModules.cs} script. As shown in figure \ref{fig:ActionModuleDia} this component acts as a bridge between the \texttt{AgentController} and the character's mechanical systems, such as movement and combat.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=8cm]{./Attachments/ActionModule.png}}
+\caption{ActionModule acts as a middleware linking AgentController decisions to gameplay subsystems such as movement and combat.}
+\label{fig:ActionModuleDia}
+\end{figure}
 
 \subsubsection{Purpose and Motivation}
 Rather than embedding low-level movement or attack logic within the agent class itself, \texttt{PlayerActionModules} exposes high-level behavior functions like \texttt{Move()}, \texttt{Jump()}, \texttt{Dash()}, \texttt{Drop()}, and \texttt{Attack()}. These functions internally route commands to specialized scripts like \texttt{BasicPlayerMovement} and \texttt{PlayerAttack}.
@@ -1369,14 +1421,14 @@ To implement this, the game utilizes a dual-layer rendering system:
 The main camera, which is responsible for rendering the actual game world as seen by the player. This includes fully detailed textures, lighting effects, UI elements, and all in-game objects categorized into specific layers such as Ground, Enemy, Prize, Checkpoint, etc.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=10cm]{./Attachments/EnvironmentDesign.png}}
+\fbox{\includegraphics[width=10cm]{./Attachments/PlayerPerspective.png}}
 \caption{Player perspective}\label{fig:PlayerPers}
 \end{figure}
 \item  \textbf{Agent Camera (AI Perspective):}
 A separate camera dedicated to the AI agent, rendering a simplified version of the game world. This camera ignores visual effects and detailed textures, instead utilizing a distinct ML sprite system composed of minimalistic geometric representations of in-game objects.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=10cm]{./Attachments/AiPerspective.png}}
+\fbox{\includegraphics[width=10cm]{./Attachments/AgentPerspective.png}}
 \caption{AI perspective}\label{fig:AIPers}
 \end{figure}
 \end{itemize}
@@ -1477,10 +1529,8 @@ Eliminated & -200 \\ \hline
 \end{table}
 These reward system is fine-tuned iteratively to ensure that the AI develops efficient and strategic movement patterns without exploiting rewards through unintended behaviors.\par
 
-\section{AI Algorithm Implementation}
-This project utilizes Proximal Policy Optimization (PPO) as the reinforcement learning algorithm for training both player and enemy agents. PPO is selected due to its compatibility with Unity ML-Agents and its proven performance in continuous and discrete action environments. This section focuses on the practical integration and usage of the algorithm within the custom 2D platformer project.
-\texttt{Behavior Configuration and Trainer Setup}
-Training is orchestrated using Unity’s ML-Agents toolkit, which enables direct integration between Unity and an external Python-based PPO trainer. Each trainable agent in the environment is assigned a Behavior Name via the Behavior Parameters component. A corresponding YAML configuration file defines the training hyperparameters.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%         SEE LATEST CHATGPT
 
 \section{Training Process and Setup}
 
@@ -1914,6 +1964,7 @@ This packaging and deployment framework transforms the trained agent from a rese
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% Experiments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Results and Discussion}
 This chapter presents an in-depth analysis of the AI agent’s performance following reinforcement learning training within the custom 2D platformer environment. The primary aim is to assess the extent to which the agent can autonomously navigate, interact with the environment, and make decisions aligned with its training objectives. Evaluation includes both quantitative metrics and qualitative observations derived from training logs, real-time visual monitoring, and gameplay demonstrations.
 
