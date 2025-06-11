@@ -284,46 +284,48 @@ RL & Reinforcement Learning \\
 
 \section{Background}
 
-Platformer games, characterized by side-scrolling environments, obstacle navigation, and real-time player control, have long been a staple of the video game industry. From iconic titles like Super Mario Bros. to modern indie successes like Hollow Knight, 2D platformers remain popular due to their accessible gameplay and design flexibility. However, designing intelligent in-game agents—whether as controllable characters or non-player characters (NPCs)—continues to pose technical challenges, particularly for developers with limited resources.\par
+Platformer games, characterized by side-scrolling environments, real-time control, and obstacle navigation, have remained a cornerstone of the video game industry. From early classics like Super Mario Bros. to modern indie titles such as Celeste and Hollow Knight, 2D platformers continue to thrive due to their accessible mechanics, expressive level design, and broad audience appeal. These games often serve as entry points for indie developers due to their design simplicity and well-established conventions.\par
 
-Artificial intelligence (AI) plays a pivotal role in creating engaging gameplay by simulating intelligent behavior. Traditional AI techniques in games, such as finite state machines or behavior trees, offer predictable and rule-based control systems that are effective but limited in adaptability. These approaches often struggle to scale across complex environments or accommodate emergent gameplay scenarios.\par
+A central component of platformer gameplay lies in the design of intelligent agents. Whether as playable characters or non-player characters (NPCs), these agents must exhibit responsive, believable behavior within dynamic environments. Traditionally, such behavior is implemented using finite state machines or behavior trees, rule-based systems that are straightforward to construct and maintain. However, these methods often produce rigid, predictable behavior that lacks adaptability in complex scenarios.\par
 
-Reinforcement learning (RL), a subfield of machine learning, provides a compelling alternative by enabling agents to learn behaviors through interactions with their environment. Unlike scripted AI, RL agents adapt to different contexts by optimizing their actions to maximize cumulative rewards. This trial-and-error learning paradigm has shown promising results in dynamic environments and is particularly well-suited for games that require exploration, timing, and coordination.\par
+In contrast, reinforcement learning (RL), a subfield of machine learning, offers a more flexible and scalable approach to agent behavior. By learning through trial-and-error interaction with the environment, RL agents discover policies that maximize long-term cumulative rewards. This paradigm enables AI agents to adapt autonomously to changes in game conditions, mechanics, and objectives. RL has shown great potential in various domains such as robotics, autonomous navigation, and advanced gameplay systems.\par
 
-Despite its promise, the use of RL in game development is largely constrained to research settings or high-budget projects. Training and deploying RL models demands expertise in both machine learning and software engineering, as well as significant computational resources. For small studios and independent developers, these requirements often place RL out of reach. Moreover, most existing RL agents are designed for specific game contexts, limiting their reuse across different projects or genres.\par
+Despite these advantages, the adoption of reinforcement learning in commercial game development remains limited. RL-based systems are typically confined to academic research or high-budget productions, primarily due to their steep learning curve, extensive training requirements, and lack of accessible tooling. Small studios and indie developers often lack the machine learning expertise, compute resources, and development time required to implement RL solutions effectively. Furthermore, most existing RL agents are purpose-built for specific games and environments, making them difficult to reuse or extend across projects.\par
 
-This project proposes a reusable and modular AI framework for 2D platformer games using reinforcement learning. The system is implemented within Unity and designed to simulate core player behaviors—such as walking, jumping, dashing, and obstacle avoidance—through a flexible architecture. Its modular structure enables developers to extend the agent’s capabilities (e.g., adding special attacks or advanced mechanics) without modifying the core decision-making logic.\par
+This project aims to address these challenges by developing a modular, reusable AI framework tailored for 2D platformer games. The system is built within the Unity engine and leverages reinforcement learning to enable agents to perform essential platformer actions, such as walking, jumping, dashing, and obstacle avoidance, using a flexible, extensible architecture. The core design supports integration with external mechanics, custom environments, and retraining workflows\par
 
 Although the focus is on 2D platformers, the framework is built with generalizability in mind. It aims to establish a foundation for developing scalable, adaptable AI agents that can be integrated into a range of game genres. By doing so, it addresses the gap between academic RL research and practical AI deployment in commercial game development, especially within the indie development space.\par
 
 \section{Problem Statement}
 
-While artificial intelligence has become a critical component in modern game development, many current AI systems suffer from poor adaptability, limited scalability, and a lack of reusability. These shortcomings are especially pronounced in the context of small or independent game studios, where technical expertise and computational resources are often constrained. Traditional game AI architectures—such as finite state machines and behavior trees—tend to produce rigid behaviors that are difficult to maintain or extend across new gameplay mechanics or level designs.\par
+Artificial intelligence is a critical component of modern video games, influencing enemy behavior, environmental interactivity, and automated testing. Yet for many small-scale and independent game studios, building intelligent, adaptive AI remains a significant hurdle. Traditional methods such as finite state machines and behavior trees dominate game AI implementation due to their ease of use and predictability. However, these approaches offer limited adaptability and scalability, often resulting in scripted, repetitive behaviors that require manual tuning and maintenance.\par
 
-Reinforcement learning offers a powerful alternative by enabling agents to learn from interaction rather than relying on predefined rules. However, RL-based solutions are often developed for narrow use cases and are tightly coupled to specific game mechanics. Consequently, transferring such agents to new games or even slightly modified environments typically requires retraining, restructuring, or extensive fine-tuning. This process introduces significant overhead, reducing the feasibility of using RL for most developers.\par
+Reinforcement learning presents a compelling alternative by enabling agents to learn optimal behaviors through experience rather than predefined rules. However, RL implementations are typically developed for narrow use cases and tightly coupled to specific environments. This specialization limits their transferability, an agent trained for one game cannot easily be applied to another without extensive retraining or reengineering. This lack of generalization undermines RL's practical value for indie developers seeking flexible solutions that can adapt to different mechanics and level designs.\par
 
-Moreover, the available RL frameworks often lack the modularity and documentation necessary for straightforward integration into existing projects. Pretrained agents, if available, are rarely reusable out-of-the-box and may not support features like modular action sets or customizable input pipelines. This restricts developers’ ability to adapt AI systems to their own design needs without substantial reengineering.\par
+Furthermore, most existing RL toolkits and models are not designed with reusability in mind. They often lack modularity, documentation, or support for customization. Developers must invest considerable effort to integrate RL agents into existing projects, let alone extend them with new mechanics such as double-jumping or combat behavior.\par
 
-To address these limitations, this project focuses on developing a generalizable RL-based AI agent for 2D platformer games. In this context, "solving" a game refers to the agent’s ability to complete platformer levels by performing fundamental actions—such as moving, jumping, avoiding hazards, and optionally collecting in-game items. The agent learns these behaviors autonomously through trial-and-error training within a custom-built Unity environment. Once trained, the model is packaged into a Unity-compatible asset that includes integration tools, modular behavior components, and clear extension points for future customization.\par
+This project seeks to address these limitations by delivering a reinforcement learning-based AI agent for 2D platformers that is not only pretrained but also modular, extensible, and easy to integrate. The agent learns to “solve” a platformer level by performing core gameplay actions, including traversal, object collection, and hazard avoidance, within a training environment constructed in Unity. Once trained, the model is exported as a Unity-compatible asset bundle that includes support components such as perception systems, action modules, and configuration files.\par
 
-By lowering the barrier to entry for reinforcement learning-based AI, this project aims to make intelligent agent development more accessible to indie developers. The outcome is not only a practical AI system for platformer games but also a scalable architectural framework that can be extended to a broader range of game genres and use cases.\par
+Importantly, the system is built to mimic the way human players generalize mechanical skills across games: a player who learns jumping and timing in one platformer can often apply that knowledge to another with similar mechanics. Likewise, this project aims to enable developers to reuse the pretrained agent across multiple games with comparable design principles, reducing training time, improving reliability, and supporting modular extension.\par
+
+By lowering the barrier to entry for reinforcement learning in game development, this project provides a practical AI framework that supports not just a single application, but a family of games within a genre. It offers an efficient, scalable alternative to handcrafted AI systems for small teams working under constrained development resources.\par
 
 \section{Objectives}
-The primary objective of this project is to develop reusable, pretrained AI agents for 2D platformer games, packaged as a modular Unity asset that is easy to integrate, extend, and retrain. Specific objectives include:
+The primary goal of this project is to develop reusable, pretrained AI agents for 2D platformer games, delivered as a modular Unity asset that is easy to integrate, customize, and extend. The solution is designed to address the practical needs of indie developers by offering scalable AI functionality without requiring extensive machine learning expertise. The specific objectives are outlined as follows:
 \subsection{Train Adaptive AI Agents for Platformer Mechanics}
 \begin{itemize}
-\item Train reinforcement learning (RL)-based agents capable of executing core platformer actions—walking, jumping, dashing, and hazard avoidance—within varied level designs.
-\item Enable both player and enemy AI to generalize across different gameplay scenarios without requiring full retraining.
+\item Train reinforcement learning (RL) agents capable of performing essential platformer behaviors, such as walking, jumping, dashing, and hazard avoidance, across varied level designs and gameplay scenarios.
+\item Enable the AI agents to adapt to different environments and tasks without requiring full retraining.
 \end{itemize}
 \subsection{Develop a Modular and Reusable Unity Package}
 \begin{itemize}
-\item Package the trained AI models and supporting systems into a Unity-compatible asset for straightforward integration.
-\item Create a modular framework that allows developers to adjust AI behavior and insert new mechanics without modifying the core architecture.
+\item Package the trained AI models and support systems into a Unity-compatible asset that can be easily imported into other projects.
+\item Design the architecture to be modular, allowing developers to add or remove functionality without modifying the core agent logic.
 \end{itemize}
 \subsection{Support Customization and Scalability}
 \begin{itemize}
-\item Implement an ActionModule system to facilitate the addition of new behaviors (e.g., double jump, special attack) through modular scripts.
-\item Ensure the system supports scalable AI behavior expansion for varying gameplay needs.
+\item Implement an Action Module system that acts as a middleware layer, enabling developers to integrate their own control scripts with the pretrained agent through a standardized interface
+\item Ensure the system is scalable to support additional mechanics such as double-jumping or ranged attacks by adding modular components.
 \end{itemize}
 \subsection{Establish a Generalizable AI Development Framework}
 \begin{itemize}
@@ -332,39 +334,39 @@ The primary objective of this project is to develop reusable, pretrained AI agen
 \end{itemize}
 \subsection{Deliver Comprehensive Documentation and Developer Resources}
 \begin{itemize}
-\item Provide detailed documentation, including setup instructions, customization workflows, and example use cases.
-\item Include tutorials, troubleshooting guides, and retraining guidelines for developers of varying experience levels.
+\item Include thorough documentation covering setup, customization workflows, and integration steps for different use cases.
+\item Provide example scenes, tutorials, and retraining guides to support developers with varying levels of experience.
 \end{itemize}
 
 \section{Scope of Work}
-This project encompasses the design, development, training, and packaging of a reinforcement learning-based AI system for 2D platformer games. The scope includes:
+This project is focused on the development of a reusable, pretrained AI framework for 2D platformer games using reinforcement learning techniques. The scope is defined by the genre, intended users, tools used, and practical boundaries that shape the project's direction.\par
 
-\subsection{Development of Game Environment and AI Agents}
+\subsection{Project Focus}
+
+The project is limited to the domain of 2D platformer games, chosen for their popularity, accessibility, and relevance to small and indie game development teams. The AI framework developed is intended to be integrated into Unity-based games, where agents must perform core platformer tasks such as movement, jumping, and hazard avoidance.
+
+\subsection{Development Scope}
+
+The scope includes the design of:
 \begin{itemize}
-\item Create a custom 2D platformer environment in Unity for training and evaluation of RL agents.
-\item Design and train player and enemy AI agents to effectively navigate, interact with, and respond to dynamic platforming challenges.
+\item A reinforcement learning-based AI agent capable of learning and performing platformer mechanics.
+\item A modular system for integrating trained agents into different Unity projects with minimal adjustments.
+\item A packaged Unity asset containing pretrained models, example environments, and documentation to support ease of use and further customization.
 \end{itemize}
 
-\subsection{Creation of a Modular Unity Asset Package}
+The project is designed with reusability, adaptability, and developer accessibility in mind, with a particular emphasis on supporting small game teams that may lack machine learning expertise.
+
+\subsection{Boundaries and Limitations}
+
 \begin{itemize}
-\item Build a Unity package containing pretrained models, core AI scripts, and example integration scenes.
-\item Ensure compatibility with common Unity project structures to facilitate easy adoption.
+\item The system is developed and tested solely for 2D platformer environments within Unity. Other genres or engines (e.g., 3D games, Unreal Engine) are not included in this scope.
+\item Only the player agent is trained in this phase. While the system is extensible to enemy agents, adversarial training is reserved for future work.
+\item The training process focuses on general platformer behavior rather than game-specific strategies, ensuring broad applicability at the expense of specialized behaviors.
+\item The reinforcement learning approach is based on the Proximal Policy Optimization (PPO) algorithm provided by the Unity ML-Agents toolkit. Alternative algorithms are not explored in this work.
 \end{itemize}
-\subsection{Implementation of ActionModule System for Extensibility}
-\begin{itemize}
-\item Develop a modular ActionModule interface that supports the addition of new player actions and enemy behaviors.
-\item Allow developers to extend gameplay mechanics without modifying existing AI logic.
-\end{itemize}
-\subsection{Evaluation and Testing of AI Performance}
-\begin{itemize}
-\item Evaluate AI generalization across multiple levels and configurations.
-\item Conduct automated testing using AI agents to identify game design flaws and assess balance.
-\end{itemize}
-\subsection{Framework and Documentation Delivery}
-\begin{itemize}
-\item Provide a structured, reusable framework for AI training, integration, and extension.
-\item Deliver comprehensive documentation, including step-by-step guides, API references, and example use cases to support both novice and experienced developers.
-\end{itemize}
+
+This scope provides a practical and clearly bounded framework for delivering a usable AI solution, while acknowledging limitations that define the context of the project's outcomes.
+
 \section{Project Schedule}
 The Gantt chart below (Figure \ref{fig:Gantt Chart}) illustrates the planned timeline for the project.
 \begin{figure}[H]
@@ -377,7 +379,7 @@ The Gantt chart below (Figure \ref{fig:Gantt Chart}) illustrates the planned tim
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Background Theory and Related Work}
 \section{Introduction}
-This chapter provides the essential background knowledge and theoretical foundations necessary to understand the development of adaptive artificial intelligence (AI) in game environments. It covers key concepts, technologies, and programming languages utilized in AI development, with a focus on machine learning techniques such as reinforcement learning and relevant level design principles. Additionally, this chapter will explore related research and existing solutions, offering insights into the current state of AI in game development.
+This chapter presents the foundational theories and background knowledge required to understand the development of adaptive artificial intelligence (AI) agents within game environments. It covers essential machine learning concepts, particularly reinforcement learning, as well as the design principles relevant to interactive and dynamic gameplay. Additionally, the chapter introduces the development tools and frameworks used in this project, followed by a review of related research in the field. By examining existing AI methodologies and comparing them to the proposed system, this chapter highlights the technological context and motivation behind the project's design choices.
 
 %This is how you add website url. -> \url{http://www.cpe.kmutt.ac.th}
 %Explain theory, algorithms, protocols, or existing research works and tools related to your work.
@@ -385,332 +387,257 @@ This chapter provides the essential background knowledge and theoretical foundat
 
 \section{Theories and Core Concepts}
 \subsection{Game Development}
-\subsubsection{Game Development Life Cycle}
-Game development is a complex and multifaceted process that involves various stages, from initial concept to the final product. The main stages include:
+Game development is a multidisciplinary process involving design, art, programming, and testing to create interactive digital experiences. This project focuses on 2D platformer games, a genre characterized by structured level design, real-time movement, and timing-based mechanics. Understanding how games are developed provides essential context for designing AI agents capable of functioning effectively in such environments.
+\subsubsection{Game Development Lifecycle}
+The process of developing a game typically consists of several phases, each building upon the previous:
 \begin{itemize}
-\item  \textbf{Pre-production:} Conceptualization, storyboarding, and planning of the game. This stage defines the genre, mechanics, platform, and overall vision for the game.
-\item  \textbf{Production:} The actual creation of the game, which includes coding, asset creation (art, sound, and animations), level design, and initial testing.
-\item  \textbf{Post-production:} Refining the game through bug fixes, balancing, optimization, and quality assurance. This is also when the game is released to the public, followed by ongoing support such as updates and patches.
+\item  \textbf{Pre-production:} This phase involves defining the game’s concept, genre, mechanics, art style, and development scope. It also includes creating design documentation and planning technical requirements.
+\item  \textbf{Production:} The core development phase where game assets and systems are built. This includes character controllers, UI, level design, animations, physics, and audio integration.
+\item  \textbf{Testing:} Debugging, performance testing, and gameplay balancing. AI behavior, especially if it is not deterministic, must be evaluated for reliability and consistency across different playthroughs.
+\item  \textbf{Post-production:} Final refinements, bug fixes, performance optimizations, and user feedback integration. This stage also includes publishing, updates, and maintenance.
 \end{itemize}
-Throughout all stages, collaboration among developers, designers, artists, and sound engineers is essential to creating a cohesive experience. Game development today often involves teams of varying sizes, from small indie developers to large studios with hundreds of team members.
+Game development often involves teams of varying sizes, from large studios with specialized departments to small indie teams handling multiple roles.
 \subsubsection{Game Design}
-Game design encompasses various elements that contribute to a game’s playability, engagement, and overall success:
+Game design defines the systems and elements that shape a player's experience. Core areas include:
 \begin{itemize}
 \item  \textbf{Game Mechanics:}
-The rules and systems that govern how the game works. These include the physics, player controls, objectives, and win/lose conditions.
-\item  \textbf{Story and Narrative:}
-The storyline or plot that guides the player through the game. This can range from minimal or abstract narratives to fully immersive stories with complex characters and world-building.
+The rules and interactions that define gameplay, movement, physics, progression, scoring, and objectives.
+\item  \textbf{Narrative Design:}
+Story elements that guide player engagement, from minimalistic setups to expansive, character-driven narratives.
 \item  \textbf{Level Design:}
-The creation of game environments and how players progress through them. Effective level design includes balancing challenge, pacing, and exploration, often introducing new elements at each stage to maintain player interest.
+Crafting environments that balance pacing, challenge, and progression. Good level design introduces new elements incrementally and encourages exploration.
 \item  \textbf{Assets:}
 Game assets refer to the components used to build the visual, auditory, and interactive elements of a game. These include:
 \begin{itemize}
 \item  \textbf{Visual Assets:} Textures, 3D models, 2D sprites, animations, and visual effects that define the game's appearance.
 \item  \textbf{Audio Assets:} Sound effects, background music, and character voices that create the auditory experience.
 \item  \textbf{Code Assets:} Scripts and algorithms that govern game mechanics, AI behavior, and interactive elements.
-\item  \textbf{UI Assets:} Icons, buttons, menus, and other user interface components.
+\item  \textbf{UI Assets:} Menus, HUDs, buttons, feedback indicators, and other user interface components.
 \end{itemize}
 Assets are the building blocks of any game, providing the necessary materials to bring concepts to life. Their quality and integration play a significant role in defining the overall aesthetic and functionality of the game.
 \item  \textbf{User Interface (UI) and User Experience (UX):}
 The design of menus, HUDs (heads-up displays), and the interaction flow. A clean and intuitive UI is critical for keeping players immersed in the game.
 \end{itemize}
+\subsubsection{Game Design in 2D Platformers}
+2D platformers are structured around character movement through levels composed of platforms, hazards, collectibles, and enemies. These games typically emphasize responsive controls, spatial awareness, timing, and feedback. Their mechanical clarity and visual simplicity make them ideal candidates for applying reinforcement learning techniques. Because platformers focus heavily on movement, navigation, and interaction with environmental objects, they provide a natural environment for testing AI performance in real-time gameplay contexts.\par
+This genre is particularly relevant for this project because it is often chosen by indie developers due to its approachable development scope and strong potential for innovation. Solving AI challenges in this context can yield reusable and broadly applicable solutions.\par
+\subsubsection{Game Teseting and Automation}
+Game testing is critical to ensuring gameplay functionality, balance, and quality. It involves systematic evaluation of mechanics, interactions, and edge cases. Testing also plays a central role in identifying bugs, optimizing performance, and assessing the effectiveness of AI systems.\par
+Traditionally, game testing is performed manually by QA testers or designers. This method is time-consuming and may not scale well with game complexity, especially for games with nonlinear progression, emergent behaviors, or multiple difficulty levels.\par
+Automated testing tools have become increasingly useful, particularly for repeated simulation of gameplay scenarios. AI agents and scripted bots can be used to simulate playthroughs, identify unbalanced mechanics, and detect hard-to-find bugs. These agents also enable consistent data collection, such as completion time, failure points, or action frequencies, which supports more informed design decisions.\par
+In recent years, machine learning has opened new possibilities for game testing. Reinforcement learning agents, for instance, can test levels by interacting adaptively with the environment, providing insight into player-like behavior. These methods are particularly valuable in open-ended or highly interactive games where traditional scripting approaches may fall short.\par
 \subsubsection{Challenges Faced by Developers}
+Game development, especially in small studios or solo efforts, presents several constraints:
 \begin{itemize}
-\item  \textbf{Resource Limitations:}
-Small teams often lack the budget and manpower to implement complex systems like advanced AI, detailed art, or high-end graphics
-\item  \textbf{Complexity of Game Design:}
-The more complex the game, the harder it is to manage. Creating a balanced and fun experience while ensuring that the game performs well across different platforms is a constant challenge.
-\item  \textbf{Market Saturation:}
-With the rise of digital storefronts and indie game platforms, the market is flooded with games, making it hard for any individual title to stand out.
-\item  \textbf{Time Constraints:}
-Many indie developers work on tight deadlines, often needing to finish a game within a limited period to avoid budget overruns or loss of momentum.
+\item \textbf{Resource Limitations:} Small teams often lack access to advanced hardware, dedicated AI engineers, or large-scale testing capabilities.
+\item \textbf{Complexity of Design:} Creating balanced mechanics and scalable systems becomes increasingly difficult as gameplay depth increases.
+\item \textbf{Time Constraints:} Indie projects frequently operate under tight timelines, requiring efficient workflows and rapid iteration cycles.
+\item \textbf{Market Competition:} High competition in the indie game market makes polish, responsiveness, and innovation essential for visibility and success.
 \end{itemize}
 \subsubsection{The Increasing Demand for Adaptive and Dynamic Gameplay}
 Players today expect more than static, predictable game experiences. They want games to react to their choices in real-time, creating a more dynamic and immersive experience\cite{apnews_ai_npc}. This demand has led to the integration of more advanced AI systems that can adapt and respond to player behavior in meaningful ways.\par
 Games like \emph{The Witcher 3}\cite{medium_witcher3_ai} and \emph{Horizon Zero Dawn}\cite{aiandgames_horizon} offer NPCs that respond realistically to the player’s actions, creating a sense of a living world. This trend toward dynamic and reactive gameplay is challenging for developers, especially smaller teams with limited resources, as it often requires implementing sophisticated AI and adaptive systems that can learn and evolve.
 
 \subsection{Artificial Intelligence}
-Artificial Intelligence (AI) \cite{fpgainsights_adaptive_ai}in gaming refers to the simulation of human-like intelligence and decision-making processes in game entities. It plays a vital role in enhancing the interactivity and immersion of games by enabling non-player characters (NPCs) to exhibit responsive and believable behaviors. AI in games can range from simple rule-based systems to sophisticated machine learning models that adapt and evolve over time.
-\subsubsection{Types of AI in Game Development}
+
+Artificial Intelligence (AI) in the context of game development refers to the simulation of intelligent behavior in non-player characters (NPCs), enemies, companions, or dynamic game systems\cite{fpgainsights_adaptive_ai}. AI systems allow games to respond to player actions, create believable worlds, and maintain a sense of challenge and immersion. While AI in games does not aim for human-level intelligence, it is designed to enhance interactivity and gameplay engagement by imitating decision-making and behavioral patterns.
+
+\subsubsection{Roles of AI in Games}
+AI serves various roles depending on the type and genre of the game. Common roles include:
 \begin{itemize}
-\item  \textbf{Finite State Machines (FSMs):}
-FSMs are one of the simplest AI systems used in games. They consist of a finite set of states (e.g., idle, attack, flee) and predefined transitions between these states based on specific conditions. FSMs are easy to implement but may lead to predictable and repetitive behaviors.
-\item  \textbf{Behavior Trees:}
-Behavior trees are hierarchical structures used to manage decision-making processes. They allow for more modular and reusable AI behaviors compared to FSMs, making them popular in modern game development for controlling NPCs.
-\item  \textbf{Utility-Based AI:}
-This system evaluates different actions based on a utility score, selecting the action with the highest score. Utility-based AI allows NPCs to make decisions based on dynamic priorities, leading to more flexible and context-aware behaviors.
-\item  \textbf{Pathfinding and Navigation:}
-AI-controlled entities often need to move through complex environments. Pathfinding algorithms like A* (A-star) are widely used to calculate the shortest or most efficient paths, avoiding obstacles and optimizing movement.
-\item  \textbf{Machine Learning in Games:}
-Machine learning (ML) introduces adaptability and dynamic behaviors that traditional systems cannot achieve. Techniques like reinforcement learning enable AI agents to learn from their interactions with the environment, improving their performance over time. These systems can produce more realistic, challenging, and unpredictable NPCs.
+\item \textbf{Enemy Behavior:} In action and platformer games, AI controls enemy movements, attack patterns, and responses to the player. It creates tension and challenge throughout gameplay.
+\item \textbf{Companions and Allies:} Some AI systems assist the player by following them, healing, or fighting alongside them. These behaviors often involve pathfinding and coordinated actions.
+\item \textbf{Environmental Dynamics:} AI can govern ambient world behaviors, such as wildlife, crowd flow, or weather systems, contributing to environmental immersion.
+\item \textbf{Procedural Content Generation:} AI can be used to dynamically generate terrains, levels, puzzles, or quests based on player progress and interaction.
+\item \textbf{Adaptive Difficulty and Personalization:} AI may adjust game difficulty based on the player’s performance or learning curve to maintain balance and engagement.
+\item  \textbf{Game Testing and QA:}AI agents can simulate player behaviors to help developers test game mechanics, uncover bugs, or evaluate gameplay balance.
 \end{itemize}
-\subsubsection{Applications of AI in Game Development}
+
+\subsubsection{Traditional Game AI Techniques}
+Historically, game AI has relied on rule-based systems due to their predictability, control, and ease of implementation. Common techniques include:
 \begin{itemize}
-\item  \textbf{NPC Behavior and Opponent AI:}
-AI is commonly used to control NPCs, making them act as enemies, allies, or neutral characters. The goal is to create behaviors that challenge and engage players without being overly predictable or frustrating.
-\item  \textbf{Procedural Content Generation (PCG):}
-AI can generate game assets such as levels, characters, and items dynamically. This enhances replayability and reduces development time by automating repetitive tasks.
-\item  \textbf{Game Testing and QA:}
-Adaptive AI agents can be trained to simulate player behaviors, identifying bugs, balancing gameplay, and stress-testing game mechanics during development.
-\item  \textbf{Player Profiling and Personalization}
-AI systems can analyze player data to adapt the gameplay experience, tailoring difficulty, content, and narratives to individual player preferences.
+\item \textbf{Finite State Machines (FSMs):} A widely used architecture where NPCs switch between states (e.g., idle, patrol, chase, attack) based on specific triggers or conditions. FSMs are simple to implement but become increasingly rigid and complex to maintain as behaviors grow.
+\item \textbf{Behavior Trees (BTs):} A hierarchical decision model where nodes represent conditions and actions. BTs offer improved modularity and scalability over FSMs and are common in modern AAA games.
+\item \textbf{Rule-Based Systems:} These use IF-THEN logic to determine actions based on predefined scenarios. Although they are transparent and interpretable, they are difficult to manage in dynamic or large-scale environments.
+\item \textbf{Pathfinding Algorithms:} Algorithms such as A* and Dijkstra’s are core to NPC movement, enabling efficient navigation around obstacles in 2D and 3D environments.
+\item \textbf{Scripting and Heuristics:} Custom scripts or scoring systems that allow designers to fine-tune behavior based on game-specific priorities.
 \end{itemize}
-\subsubsection{Advantages of AI in Game Development}
+
+\subsubsection{Limitations of Traditional Game AI}
+Despite their popularity, traditional AI approaches have several limitations:
 \begin{itemize}
-\item  \textbf{Dynamic and Immersive Gameplay:}
-Adaptive AI creates experiences that feel more responsive and personalized.
-\item  \textbf{Enhanced Development Efficiency:}
-Automating tasks like testing, content generation, and debugging reduces time and costs.
-\item  \textbf{Scalability:}
-AI systems can be designed to adapt across different game genres and mechanics, enabling reusable assets.s
+\item \textbf{Lack of Adaptability:} Rule-based agents cannot learn from the player’s behavior or from the game world, resulting in repetitive and predictable responses.
+\item \textbf{Poor Scalability:} Expanding FSMs or behavior trees for large games with complex mechanics can lead to brittle and unmanageable codebases.
+\item \textbf{Limited Emergent Behavior:} Pre-scripted systems are unable to develop novel or surprising behaviors, reducing the depth of player-AI interactions.
+\item \textbf{High Manual Effort:} Fine-tuning traditional AI requires extensive design time, playtesting, and ongoing maintenance, especially as content evolves.
 \end{itemize}
-\subsubsection{Challenges of AI in Game Development}
-\begin{itemize}
-\item  \textbf{Development Costs:}
-Advanced AI systems require significant computational resources and expertise, which can be a challenge for indie developers.
-\item  \textbf{Complexity in Balancing:}
-Creating an AI that is both challenging and fair to players requires careful design and testing.
-\item  \textbf{Unpredictable Outcomes:}
-In adaptive systems, emergent behaviors may lead to unintended gameplay consequences.
-\end{itemize}
-AI in game development is an ever-evolving field, driven by advances in computational power and machine learning algorithms. It holds tremendous potential for creating smarter, more immersive games while addressing development bottlenecks like scalability and automation.
+These limitations have fueled the growing interest in data-driven and learning-based approaches, such as machine learning and reinforcement learning, which allow AI agents to learn from experience and adapt to dynamic environments. These modern approaches, while more demanding in terms of computational resources and expertise, offer new possibilities for creating intelligent, responsive, and reusable game AI.\par
 
 \subsection{Machine Learning}
 
-Machine learning involves programming computers to optimize a performance criterion based on example data or past experiences. It entails constructing models capable of recognizing patterns or regularities in data, enabling systems to make predictions, adapt, or gain insights. Grounded in statistical theory, machine learning employs efficient algorithms to manage large datasets and perform complex computations. It has widespread applications in fields such as retail, finance, healthcare, and telecommunications, addressing challenges like prediction, optimization, and pattern recognition.\par
+Machine learning (ML) is a subfield of artificial intelligence that enables computer systems to learn patterns and make decisions from data without being explicitly programmed. Instead of using rule-based instructions, machine learning models improve their performance over time by learning from experience or data examples \cite{mitchell1997machine}. The core principle behind ML is that given enough data and the right algorithms, a system can learn to predict outcomes, recognize patterns, or take optimal actions.
 
-Machine learning algorithms are commonly categorized into three types based on their learning paradigm: supervised learning, unsupervised learning, and reinforcement learning.
+Machine learning can be broadly categorized into three main types:
 
-\subsubsection{Supervised Learning}
-Supervised learning relies on labeled datasets, where the correct outcome is predefined, to train models. These models predict outcomes based on input data and refine predictions by learning from errors. Supervised learning is frequently applied in classification and regression tasks.
 \begin{itemize}
-\item  \textbf{Naive Bayes:} Naive Bayes is a classification method based on Bayes Theorem, assuming that features are independent of each other. There are three types: Multinomial, Bernoulli, and Gaussian Naive Bayes. It's commonly used in text classification, spam detection, and recommendation systems.
-\item  \textbf{K-nearest neighbor:} KNN is a non-parametric algorithm that classifies data points based on proximity, usually using Euclidean distance. It’s simple and efficient for small datasets but becomes slower as the dataset grows. KNN is often used in recommendation engines and image recognition.
-\item  \textbf{Random forest:} Random forest is a flexible supervised algorithm for classification and regression, combining multiple decision trees to reduce variance and improve accuracy.
+\item \textbf{Supervised Learning:} Involves training a model on a labeled dataset, where the input-output pairs are known. The model learns to map inputs to outputs based on error minimization techniques. Common applications include image classification, sentiment analysis, and spam detection.
+\item \textbf{Unsupervised Learning:} The model is provided with unlabeled data and must identify hidden patterns or groupings. Techniques like clustering and dimensionality reduction fall into this category. Examples include customer segmentation and topic modeling.
+\item \textbf{Reinforcement Learning:} An agent learns to make decisions by interacting with an environment and receiving feedback in the form of rewards or penalties. Unlike supervised learning, the agent is not told what actions to take but must discover strategies that yield maximum cumulative reward through trial and error.
 \end{itemize}
 
-\subsubsection{Unsupervised Learning}
-Unsupervised learning models analyze unlabeled data to discover hidden patterns or structures. This approach is typically applied in clustering, dimensionality reduction, and anomaly detection.
+\subsubsection{Core Components of a Machine Learning System}
+
+Across these paradigms, most ML systems share common components:
 \begin{itemize}
-\item  \textbf{K-means clustering:} K-means clustering groups data points into K clusters based on their distance from the centroids. Larger K values create smaller, more granular groups, while smaller K values result in larger clusters. It's widely used in market segmentation, document clustering, and image compression.
-\item  \textbf{Principal component analysis (PCA):} PCA is a dimensionality reduction method that transforms data into new components, maximizing variance while reducing redundancy. Each successive component is uncorrelated and orthogonal to the previous one, capturing the most variance in fewer dimensions.
-\item  \textbf{Autoencoders:} Autoencoders use neural networks to compress and reconstruct data, with the hidden layer acting as a bottleneck. The process is split into \emph{encoding} (input to hidden layer) and \emph{decoding} (hidden layer to output).
+\item \textbf{Features and Labels:} Features are input variables used by the model to make predictions. Labels represent the expected output (used in supervised learning).
+\item \textbf{Training and Inference:} Training refers to the phase where the model learns from data. Inference is the process of using the trained model to make predictions on new, unseen inputs.
+\item \textbf{Evaluation Metrics:} Accuracy, precision, recall, and F1-score are common metrics used to evaluate how well a model performs.
 \end{itemize}
 
-\subsubsection{Reinforcement Learning}
-Reinforcement learning\cite{mathworks_rl} allows an agent to learn by interacting with an environment to achieve a specific goal. Mimicking trial-and-error learning, RL optimizes actions using rewards for goal-oriented behaviors and penalties for undesirable actions. This iterative process helps the agent refine its strategy to maximize cumulative rewards.
+In the context of game development, reinforcement learning is particularly relevant because it maps naturally to sequential decision-making and dynamic environments. It enables agents to adapt without the need for hand-coded logic, which is especially valuable in large or interactive game worlds. \cite{sutton2018reinforcement}.
 
-Key Components of RL:
+\subsection{Reinforcement Learning}
+
+Reinforcement Learning (RL) is a machine learning paradigm where an agent learns to make sequential decisions by interacting with an environment. At each time step, the agent observes the current state of the environment, chooses an action, and receives feedback in the form of a scalar reward. Through repeated interactions, the agent adjusts its behavior based on trial and error to maximize its cumulative reward. Over time, it develops a policy, a strategy for selecting actions based on environmental states, that improves decision-making performance across episodes \cite{sutton2018reinforcement}.
+
+Reinforcement learning problems are commonly modeled using a Markov Decision Process (MDP), which consists of the following components \cite{MDPRohan}:
 \begin{itemize}
-\item  \textbf{Agent:} The learner or decision-maker.
-\item  \textbf{Environment:} The system with which the agent interacts.
-\item  \textbf{Actions:} Choices available to the agent.
-\item  \textbf{Rewards:} Feedback to guide the agent's learning process.
-\item  \textbf{Policy:} The strategy determining the agent's actions.
+\item \textbf{States (S):} The set of all possible configurations of the environment, denoted $s \in S$.
+\item \textbf{Actions (A):} The set of all actions the agent can take, denoted $a \in A$.
+\item \textbf{Transition Probability (P):} A probability distribution $P(s'∣s,a)$ that defines the likelihood of transitioning to a new state $s'$ given the current state $s$ and action $a$.
+\item \textbf{Reward Function (R):} A function $R(s,a,s')$ or simply $R(s)$, which defines the scalar feedback the agent receives after taking action $a$ in state $s$ and landing in state $s'$.
+\item \textbf{Policy ($\pi$):} A strategy or mapping from states to actions that the agent follows, $\pi(a∣s)$, indicating the probability of taking action $a$ given state $s$.
+\item \textbf{Value Function (V):} The expected cumulative reward that an agent can achieve starting from a particular state under a given policy.
+\item \textbf{Environment:} The external system or simulator that provides observations, accepts actions from the agent, and returns new states and rewards. It defines the dynamics and constraints of the learning problem.
 \end{itemize}
+
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=10cm]{./Attachments/ReinforceModelDia.png}}
-\caption{Reinforce Learning Model Diagram}\label{fig:ReinforceModelDia}
+\fbox{\includegraphics[width=8cm]{./Attachments/ReinforceModelDia.png}}
+\caption{RL Process Diagram illustrating the interaction between the Agent and Environment.}\label{fig:ReinforceModelDia}
 Source:
 \href{https://www.mathworks.com/help/reinforcement-learning/ug/what-is-reinforcement-learning.html} {https://www.mathworks.com/help/reinforcement-learning/ug/what-is-reinforcement-learning.html}
 \end{figure}
-In game development, RL is particularly useful for training adaptive AI that can learn and evolve based on player interactions. This enables the creation of NPCs with more dynamic and challenging behaviors, as well as automated game testing agents that evaluate game mechanics and balance.
-\subsection{Reinforcement Learning}
-Reinforcement learning (RL) focuses on training agents to make sequences of decisions by interacting with an environment. The agent learns to optimize a long-term reward by observing states, taking actions, and receiving feedback in the form of rewards or penalties. This section explores key RL algorithms relevant to game development and their applications.
-\subsubsection{Q-Learning}\cite{datacamp_q_learning}
-Q-Learning is one of the simplest RL algorithms that builds a Q-value table to represent the expected future rewards for every state-action pair.\par
-\textbf{Mathematical Foundation} \\
-The Bellman Equation updates the Q-value for a given state-action pair iteratively
+
+As shown in Figure \ref{fig:ReinforceModelDia}, the environment provides observations and rewards based on the agent’s actions, completing the learning loop. The reinforcement learning algorithm updates the policy to favor actions that lead to higher expected rewards.
+
+\subsubsection{Reinforcement Learning in Video Games}
+
+In video games, RL enables agents to learn complex behaviors by trial and error, without the need for manually scripted rules. For instance, in a 2D platformer environment, the agent may learn to walk, jump, dash, avoid enemies, and collect items. The state might include the player’s position, velocity, health status, or proximity to obstacles. Actions could involve movement directions or ability triggers, and rewards can be tied to reaching checkpoints, avoiding damage, or completing levels.
+
+\subsubsection{Temporal Credit Assignment}
+
+One unique aspect of RL is handling delayed rewards. Agents must learn to associate long-term outcomes with earlier decisions, a challenge known as the temporal credit assignment problem. For example, a jump executed early in a level may lead to avoiding death several seconds later, and the RL system must discover that causal link through repeated exploration.
+
+\subsubsection{Exploration vs. Exploitation}
+
+A fundamental challenge in RL is the trade-off between exploration (trying new actions to discover rewards) and exploitation (choosing known actions that yield high rewards). Effective training strategies balance these two aspects to ensure the agent continues to discover optimal behaviors without getting stuck in local minima.
+
+\subsubsection{Episode-Based Learning and Reset Logic}
+
+RL training typically occurs across episodes, bounded simulations of gameplay that end upon success, failure, or time limit. After each episode, the environment is reset, allowing the agent to explore new sequences and refine its strategy over time.
+
+These characteristics make RL an ideal candidate for training adaptive game agents that can handle non-deterministic conditions and learn effective strategies without explicit programming.
+
+\section{Proximal Policy Optimization (PPO)}
+
+Proximal Policy Optimization (PPO) is a reinforcement learning algorithm introduced by Schulman et al. \cite{schulman2017ppo} as a more efficient and practical alternative to earlier policy optimization methods such as Trust Region Policy Optimization (TRPO). PPO strikes a balance between theoretical robustness and implementation simplicity, making it highly suitable for complex and high-dimensional environments such as video games.
+
+\subsubsection{Policy Gradient Methods and TRPO}
+
+In standard policy gradient methods, the agent updates its policy by maximizing the expected return through gradient ascent. The surrogate objective for the policy gradient is given by:
+
 \begin{equation}
-Q(s, a) \gets Q(s, a) + \alpha(r + \gamma max_{a}(Q(s', a')) - Q(s, a))
+\hat{g} = \mathbb{E}_t \left[ \nabla_{\theta} \log \pi_{\theta}(a_t | s_t) \hat{A}_t \right]
 \end{equation}
+
+Where:
 \begin{itemize}
-\item $Q(s,a)$: Current Q-value for state $s$ and action $a$.
-\item $s$: Current state
-\item $a$: Current action
-\item $r$: Reward received after taking action $a$ in state $s$
-\item $a'$: Next action
-\item $s'$: Next state
-\item $\alpha$: Learning rate, controlling the size of the update step.
-\item $\gamma$: Discount factor, determining the importance of future rewards.
-\end{itemize}
-\textbf{Key Features}
-\begin{itemize}
-\item Off-policy: It learns the optimal policy independently of the agent’s actions.
-\item Suitable for discrete and small state-action spaces.
-\end{itemize}
-\textbf{Use Case in Games} \\
-Training AI for grid-based games like Snake or Pac-Man.\par
-\textbf{Psuedocode}
-\begin{algorithm}
-\caption{Q-Learning Algorithm}\label{alg:QLA}
-\begin{algorithmic}
-\State Initialize Q-table with zeros
-\For{\texttt{each episode}}
-\State Initialize state s
-\While{\texttt{not done}}
-	\State Choose action a using epsilon-greedy policy
-	\State Take action $a$, observe reward $r$ and next state $s'$	
-	\State  Update Q-value:
-	\State  $Q(s, a) \gets Q(s, a) + \alpha * (r + \gamma * max(Q(s', a')) - Q(s, a))$
-	\State $s = s'$
-\EndWhile
-\EndFor
-\end{algorithmic}
-\end{algorithm}
-\subsubsection{Deep Q-Learning (DQN)}\cite{pytorch_dqn_tutorial}
-DQN scales Q-Learning to environments with continuous or high-dimensional state spaces by approximating the Q-function using a deep neural network.\par
-\textbf{Enhancements over Q-Learning:}
-\begin{itemize}
-\item  \textbf{Experience Replay:} Stores past transitions $(s,a,r,s')$ in a replay buffer, sampling mini-batches for training to reduce correlation.
-\item  \textbf{Target Network:}  A separate network for computing target Q-values, updated less frequently to stabilize training.
-\end{itemize}
-\textbf{Key Equations} \\
-Update the neural network weights $\theta$ by minimizing the loss:
-\begin{equation}
-L(\theta) = 	\mathbb{E}_{(s,a,r,s')}[(r + \gamma max_{a}Q(s',a;\theta^-)-Q(s,a;\theta))^2]
-\end{equation}
-\begin{itemize}
-\item $L(\theta)$: The loss function, a measure of how far the model's predictions are from the true or desired values.
-\item $Q(s,a;\theta)$: $Q(s,a)$ approximate using neural network $\theta$.
-\item $\theta$: Parameters of a neural network used to approximate a function.
-\item $\mathbb{E}$: The average value of the loss across sampled data points.
-\end{itemize}
-\textbf{Use Case in Games} \\
-Training agents in platformers, complex strategy games, or visual navigation tasks.\par
-\textbf{Psuedocode}
-\begin{algorithm}
-\caption{Deep Q-Learning Algorithm}\label{alg:DQLA}
-\begin{algorithmic}
-\State Initialize replay buffer and Q-network
-\For{\texttt{each episode}}
-\State Initialize state s
-\While{\texttt{not done}}
-	\State Choose action a using epsilon-greedy policy
-	\State Take action $a$, observe reward $r$ and next state $s'$	
-	\State Store transition (s, a, r, s') in replay buffer
-	\State Sample mini-batch from replay buffer
-	\State Compute target: $y = r + \gamma max(Q_target(s', a'))$
-	\State Update Q-network using gradient descent
-	\State Periodically update target network
-\EndWhile
-\EndFor
-\end{algorithmic}
-\end{algorithm}
-\subsubsection{Policy Gradient Methods}\cite{PGA}
-Policy gradient methods optimize the policy directly by maximizing the expected reward.\par
-\textbf{Policy Representation} \\
-The policy is parameterized as $\pi_{\theta}(a|s)$, where $\theta$ are the weights of the model. \\
-\textbf{Objective Function}
-\begin{equation}
-J(\theta) = \mathbb{E}_{\pi_{\theta}}[\sum_{t} \gamma^{t}r_{t}]
-\end{equation}
-\textbf{Gradient Update:} \\
-Using the policy gradient theorem:
-\begin{equation}
-\nabla_{\theta}J(\theta) = \mathbb{E}[\nabla_{\theta}log\pi_{\theta}(a|s)R]
-\end{equation}
-where $R$ is the cumulative reward.\par
-\textbf{Use Case in Games} \\
-Training agents in games requiring smooth control, such as racing or flight simulators.\par
-\textbf{Psuedocode}
-\begin{algorithm}
-\caption{Policy Gradient Methods}\label{alg:PGM}
-\begin{algorithmic}
-\State Initialize policy network
-\For{\texttt{each episode}}
-\State Collect trajectory of states, actions, and rewards
-\State Compute discounted rewards for each state
-\State Update policy network to maximize log-probability of actions weighted by rewards
-\EndFor
-\end{algorithmic}
-\end{algorithm}
-\subsubsection{Proximal Policy Optimization (PPO)}\cite{datacamp_ppo_tutorial}
-PPO improves policy gradient methods by introducing a clipped objective to ensure stable updates.\par
-\textbf{Objective Function}
-\begin{equation}
-L^{CLIP}(\theta) = \mathbb{E}[\min(r_{t}(\theta)A_{t}, clip(r_{t}(\theta), 1 - \epsilon, 1 + \epsilon)A_{t}]
-\end{equation}
-where $r_{t}(\theta)$ is the probability ratio, $A_{t}$ is the advantage estimate, and $\epsilon$ is a hyperparameter for clipping.\par
-\textbf{Key Features}
-\begin{itemize}
-\item Prevents large policy updates.
-\item Balances performance and training stability.
-\end{itemize}
-\textbf{Use Case in Games} \\
-Robust AI for large-scale multi-agent systems or highly variable environments.\par
-\textbf{Psuedocode}
-\begin{algorithm}
-\caption{Proximal Policy Optimization}\label{alg:PPO}
-\begin{algorithmic}
-\For{\texttt{iteration=1, 2, ...}}
-\State Collect trajectories using current policy
-\State Compute advantages using value function
-\State Update policy network using clipped surrogate objective
-\State Update value network to reduce value estimation error
-\EndFor
-\end{algorithmic}
-\end{algorithm}
-\subsubsection{Actor-Critic Methods}
-Actor-Critic combines policy optimization (actor) with value function estimation (critic).\par
-\textbf{Advantages} 
-\begin{itemize}
-\item Prevents large policy updates.
-\item Balances performance and training stability.
-\end{itemize}
-\textbf{Variants}
-\begin{itemize}
-\item  \textbf{A2C:} Uses synchronous updates with multiple workers.
-\item  \textbf{A3C:} Parallelizes training by running multiple agents asynchronously.
-\end{itemize}
-\textbf{Use Case in Games} \\
-Real-time strategy games requiring fast adaptation.\par
-\textbf{Psuedocode}
-\begin{algorithm}
-\caption{Actor-Critic Methods}\label{alg:ACM}
-\begin{algorithmic}
-\For{\texttt{each iteration}}
-\State Collect trajectories from actor network
-\State Compute value targets using critic network
-\State Update actor to maximize policy objective
-\State Update critic to minimize value estimation error
-\EndFor
-\end{algorithmic}
-\end{algorithm}
-\subsubsection{Multi-Agent Reinforcement Learning (MARL)}
-In MARL, multiple agents learn and interact in a shared environment, adapting strategies collaboratively or competitively.\par
-\textbf{Key Challenges} 
-\begin{itemize}
-\item Coordination among agents.
-\item Balancing exploration and exploitation in dynamic environments.
-\end{itemize}
-\textbf{Applications in Games}
-\begin{itemize}
-\item Multiplayer strategy games.
-\item Cooperative tasks in simulation-based training.
+\item $s_t$: The state of the environment at time step $t$.
+\item $a_t$: The action taken by the agent at time step $t$.
+\item $\theta$: The parameter vector of the policy network (e.g., weights in a neural network).
+\item $\hat{g}$: The estimated policy gradient. It determines the direction in which the policy parameters should be updated to improve expected rewards.
+\item $\mathbb{E}t[\cdot]$: Expectation taken over timesteps $t$. This indicates that the gradient is averaged over a batch of sampled trajectories or steps.
+\item $\nabla_{\theta}$: Gradient operator with respect to the policy parameters $\theta$.
+\item $\pi_{\theta}(a_t | s_t)$: The stochastic policy. It defines the probability of taking action $a_t$ given the current state $s_t$ under the policy parameterized by $\theta$.
+\item $\log \pi_{\theta}(a_t | s_t)$: The log-probability of selecting action $a_t$ in state $s_t$. This is used because its gradient provides an unbiased estimate for the policy update.
+\item $\hat{A}_t$: The advantage estimate at time $t$, indicating how much better (or worse) an action is compared to the average performance at that state. A positive advantage encourages repeating the action, while a negative advantage discourages it.
 \end{itemize}
 
-\begin{table}[H]
-\caption{Comparison of RL Algorithms}\label{tbl:ComparisonofRLAlgorithms}
-\renewcommand{\arraystretch}{1.5} % Increase row height
-\setlength{\tabcolsep}{4pt} % Adjust column padding
-\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
-\hline
-\textbf{Algorithm} & \textbf{Advantages} & \textbf{Limitations} & \textbf{Suitable Games} \\ \hline
-\textbf{Q-Learning} & Simple, effective for small problems. & Struggles with large state spaces. & Grid-based games, Puzzles \\ \hline
-\textbf{Deep Q-Learning (DQN)} & Handles complex state spaces. & Computationally intensive. & Visual games \\ \hline
-\textbf{Policy Gradient} & Works well in continuous action spaces. & Susceptible to instability. & Racing, Flight simulators \\ \hline
-\textbf{PPO} & Stable, efficient in diverse scenarios. & Trade-off between stability and speed. & Scalable multi-agent games \\ \hline
-\textbf{Actor-Critic} & Fast convergence, suitable for real-time games. & Requires careful tuning. & Real-time strategy games, Simulators \\ \hline
-\textbf{MARL} & Enables collaborative/competitive AI. & Complexity increases with agent count. & Multiplayer games, Co-op challenges \\ \hline
-\end{tabularx}
-\end{table}
+While effective, naive gradient ascent may lead to excessively large updates that destabilize training. To address this, TRPO introduces a constraint based on the Kullback–Leibler (KL) divergence between the old and new policy distributions:
+
+\begin{equation}
+\max_{\theta} \ \mathbb{E}_t \left[ \frac{\pi_{\theta}(a_t \mid s_t)}{\pi_{\theta_{\text{old}}}(a_t \mid s_t)} \hat{A}_t \right] \quad \text{subject to} \quad \mathbb{E}_t \left[ KL\left[ \pi_{\theta_{\text{old}}}(\cdot \mid s_t) \,\|\, \pi_{\theta}(\cdot \mid s_t) \right] \right] \leq \delta
+\end{equation}
+\newpage
+Where:
+\begin{itemize}
+\item $\theta$: Current parameters of the policy being optimized.
+\item $\theta_{\text{old}}$: Parameters of the policy before the update (used as a baseline for measuring change).
+\item $\pi_{\theta}(a_t \mid s_t)$: Probability of taking action $a_t$ in state $s_t$ under the current policy.
+\item $\pi_{\theta_{\text{old}}}(a_t \mid s_t)$: Probability of taking the same action under the old policy.
+\item $\hat{_A}t$: Estimated advantage function at time step $t$, which represents how much better or worse the taken action was compared to the average.
+\item $\frac{\pi{\theta}(a_t \mid s_t)}{\pi_{\theta_{\text{old}}}(a_t \mid s_t)}$: Importance sampling ratio (also known as the probability ratio), which corrects for the fact that data was collected under the old policy.
+\item $\mathbb{E}t[\cdot]$: Expectation over time steps or sampled trajectories.
+\item $KL[\cdot ,|, \cdot]$: Kullback–Leibler divergence, a measure of how different two probability distributions are.
+\item $KL\left[ \pi{\theta_{\text{old}}}(\cdot \mid s_t) ,|, \pi_{\theta}(\cdot \mid s_t) \right]$: KL divergence between the old policy and the new policy at a given state. This measures how much the new policy has changed relative to the old one.
+\item $\delta$: A small positive threshold (hyperparameter) that bounds how much the new policy is allowed to deviate from the old policy. It serves as a trust region constraint.
+\end{itemize}
+
+This formulation ensures that the policy improvement step does not shift the agent's behavior too drastically, which helps maintain stable and reliable learning. Although effective, TRPO's reliance on second-order optimization and the need to compute the KL divergence make it relatively difficult to implement and compute-intensive.
+
+\subsubsection{Clipped Surrogate Objective}
+PPO simplifies the TRPO constraint by introducing a clipped surrogate objective that approximates trust region behavior without explicitly computing second-order derivatives. The clipped objective is defined as:
+
+\begin{equation}
+L^{\text{CLIP}}(\theta) = \mathbb{E}_t \left[ \min \left( r_t(\theta) \hat{A}_t, \ \text{clip}\left(r_t(\theta), 1 - \epsilon, 1 + \epsilon\right) \hat{A}_t \right) \right]
+\end{equation}
+
+Where:
+\begin{itemize}
+\item $r_t(\theta) = \frac{\pi_{\theta}(a_t | s_t)}{\pi_{\theta_{\text{old}}}(a_t | s_t)}$: Probability ratio between the new and old policy.
+\item $\epsilon$: Clipping threshold (typically 0.1 to 0.2) controlling how much the policy is allowed to change per update.
+\end{itemize}
+
+This objective penalizes updates that cause large policy shifts, effectively constraining updates within a small neighborhood of the old policy, thereby maintaining stability while encouraging learning progress.
+
+\subsubsection{Combined Objective and Additional Terms}
+The final PPO objective combines the clipped policy loss with additional components: a value function loss for accurate reward estimation and an entropy bonus to encourage exploration. The complete loss function is:
+
+\begin{equation}
+L^{\text{PPO}} = \mathbb{E}_t \left[ L^{\text{CLIP}}_t(\theta) - c_1 L^{\text{VF}}_t(\theta) + c_2 S[\pi_{\theta}](s_t) \right]
+\end{equation}
+
+Where:
+\begin{itemize}
+\item $L^{\text{CLIP}}_t(\theta)$: Clipped surrogate policy loss at time step $t$.
+\item $L^{\text{VF}}_t(\theta)$: Squared error between predicted and target value estimates (value loss).
+\item $S\pi_{\theta}$: Entropy of the policy at state $s_t$ to promote exploration.
+\item $c_1$, $c_2$: Coefficients that control the weighting of the value loss and entropy bonus, respectively.
+\end{itemize}
+
+
+\subsection{Advantages and Suitability for Game Environments}
+
+PPO has demonstrated high empirical performance in both discrete and continuous control problems, including benchmark environments like Atari and MuJoCo. Key advantages include:
+\begin{itemize}
+\item Simplicity of implementation using standard deep learning frameworks.
+\item High training stability and robustness across different hyperparameters.
+\item Suitability for environments with high-dimensional or stochastic observations.
+\end{itemize}
+
+In the context of this project, PPO is used to train adaptive agents for 2D platformer games, where actions such as jumping, dashing, and avoiding hazards require both temporal coordination and spatial awareness. PPO’s clipping mechanism ensures that learning is stable and reliable, even in complex environments with diverse platforming mechanics and variable reward structures.
 
 \section{Development Tools}
 
-\subsection{Unity}
-Unity is a versatile and widely-used game development engine renowned for its ease of use, flexibility, and strong support for both 2D and 3D projects. It was chosen for this project due to its compatibility with machine learning tools, efficient workflow, and robust asset pipeline. Unity provides a range of tools for AI development, including the Unity ML-Agents Toolkit, NavMesh systems, and animation controllers, which enable the creation of intelligent and adaptive behaviors. These tools allow AI agents to interact with their environment, learn from rewards, and optimize performance effectively.
+\subsection{Unity Game Engine}
+Unity is a widely adopted cross-platform game engine known for its real-time rendering capabilities, visual editing tools, and support for both 2D and 3D games. This project uses Unity as the central development platform to create, train, and test reinforcement learning agents in a custom 2D platformer environment.
+
+\begin{itemize}
+\item \textbf{2D Platformer Development:} Unity’s native 2D systems—Tilemap Editor, Rigidbody2D physics, BoxCollider2D, and Animation system, enable rapid prototyping of movement, hazards, and level layout.
+\item \textbf{Scene Management:} Unity's visual editor simplifies environment creation, allowing real-time adjustments to platform layouts, spawn points, and camera logic.
+\item \textbf{Real-Time Rendering and UI:} Unity's built-in rendering pipeline supports layered camera views and overlays.
+\end{itemize}
 
 %\begin{figure}[!h]
 %\centering
@@ -718,19 +645,17 @@ Unity is a versatile and widely-used game development engine renowned for its ea
 %\caption{Unity Logo}\label{fig:UnityLogo}
 %\end{figure}
 
+\subsection{Unity ML-Agents Toolkit}
+Unity ML-Agents Toolkit is an open-source plugin that enables reinforcement learning inside Unity environments. It provides seamless integration between game scenes and Python-based training scripts.
+
 \begin{itemize}
-\item  \textbf{ML-Agents Capabilities}
-Unity’s ML-Agents\cite {mlagents_docs} Toolkit is a robust feature for integrating machine learning into game development. It supports training AI agents using techniques like reinforcement learning (RL), imitation learning, and other advanced approaches. Key features include:
-\begin{itemize}
-\item  \textbf{Reinforcement Learning:} ML-Agents supports deep reinforcement learning (DRL), enabling agents to learn through interactions with the environment by maximizing cumulative rewards. This is particularly suitable for developing adaptive AI behaviors in platformer games.
-\item  \textbf{Training Environments:} It simplifies the creation of training environments, allowing agents to interact with dynamic game worlds, respond to stimuli (e.g., obstacles or goals), and improve their performance iteratively.
-\item  \textbf{Training with Multiple Agents:} The toolkit supports simultaneous training of multiple agents in the same environment, ideal for creating coordinated enemy behaviors or competitive agents.
-\item  \textbf{Sensor Integration:} ML-Agents accommodates various sensors (e.g., visual, ray-casting, and custom inputs), enabling agents to gather feedback from the game world for informed decision-making.
-\item  \textbf{Model Export:} Trained models can be exported in the ONNX (Open Neural Network Exchange) format for seamless deployment in Unity, integrating advanced AI behavior into gameplay.
+\item \textbf{Agent API:} Built-in C\# components such as Agent, BehaviorParameters, and DecisionRequester abstract away low-level control and allow for simple configuration of action and observation spaces.
+\item \textbf{Flexible Perception:} ML-Agents supports both vector observations and visual observations from dedicated agent cameras.
+\item \textbf{Multiple Agents and Parallel Training:} The toolkit supports training multiple agents in parallel within a single environment to accelerate data collection and learning.
+\item \textbf{ONNX Inference:} Trained models are exported to the ONNX format and loaded directly into Unity for runtime inference.
 \end{itemize}
-\item  \textbf{2D Game Support:}
-Unity's native 2D tools, including Tilemaps, physics, and animation systems, streamline the creation of platformer environments. This aligns perfectly with the project's goals by facilitating a smooth workflow for designing levels and mechanics.
-\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{C\#}
 C\# is Unity's primary programming language, offering an optimal balance of performance, ease of use, and flexibility. It is instrumental in implementing game mechanics and AI behaviors.
@@ -790,7 +715,7 @@ AI is an important tool for creating interesting yet challenging gameplay, parti
 \fbox{\includegraphics[width=10cm]{./Attachments/AITechniquesin2DPlatformerGames.png}}
 \caption{In a 2D platform game, pathfinding nodes are shown as ellipse with corresponding indexes and connections on the map.}\label{fig:AITechniq}
 Source:
-\href{https://www.diva-portal.org/smash/get/diva2\%3A4762/FULLTEXT01.pdf?utm\_source=chatgpt.com}{https://www.diva-portal.org/smash/get/diva2\%3A4762/FULLTEXT01.pdf?utm\_source=chatgpt.com}
+\href{https://www.diva-portal.org/smash/get/diva2\%3A4762/FULLTEXT01.pdf?utm\_source=chatgpt.com}{https://www.diva-portal.org/smash/get/diva2\%3A4762/FULLTEXT01.pdf?utm}
 \end{figure}
 Behavior trees and FSMs make for an alternative pseudo-scientific contrast, they would be a fit in the context of game AI. FSMs provide a fixed, predictable AI behavior strategy, tending to have an extraordinarily rigid structure that requires much tuning to reproduce complex interactions. Behavior trees are about modularity and scalability, but still, they lack dynamically generated structures for decision making. Persson's solution offers a system that is more dynamic in character than pure FSM-based behavior systems but suffers from a downslope in computation.\par
 \newpage
@@ -806,9 +731,9 @@ Source:
 Smith's algorithmic approach, in contrast to machine learning-based navigation systems, allows for a greater degree of control and responsiveness. However, it is still limited. Deep reinforcement learning (DRL) would be an alternative approach to AI navigation, where agents would learn movement strategies through trial and error. On the one hand, the advantage of DRL-based AI is its adaptation to a dynamically changing environment; this, of course, comes alongside their requirement of extensive training and computation resources. Smith's method, conversely, is fast and reliable during runtime, for their physics-based paths are pre-calculated, yet they lack the adaptability of AI solutions based on DRL to tackle the unforeseen changes of levels.\par
 \newpage
 \section{Gap Analysis}
-While artificial intelligence has made notable strides in 2D platformer games, several recurring limitations remain evident across the literature. For instance, in Sriram’s (2019) project on automated playtesting using reinforcement learning, the AI agent was trained to navigate platformer levels for the purpose of validating level design. Although the study effectively showcased how deep reinforcement learning (DRL) can be applied in testing environments, the focus remained on single-agent behavior in relatively static and simplified levels. There was no interaction with dynamic enemies or evolving objectives, and the system lacked the flexibility to handle more diverse or unpredictable challenges—conditions often present in real gameplay.Similarly, Persson (2005) presented a foundational overview of traditional AI techniques in 2D platformers, including pathfinding, line-of-sight mechanics, and behavior trees. These techniques were—and still are—widely used due to their efficiency and ease of implementation. However, they rely on rule-based logic, which tends to produce predictable and rigid behavior. These systems often fail to generalize well when faced with new level structures or gameplay rules, limiting their usefulness in adaptive game environments or procedural content systems.Smith (2021) explored physics-based pathfinding using A* algorithms and platform graphs, providing a practical method for navigating complex 2D spaces. His work contributes valuable insights into deterministic path planning, especially in tightly constrained levels. However, this approach assumes a largely fixed environment and doesn’t incorporate learning or adaptation over time. As a result, agents guided solely by static pathfinding algorithms struggle when unexpected gameplay changes occur—such as moving platforms, adversarial agents, or real-time hazards.Taken together, these studies highlight a clear opportunity for improvement: while each offers effective strategies for solving specific problems, they often fall short in handling dynamic gameplay, adapting to new challenges, or interacting with other agents. This is where our work seeks to contribute—by creating a reinforcement learning-driven framework that not only learns from experience but also adapts to a variety of gameplay elements through a modular, generalizable design.
+While artificial intelligence has made notable strides in 2D platformer games, several recurring limitations remain evident across the literature. For instance, in Sriram’s (2019) project on automated playtesting using reinforcement learning, the AI agent was trained to navigate platformer levels for the purpose of validating level design. Although the study effectively showcased how deep reinforcement learning (DRL) can be applied in testing environments, the focus remained on single-agent behavior in relatively static and simplified levels. There was no interaction with dynamic enemies or evolving objectives, and the system lacked the flexibility to handle more diverse or unpredictable challenges, conditions often present in real gameplay.Similarly, Persson (2005) presented a foundational overview of traditional AI techniques in 2D platformers, including pathfinding, line-of-sight mechanics, and behavior trees. These techniques were, and still are, widely used due to their efficiency and ease of implementation. However, they rely on rule-based logic, which tends to produce predictable and rigid behavior. These systems often fail to generalize well when faced with new level structures or gameplay rules, limiting their usefulness in adaptive game environments or procedural content systems.Smith (2021) explored physics-based pathfinding using A* algorithms and platform graphs, providing a practical method for navigating complex 2D spaces. His work contributes valuable insights into deterministic path planning, especially in tightly constrained levels. However, this approach assumes a largely fixed environment and doesn’t incorporate learning or adaptation over time. As a result, agents guided solely by static pathfinding algorithms struggle when unexpected gameplay changes occur, such as moving platforms, adversarial agents, or real-time hazards.Taken together, these studies highlight a clear opportunity for improvement: while each offers effective strategies for solving specific problems, they often fall short in handling dynamic gameplay, adapting to new challenges, or interacting with other agents. This is where our work seeks to contribute, by creating a reinforcement learning-driven framework that not only learns from experience but also adapts to a variety of gameplay elements through a modular, generalizable design.
 \section{How our work differs}
-This project builds upon the knowledge gained from the previous research while addressing the shortcomings of that research through a somewhat novel mixture of reinforcement learning, adversarial agent design, and modular asset creation. Sriram’s (2019) work was specific to the use of a single agent to automatically validate levels; this work instead looks at having two agents interact within an environment—both the player and the enemy agent are being trained together. Such an adversarial setup makes things more complicated and realistic from the perspective of the agent and thus allows for a richer framework for gameplay-testing and behavior emergence.
+This project builds upon the knowledge gained from the previous research while addressing the shortcomings of that research through a somewhat novel mixture of reinforcement learning, adversarial agent design, and modular asset creation. Sriram’s (2019) work was specific to the use of a single agent to automatically validate levels; this work instead looks at having two agents interact within an environment, both the player and the enemy agent are being trained together. Such an adversarial setup makes things more complicated and realistic from the perspective of the agent and thus allows for a richer framework for gameplay-testing and behavior emergence.
 Our approach stands several other feet taller than Persson’s (2005) rule-based ones as it puts Proximal Policy Optimization (PPO) to work to allow agent training from scratch using feedback from the environment while being more adaptive and functioning under some measures of uncertainty. This design choice of switching from hard-coded behavior to trainable policies vastly improves an agent’s ability to function in procedurally varied or evolving levels.While Smith (2021) deals with deterministic navigation, what we have here is an integration of physics-aware decision-making into a learning framework, wherein an agent can compute a path but is also able to revise its traversal policy depending on the outcomes and depending on interactions with moving obstacles or enemies. Another major innovation is a modular and reusable asset design. In contrast to many prior approaches that custom-build AI systems for specific games or sets of use cases, this platformer AI is designed to be a stand-alone Unity asset, which can be plugged into all kinds of 2D games with very few modifications. This is, thus, a goldmine for indie developers and researchers.
 
 
@@ -826,7 +751,7 @@ Our approach stands several other feet taller than Persson’s (2005) rule-based
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{METHODOLOGY AND DESIGN}
+\chapter{Methodology And Design}
 
 \section{Introduction}
 
@@ -870,7 +795,7 @@ Figure \ref{fig:SystemDiagram} visualizes the architecture and interconnections 
 \end{figure}
 \FloatBarrier
 \subsection{Training Environment}
-The training environment is a controlled simulation where AI agents interact, learn, and refine their decision-making abilities through reinforcement learning. It is structured within a Unity scene that replicates typical platformer game scenarios, including various obstacles, enemies, and interactive elements. By defining key training parameters—such as agent actions, observations, and reward structures—the system ensures an effective learning process, guiding the agents toward optimal gameplay strategies.
+The training environment is a controlled simulation where AI agents interact, learn, and refine their decision-making abilities through reinforcement learning. It is structured within a Unity scene that replicates typical platformer game scenarios, including various obstacles, enemies, and interactive elements. By defining key training parameters, such as agent actions, observations, and reward structures, the system ensures an effective learning process, guiding the agents toward optimal gameplay strategies.
 
 \subsubsection{Agents}
 Agents are entities in the environment that actively interact with their surroundings. Each agent observes the current state of the game environment using provided sensors, make decisions based on the information, and perform actions accordingly. These actions influence the environment and the agent's progression toward its assigned goals.\par
@@ -1252,7 +1177,7 @@ To ensure the environment’s reusability across future projects and training sc
 \item  \textbf{Enemy and Obstacle Density:} The performance and behavior of agents were evaluated under varying densities of enemies and environmental hazards.
 \item  \textbf{Generalization Potential:} Agents were tested in unseen level variants to assess their ability to transfer learned behaviors beyond a single map configuration.
 \end{itemize}
-Through these evaluations, the environment was confirmed to be reliable, efficient, and extensible—supporting the project’s objective of producing a robust, reusable AI training platform for 2D platformer games.
+Through these evaluations, the environment was confirmed to be reliable, efficient, and extensible, supporting the project’s objective of producing a robust, reusable AI training platform for 2D platformer games.
 
 \section{AI Agents Development}
 The artificial intelligence system developed for this project leverages reinforcement learning (RL) to train agents capable of navigating and interacting with a 2D platformer environment. Implemented using Unity ML-Agents, the AI model learns through trial-and-error to execute gameplay behaviors such as jumping, attacking, and collecting objectives. This section details the core aspects of the AI system, including the action space, observation model, reward system, and the algorithm used to drive learning.
@@ -1312,7 +1237,7 @@ This separation offers several advantages:
 \begin{itemize}
 \item \textbf{Modularity:} The AI logic remains independent of how each action is technically executed, enabling clean separation of concerns.
 \item \textbf{Reusability:} The Action Module system can be reused across different characters or AI types with minimal code duplication.
-\item \textbf{Scalability:} Additional abilities—such as ranged attacks, double jumps, or new movement types—can be integrated by extending this module without modifying the AgentController or retraining from scratch.
+\item \textbf{Scalability:} Additional abilities, such as ranged attacks, double jumps, or new movement types, can be integrated by extending this module without modifying the AgentController or retraining from scratch.
 \end{itemize}
 
 \subsubsection{Implementation Structure}
@@ -1729,7 +1654,7 @@ Episodes conclude under one of the following conditions:
 \item The agent completes the intended level objective or calls \texttt{EndEpisode()} manually
 \end{itemize}
 
-Before termination, the \texttt{CompleteEpisode()} method calculates final rewards, including completion bonuses and efficiency taxes—and records key metrics for analysis.
+Before termination, the \texttt{CompleteEpisode()} method calculates final rewards, including completion bonuses and efficiency taxes, and records key metrics for analysis.
 
 \begin{lstlisting}[language={[Sharp]C}]
 public void CompleteEpisode()
@@ -1888,7 +1813,7 @@ These logs are used to generate training graphs, reward curves, and behavior ana
 
 %\subsection{Multi-Agent Support and Role Specialization}
 
-%Although this project focuses primarily on the player agent, the system architecture and PPO trainer support multi-agent training. Future work will introduce adversarial agents—e.g., enemies that learn to challenge the player agent. These agents will have:
+%Although this project focuses primarily on the player agent, the system architecture and PPO trainer support multi-agent training. Future work will introduce adversarial agents, e.g., enemies that learn to challenge the player agent. These agents will have:
 
 %\begin{itemize}
 %\item Independent reward functions and behavior names
@@ -2116,94 +2041,76 @@ During training, Unity ML-Agents’ built-in logging with TensorBoard provides t
 
 These graphs are used to validate convergence, detect reward hacking, and assess the consistency of training progress.
 
-\section{Experiments and Results}
+\section{Experiments}
 
 To validate the effectiveness of the proposed reinforcement learning framework, a series of iterative experiments were conducted using Unity ML-Agents. The experiments focused exclusively on training the player agent within a handcrafted 2D platformer environment, while enemy agents operated using predefined state machine behaviors. This section outlines the training setup, experimental procedure, and environment dynamics used during training and evaluation.
 
 \subsection{Training Sessions and Iterative Runs}
 
-Throughout development, approximately 30 independent training runs were conducted. Each run utilized the PPO (Proximal Policy Optimization) algorithm and executed between 1 to 2 million training steps. Post-run evaluations involved analyzing cumulative reward trends, behavioral metrics, and in-game performance. This iterative cycle facilitated fine-tuning of:
+Over the course of development, approximately 30 independent training runs were conducted. Each run was configured with the PPO algorithm and executed between 1 million to 2 million training steps. After each run, results were analyzed using cumulative reward trends, performance metrics, and in-game behavior. This iterative process enabled fine-tuning of:
 
 \begin{itemize}
-\item Reward values and shaping penalties (configured via \texttt{RewardConfigSO})
+\item Reward values and shaping penalties (via \texttt{RewardConfigSO})
 \item PPO hyperparameters (e.g., learning rate, batch size)
 \item Observation normalization and action mappings
 \item Spawn logic and episode termination conditions
 \end{itemize}
 
-Adjustments targeted improvements in sample efficiency, stabilization of learning, and elimination of unintended exploitative behaviors (e.g., reward farming through idling or repetitive jumping).
+These adjustments were made to improve sample efficiency, stabilize learning, and eliminate unintended exploitative behaviors (e.g., repeated jumping or idling for reward).
 
 \subsection{Environment Configuration}
 
-All training and evaluation occurred within a single handcrafted 2D platformer level comprising:
+All experiments were conducted within a single handcrafted 2D platformer level that includes:
 
 \begin{itemize}
-\item Static and dynamic platforms
+\item Static and moving platforms
 \item Collectible items (coins, checkpoints)
 \item Hazardous elements (spikes, pits)
-\item Melee enemies controlled by FSM-based logic
+\item Melee enemies controlled by state machines
 \end{itemize}
 
-To prevent memorization of fixed obstacle patterns, a dynamic episode reset system was deployed. Upon death or episode termination, the agent's spawn point was randomized, and all environment elements were reset to their initial configurations. This strategy promoted generalizable policy learning over rote memorization.
+To prevent memorization of fixed obstacle patterns, a dynamic episode reset system was used. After each death or episode termination, the player’s spawn point was randomized from a predefined list. Simultaneously, all environment elements, coins, checkpoints, enemies were reset to their initial state. This strategy ensured that the agent learned generalizable skills rather than memorizing deterministic paths.
 
 \subsection{Evaluation Protocol}
 
-Agent performance was periodically assessed both during and after training in inference mode. Key elements of the evaluation setup included:
+Agent performance was periodically evaluated during and after training in inference mode. In this phase:
 
 \begin{itemize}
-\item Environment resets using the same randomized initialization logic
-\item Deterministic policy execution without exploration noise or entropy
-\item Metric tracking via \texttt{RewardLogger.cs} and TensorBoard, including episode reward, step count, coin collection rate, and death count
+\item The environment was reset using the same randomization logic.
+\item No exploration noise or entropy was applied; the trained policy operated deterministically.
+\item Metrics such as episode reward, steps taken, coin collection rate, and death count were tracked using \texttt{RewardLogger.cs} and TensorBoard.
 \end{itemize}
 
-Comparative analysis across training runs demonstrated the impact of different reward functions, observation schemas, and PPO configurations on behavioral quality.
+By comparing evaluation performance across runs, the experiments revealed the impact of reward modifications, observation tweaks, and PPO settings on learned behavior quality.
 
 \subsection{Focus on Player Agent}
 
-Due to time constraints, the experiments exclusively trained the player agent. Enemy agents followed scripted FSM behaviors, enabling reliable assessment of obstacle avoidance, stress navigation, and combat responses. Future extensions will involve PPO-based training for enemy agents using the trained player as a fixed adversary.
+Due to time constraints, the current experiments focused exclusively on training the player agent. Enemy agents operated with scripted state machines and were used to test obstacle avoidance, navigation under pressure, and combat timing. Future iterations aim to train enemy agents using a similar PPO-based setup, treating the trained player agent as a fixed adversary.
 
-\subsection{Reward Function Effectiveness}
 
-The agent exhibited stable improvement in reward acquisition over training epochs. Penalty-driven behaviors declined consistently, while positively reinforced actions—such as coin collection and obstacle navigation—became dominant. The reward configuration effectively directed the agent toward goal-oriented interactions within the environment.
-
+%%%%%%%%%%%%%%%%%%%%
+\subsection{The Reward Functions Performing}
+The Reinforcement learning algorithms have exhibited good and stable trends of reward acquisition from one training cycle to the next. History shows improvements in increments of reward as occurrences of sub-optimal or penalty behavior decline. Thus, the agent has managed to utilize positive reinforcement, indicating the successful design of the reward function to facilitate movement and interaction optimally.
 \subsection{Convergence and Stability}
-
-Training convergence was evidenced by the stabilization of cumulative reward trends and behavioral consistency across episodes. Initial phases showed erratic behavior and frequent penalties. However, after sufficient training steps, the model displayed reduced performance variance, indicating decreased reliance on exploration and increased policy robustness.
-
+Evidence of training convergence has been through stabilization in performance over many episodes. The first few phases of training revealed very high variance in agent behavior performance in making decisions and severe penalties. However, the learning model, after training over a sufficient number of epochs, has reduced the performance fluctuation, indicating stable learning and lesser dependence on exploratory randomness. The convergence of the policy indicates a successful imprinting of an optimal decision-making structure within the agent by the training process.
 \subsection{Evaluation of Training Efficiency}
-
-Training efficiency was gauged through improvements in policy performance and reductions in redundant behaviors. The agent initially exhibited inefficient movement patterns but progressively optimized its strategy. Hyperparameter tuning and strategic reward shaping contributed to focused learning and computational effectiveness.
-
-\subsection{Agent Performance Summary}
-The agent’s learning progress is illustrated in Figure~\ref{fig:reward_progress}, which presents the cumulative average reward over 1000 training episodes. At the beginning of training, the agent exhibited poor performance with an average reward of approximately -250 per episode, often failing to collect coins or avoid hazards effectively. However, a steady and consistent improvement is observed as training progresses.The turning point occurred around episode 150, where the cumulative reward crossed into positive territory. From that point onward, the agent continued to refine its policy, achieving a peak average reward of approximately +48 by around episode 850. A slight decline toward the final episodes suggests the possibility of mild overfitting or exploration variability, which is a common occurrence in reinforcement learning.
-
-\begin{figure}[H]
-\centering
-\fbox{\includegraphics[width=10cm]{./Attachments/Result_Graph.png}}
-\caption{ presents the performance metrics from the best training session.}
-\label{fig:reward_progress}
-\end{figure}
-
-Further insights into performance metrics from the best training session are summarized in Table~\ref{tab:performance_summary}. These include key gameplay factors such as survival duration, reward consistency, and efficiency in task completion.
-
-\begin{table}[h]
-\centering
-\caption{Agent Performance Summary from Best Training Run}
-\label{tab:performance_summary}
-\begin{tabular}{|l|p{8cm}|}
-\hline
-\textbf{Metric} & \textbf{Result (Avg)} \\
-\hline
-Steps per Episode & 450–600 \\
-\hline
-Coin Collection Rate & Increased steadily from −100 to +40 over training \\
-\hline
-Average Reward per Episode & 80–90\% completion \\
-\hline
-Hazard Avoidance Rate & Significantly improved (survived longer per episode) \\
-\hline
-\end{tabular}
-\end{table}
+The evaluation of training efficiency was through policy improvement rate and reduction of superfluous movements. The learning curve of the AI clearly indicates the improvement as it refrained from making unnecessary movements early on before improving the strategy. Other training efficiencies have been enhanced by tuning hyperparameters and distributing rewards, making learning focused and effective in computational use.
+\section{AI Behavior in Environment training ground}
+\subsection{Behavior Under Different Level Designs}
+Varieties of platform layouts offered opportunity to review generalization properties of the AI model. Test results illustrate the versatility of the trained policy across structurally similar environments. High navigation and interaction performances are sustained. The AI can adapt to different setups without retraining as long as the key level design principles stay within the threshold defined by the training environment.
+\subsection{Response to Dynamic Obstacles}
+The AI shows a degree of flexibility in interacting with moving obstacles or hazards in the environment, whereby learned avoidance allows the agent to detect and circumvent moving threats with adjustments to time and trajectory accordingly. The steady successful performance on avoidance would suggest that reinforcement learning has encoded a decisional process for hazard avoidance. 
+\subsection{Efficacy in Collectible Acquisition}
+In tasks where collectible objects were tested in the environment, the AI was observed to optimize paths when seeking maximal reward. This reliance was mostly without detours as the agent preferred the path of least resistance toward collectible objects, following the decision patterns as defined by the reinforcement structure. Thus, the AI's consistent behavior in achieving successful item collection while avoiding hazards proves its risky behavior and reward calculations in a game.
+\section{Implementation and Integration of AI}
+\subsection{AI Integration in the Unity Environment}
+The integrated AI model works fully in the Unity platformer game in real time. Transitioning from simulated training environments to real-time execution appeared completely uneventful, with the AI behaving exactly as it was supposed to, following the learned patterns from training data. This has been made possible by synchronization using the ML-Agents package in Unity so that the AI decision-making can continuously interact with the physics of the game and the game world.
+\subsection{AI Perception and a Dual-Render Environment Setup}
+The dual-render environment setup allows the AI perception system to distinguish between the in-game elements. It enables the agent to structure information on the environment so that the decision-making mechanism correctly identifies relevant objects, such as the platform, obstacles, and collectibles. A rendering-based system increases the spatial awareness of the AI and hence the contextually relevant actions that can be taken.
+\subsection{Modularity and Reusability in Implementation}
+The AI system is designed as a modular system to promote reusability across projects. Movement controllers, reward functions, and decision- making modules are key components that can be adjusted to new environments in the implementation without requiring extensive reconfiguration. Thus, this modular approach enhances the AI's suitability to even more varied platformer game projects, which are intended to become an AI reusable asset.
+\section{Summary of Current AI Capabilities}
+The AI system is now competent in the movement, navigation, and interaction of a platformer game. It has shown convergence in learning which is stable, effective awareness of its environment, and generalized behavior across different level designs. Although combat is not yet in use, the current implementation offers a firm groundwork for extended AI development in platformer games. The reinforcement-learning framework has fostered agent behavior that is conducive to the free navigation and interaction of game elements in a structured and goal-directed manner.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2217,7 +2124,7 @@ One of the initial challenges encountered during training was the sparse nature 
 \subsection{Repetitive or Deterministic Behavior}
 As the agents began to converge on successful policies, they often developed overly deterministic behavior repeating the same paths or actions across episodes. This reduced their ability to adapt when small changes were introduced in the environment. To encourage more exploration and robustness, we adjusted the entropy regularization parameter in the PPO algorithm. This helped prevent premature convergence and ensured a better balance between exploiting known strategies and exploring new ones.\par
 \subsection{Long Training Times on Complex Levels}
-As the complexity of the environment increased—such as the addition of moving platforms, traps, and multiple objectives—the training time grew substantially. Agents required more episodes to learn effective policies in these challenging settings. To alleviate this, we introduced a curriculum learning-inspired level progression, where simpler levels were used at the start of training and more complex ones were gradually introduced. This stepwise exposure helped agents build foundational skills before tackling harder tasks, reducing convergence time overall.\par
+As the complexity of the environment increased, such as the addition of moving platforms, traps, and multiple objectives, the training time grew substantially. Agents required more episodes to learn effective policies in these challenging settings. To alleviate this, we introduced a curriculum learning-inspired level progression, where simpler levels were used at the start of training and more complex ones were gradually introduced. This stepwise exposure helped agents build foundational skills before tackling harder tasks, reducing convergence time overall.\par
 \subsection{Debugging and Behavior Tracking}
 Analyzing and debugging agent behavior in a multi-agent reinforcement learning setup proved to be time-consuming and occasionally opaque. With multiple agents interacting in real-time, it was difficult to isolate the cause of failures or suboptimal decisions. This was addressed by implementing visual debugging tools and logging systems within Unity and the Python training scripts. These included trajectory visualizations, reward graphs, and decision heatmaps, which allowed for deeper insights into agent behavior and facilitated more effective tuning.\par
 \section{Limitations}
@@ -2369,7 +2276,7 @@ The OnDrawGizmos() method visually represents the player’s attack range in the
 \caption{PlayerAttack gizmos section.}\label{fig:attkgizmos}
 \end{figure}
 \section{Agent Controller}
-The AgentController class inherits from Agent and integrates Unity ML-Agents with core gameplay components to enable intelligent behavior from the player character. It references two primary components via serialized fields: PlayerActionModules and PlayerManager, which likely handle character movement and overall state management, respectively. Additionally, it includes a list of spawnPointsList—a collection of potential spawn locations used to reset or relocate the agent. Internally, the class tracks the agent's last position and maintains a set called visitedAreas to record the discrete areas the agent has already explored, using Vector2Int for grid-based precision.\par
+The AgentController class inherits from Agent and integrates Unity ML-Agents with core gameplay components to enable intelligent behavior from the player character. It references two primary components via serialized fields: PlayerActionModules and PlayerManager, which likely handle character movement and overall state management, respectively. Additionally, it includes a list of spawnPointsList, a collection of potential spawn locations used to reset or relocate the agent. Internally, the class tracks the agent's last position and maintains a set called visitedAreas to record the discrete areas the agent has already explored, using Vector2Int for grid-based precision.\par
  \begin{figure}[!h]
  \centering
  \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_fac.png}}
@@ -2382,7 +2289,7 @@ The Initialize method is an overridden function from the Agent class, responsibl
  \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_ini.png}}
 \caption{AgentController Initialization section.}\label{fig:agentini}
 \end{figure}
-The OnEpisodeBegin method is another overridden function from the Agent class, which resets the agent’s state at the beginning of each new training episode. It first ensures that the playerActionModules is assigned, and then proceeds to disable the player’s input by calling DisablePlayerInput. The method also resets the agent's velocity and position—if the basicPlayerMovement module is available, it sets the Rigidbody2D's velocity to zero. Additionally, the method saves the agent's starting position in the lastPosition variable and initializes a new HashSet<Vector2Int> for tracking visited areas. This ensures that the agent’s movement and environment interaction are properly reset at the beginning of the episode.The DisablePlayerInput method disables input processing for both the basicPlayerMovement and playerAttack modules by setting their inputEnabled flags to false. It checks if the necessary modules are already assigned and assigns them if needed, ensuring that no player input can be processed during training.\par
+The OnEpisodeBegin method is another overridden function from the Agent class, which resets the agent’s state at the beginning of each new training episode. It first ensures that the playerActionModules is assigned, and then proceeds to disable the player’s input by calling DisablePlayerInput. The method also resets the agent's velocity and position, if the basicPlayerMovement module is available, it sets the Rigidbody2D's velocity to zero. Additionally, the method saves the agent's starting position in the lastPosition variable and initializes a new HashSet<Vector2Int> for tracking visited areas. This ensures that the agent’s movement and environment interaction are properly reset at the beginning of the episode.The DisablePlayerInput method disables input processing for both the basicPlayerMovement and playerAttack modules by setting their inputEnabled flags to false. It checks if the necessary modules are already assigned and assigns them if needed, ensuring that no player input can be processed during training.\par
  \begin{figure}[!h]
  \centering
  \fbox{\includegraphics[width=10cm]{./Attachments/Agentcontroller_eh.png}}
@@ -2425,7 +2332,7 @@ The Heuristic method in the AgentController script provides a manual control sch
 \end{figure}
 \section{Enemy Script}
 The Enemy class represents a basic enemy character in the game, managing its health, invincibility state, and reactions to damage. It begins with serialized fields for maxHealth, a damageCooldown duration during which the enemy becomes invincible after being hit, and a knockbackForce that defines how strongly it is pushed upon taking damage. The currentHealth tracks the enemy's remaining life points, while isInvincible and invincibilityTimer control temporary immunity to repeated attacks. In Awake(), the enemy initializes its health and retrieves its Rigidbody2D and associated EnemyActionModule if not already set.\par
-In the Update() loop, if the enemy is currently invincible, it decrements the timer until invincibility wears off. The TakeDamage() method handles damage intake—it only processes if the enemy isn't invincible. Upon being hit, the enemy reduces its health, triggers invincibility, applies knockback using the source of the attack, and checks if it should die. The ApplyKnockback() method calculates a direction vector away from the attacker and applies an impulse force to the Rigidbody2D to push the enemy back. Finally, if the enemy’s health drops to zero or below, it calls Die(), which invokes the Die() function from the action module and destroys the game object.\par
+In the Update() loop, if the enemy is currently invincible, it decrements the timer until invincibility wears off. The TakeDamage() method handles damage intake, it only processes if the enemy isn't invincible. Upon being hit, the enemy reduces its health, triggers invincibility, applies knockback using the source of the attack, and checks if it should die. The ApplyKnockback() method calculates a direction vector away from the attacker and applies an impulse force to the Rigidbody2D to push the enemy back. Finally, if the enemy’s health drops to zero or below, it calls Die(), which invokes the Die() function from the action module and destroys the game object.\par
 \newpage
  \begin{figure}[!h]
  \centering
@@ -2458,20 +2365,20 @@ The Update() method acts as the core of the state machine. It checks the current
 \end{figure}
 \newpage
 This part of the EnemyStateMachine script defines how the enemy moves during both patrol and chase behaviors, as well as how it visually responds to direction changes.
-The Patrol() method is responsible for basic waypoint navigation. The enemy moves toward the current patrol point by calculating the normalized direction vector and applying horizontal velocity using the patrol speed. When the enemy is close enough to a patrol point (within 0.2 units), it cycles to the next point using modulo arithmetic to loop through the array. The sprite is then flipped to face the movement direction using the FlipSprite() method.The ChasePlayer() method operates similarly, but instead of heading toward patrol points, the enemy calculates direction based on the player's position. It moves using a faster chaseSpeed to give the player a sense of urgency when detected. Again, the sprite is flipped to face the direction of movement for visual consistency.FlipSprite(float moveDirection) ensures the enemy's sprite visually faces the direction it's moving. It checks the horizontal movement direction and inverts the local scale’s x-axis if needed—this prevents the enemy from moonwalking or moving backward visually while chasing or patrolling.\par 
+The Patrol() method is responsible for basic waypoint navigation. The enemy moves toward the current patrol point by calculating the normalized direction vector and applying horizontal velocity using the patrol speed. When the enemy is close enough to a patrol point (within 0.2 units), it cycles to the next point using modulo arithmetic to loop through the array. The sprite is then flipped to face the movement direction using the FlipSprite() method.The ChasePlayer() method operates similarly, but instead of heading toward patrol points, the enemy calculates direction based on the player's position. It moves using a faster chaseSpeed to give the player a sense of urgency when detected. Again, the sprite is flipped to face the direction of movement for visual consistency.FlipSprite(float moveDirection) ensures the enemy's sprite visually faces the direction it's moving. It checks the horizontal movement direction and inverts the local scale’s x-axis if needed, this prevents the enemy from moonwalking or moving backward visually while chasing or patrolling.\par 
  \begin{figure}[!h]
  \centering
  \fbox{\includegraphics[width=15cm]{./Attachments/ESM_sm.png}}
 \caption{Enemy State Machine State machine logic section.}\label{fig:ESMsm}
 \end{figure}
 \newpage
-These two methods—CheckForPlayer() and CheckForPlayerOutOfRange()—control the transitions between the patrol and chase states in the EnemyStateMachine by monitoring the distance between the enemy and the player.CheckForPlayer() is used during the patrol state to detect when the player enters the enemy's detection range. If the player’s distance from the enemy is less than or equal to the defined detectionRange, the enemy enters the Chase state. Optionally, a visual indicator (like an exclamation mark or alert icon stored in the detected GameObject) is activated to signal the change in behavior.On the other hand, CheckForPlayerOutOfRange() is called during the chase state to determine when the player has moved far enough away that they are no longer considered a target. If the player moves beyond the detection range, the alert indicator is turned off and the enemy returns to the Patrol state.Together, these methods allow the enemy to dynamically switch between patrolling and actively chasing the player based on proximity, enabling more reactive and engaging AI behavior.\par
+These two methods, CheckForPlayer() and CheckForPlayerOutOfRange(), control the transitions between the patrol and chase states in the EnemyStateMachine by monitoring the distance between the enemy and the player.CheckForPlayer() is used during the patrol state to detect when the player enters the enemy's detection range. If the player’s distance from the enemy is less than or equal to the defined detectionRange, the enemy enters the Chase state. Optionally, a visual indicator (like an exclamation mark or alert icon stored in the detected GameObject) is activated to signal the change in behavior.On the other hand, CheckForPlayerOutOfRange() is called during the chase state to determine when the player has moved far enough away that they are no longer considered a target. If the player moves beyond the detection range, the alert indicator is turned off and the enemy returns to the Patrol state.Together, these methods allow the enemy to dynamically switch between patrolling and actively chasing the player based on proximity, enabling more reactive and engaging AI behavior.\par
  \begin{figure}[!h]
  \centering
  \fbox{\includegraphics[width=12cm]{./Attachments/ESM_checkplayer.png}}
 \caption{Enemy State Machine check player section.}\label{fig:ESMcp}
 \end{figure}
-This OnCollisionEnter2D method handles the interaction between the enemy and the player when a physical collision occurs.When the enemy collides with another object, the method checks if the object has the "Player" tag using CompareTag("Player"). If it does, the method attempts to retrieve the PlayerManager component from the player GameObject. If the component exists, it calls playerManager.Die(), triggering whatever logic is implemented in the player's death function—typically ending the level, restarting from a checkpoint, or triggering a death animation.This mechanic is useful for enemies that deal instant or contact-based damage, like spikes, patrolling robots, or charging creatures. It makes the enemy more threatening and reinforces the need for players to avoid direct contact.\par
+This OnCollisionEnter2D method handles the interaction between the enemy and the player when a physical collision occurs.When the enemy collides with another object, the method checks if the object has the "Player" tag using CompareTag("Player"). If it does, the method attempts to retrieve the PlayerManager component from the player GameObject. If the component exists, it calls playerManager.Die(), triggering whatever logic is implemented in the player's death function, typically ending the level, restarting from a checkpoint, or triggering a death animation.This mechanic is useful for enemies that deal instant or contact-based damage, like spikes, patrolling robots, or charging creatures. It makes the enemy more threatening and reinforces the need for players to avoid direct contact.\par
  \begin{figure}[!h]
  \centering
  \fbox{\includegraphics[width=12cm]{./Attachments/ESM_collision.png}}
