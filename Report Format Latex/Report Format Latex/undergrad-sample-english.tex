@@ -1529,69 +1529,66 @@ Eliminated & -200 \\ \hline
 \end{table}
 These reward system is fine-tuned iteratively to ensure that the AI develops efficient and strategic movement patterns without exploiting rewards through unintended behaviors.\par
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%         SEE LATEST CHATGPT
+\section{Training Configuration and Execution}
 
-\section{Training Process and Setup}
-
-This section outlines the full training procedure for training the reinforcement learning agent using Unity ML-Agents and the PPO algorithm. It covers action and observation design, simulation execution, model export, runtime optimizations, logging, and support for multi-agent setups. The goal is to train a robust AI agent that performs platformer tasks efficiently in varied game environments.
+This section presents the full training pipeline for developing reinforcement learning agents using Unity ML-Agents in conjunction with the Proximal Policy Optimization (PPO) algorithm. It covers the definition of action and observation spaces, training parameters, simulation conditions, and model export procedures. The objective is to develop robust and generalizable agents capable of operating in dynamic 2D platformer environments.
 
 \subsection{Action and Observation Interfaces}
 
-The agent's interaction with the environment is defined through a hybrid action space and a structured observation model. These interfaces are configured in the \texttt{BehaviorParameters} component within Unity and implemented in the \texttt{AgentController.cs} script.
+The agent's interaction with the environment is governed by a hybrid action space and a structured observation model, both of which are defined via the \texttt{BehaviorParameters} component in Unity and implemented within the \texttt{AgentController.cs} script.
 
 \subsubsection{Action Space}
 
-The action space is a hybrid of one continuous and four discrete channels:
+The agent operates using a combination of one continuous and four discrete actions:
 
 \begin{itemize}
-\item One continuous action: horizontal movement (value range: −1 to 1)
-\item Four discrete actions:
+\item \textbf{Continuous Action:} Horizontal movement along the x-axis, ranging from −1 to 1.
+\item \textbf{Discrete Actions:}
 \begin{itemize}
-\item Jump trigger
-\item Dash trigger
+\item Jump initiation
+\item Dash initiation
 \item Melee attack
-\item Drop down from one-way platform
+\item Drop through one-way platforms
 \end{itemize}
 \end{itemize}
 
-This structure allows the agent to control movement direction with precision while triggering event-based behaviors like jumping or attacking in binary form.
+This hybrid configuration enables both precise directional control and binary decision-making for discrete gameplay mechanics.
 
 \subsubsection{Observation Space}
 
-The \texttt{CollectObservations()} method in \texttt{AgentController.cs} compiles a vector of 25 values each step, including:
+Observations are gathered via the \texttt{CollectObservations()} method, resulting in a 25-dimensional vector. These features capture both the internal state of the agent and relevant environmental information:
 
-\paragraph{Environment and Stage Progress}
+\paragraph{Environmental and Progress Metrics}
 \begin{itemize}
-\item Total and collected coin count
-\item Total and collected checkpoint count
-\item Position of nearest active coin
+\item Total and collected coins
+\item Total and collected checkpoints
+\item Position of the nearest active coin (x, y)
 \end{itemize}
 
-\paragraph{Agent Position and Physics State}
+\paragraph{Agent State and Motion Flags}
 \begin{itemize}
-\item Agent’s current 2D position (x, y)
-\item Grounded, jumping, dashing, dropping, wall contact, wall jump flags
-\item Facing direction, jump eligibility, wall jump eligibility
+\item Agent’s current position (x, y)
+\item Flags indicating grounded, jumping, dashing, dropping, wall contact, and wall jump states
+\item Facing direction and eligibility flags for jumping or wall jumping
 \end{itemize}
 
-\paragraph{Combat and Health State}
+\paragraph{Combat and Health Information}
 \begin{itemize}
-\item Current health level from \texttt{PlayerManager.cs}
-\item Attacking state from \texttt{PlayerAttack.cs}
+\item Current health value (from \texttt{PlayerManager.cs})
+\item Active attacking status (from \texttt{PlayerAttack.cs})
 \end{itemize}
 
-To improve temporal understanding, observation stacking is configured to stack 15 consecutive observations, enabling the model to learn environmental transitions and movement momentum.
+Temporal dynamics are captured using observation stacking (15 frames per decision), allowing the agent to infer motion trends and anticipate environmental transitions.
 
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=6.5cm]{./Attachments/BehaviorParameerInspector.png}}
-\caption{Behavior Parameter settings in Unity Editor}\label{fig:BehaviorParameerInspector}
+\caption{Behavior Parameters configuration within Unity Editor}\label{fig:BehaviorParameerInspector}
 \end{figure}
 
-\subsection{Model Training and Export}
+\subsection{Training Setup and PPO Configuration}
 
-Training is launched via the ML-Agents CLI using a PPO-configured YAML file:
+Training is initiated via the ML-Agents CLI and configured through a YAML file specifying PPO parameters:
 
 \begin{lstlisting}
 mlagents-learn config.yaml --run-id=RunName
@@ -1629,28 +1626,39 @@ behaviors:
         strength: 1.0
 \end{lstlisting}
 
-During training, Unity runs in simulation mode. The training loop executes as follows:
+The PPO hyperparameters are tuned for stability and long-term reward optimization. A larger buffer and batch size are used to stabilize policy updates, while a moderately high γ encourages exploration across larger level spaces.
+
+During training, the environment runs in accelerated simulation mode. Each agent’s decision is processed via the OnActionReceived() method, triggering behavioral execution through modular subsystems (e.g., movement or combat modules). Rewards and penalties are applied in real-time using externalized parameters defined in \texttt{RewardConfigSO}.
+
+\subsection{Model Export and Inference Transition}
+
+Upon reaching convergence, the best-performing model is exported in ONNX format and integrated back into Unity for real-time inference. This transition involves:
 
 \begin{itemize}
-\item \texttt{OnActionReceived()} triggers each frame, delegating action calls to \texttt{PlayerActionModules.c}s
-\item Reward and penalty values are applied from \texttt{RewardConfigSO}
-\item \texttt{OnEpisodeBegin()} resets the agent, scene objects, and statistics for a fresh episode
+\item Importing the trained \texttt{.onnx} file into the Unity \texttt{Assets/} directory
+\item Assigning the model to the \texttt{BehaviorParameters} component
+\item Switching the agent behavior type from “Default” to “Inference Only”
+\item Conducting validation tests in sandbox environments to ensure correct behavior under inference
 \end{itemize}
 
-The trainer periodically saves progress to TensorBoard logs and \texttt{.onnx} model checkpoints. After sufficient learning, the best-performing model is selected for deployment by assigning the .onnx file to the Behavior Parameters component for inference.
+This process enables the trained agent to function autonomously within the full platformer environment without further gradient updates, allowing its deployment in production scenarios.
 
 \subsection{Episode Lifecycle and Reset Logic}
 
-Every reinforcement learning episode follows a defined initialization, interaction, and termination cycle. The episode lifecycle is managed via the \texttt{OnEpisodeBegin()} method in \texttt{AgentController.cs}, which is automatically called by Unity ML-Agents at the start of each episode. This method resets the environment and internal agent states to ensure consistent learning conditions while introducing randomized variability for generalization.
+Each reinforcement learning episode in Unity ML-Agents is structured into three phases: initialization, interaction, and termination. This episodic structure is critical for training stability, behavioral diversity, and proper credit assignment. The lifecycle is managed through the \texttt{OnEpisodeBegin()} method in \texttt{AgentController.cs}, which is invoked automatically at the start of each episode by the ML-Agents environment.
 
-Key operations include:
+\subsubsection{Initialization Phase}
+
+At the beginning of each episode, the environment and agent states are reset to prepare for a new trial. This includes both deterministic setups (e.g., resetting counters) and stochastic elements (e.g., randomized spawn positions) to promote generalization.
+
+Key initialization operations:
 
 \begin{itemize}
-\item Setting the agent’s position to a random spawn point from the predefined \texttt{spawnPointsList}
-\item Resetting the agent’s health via \texttt{PlayerManager.cs}
-\item Resetting collected coin and checkpoint counters
-\item Reactivating all relevant GameObjects (e.g., coins, enemies, hazards)
-\item Reinitializing behavior state flags and internal counters (e.g., \texttt{jumpCount}, \texttt{dashCount})
+\item Agent position is reset to a random location selected from spawnPointsList.
+\item Health and state variables are restored via \texttt{PlayerManager.cs}.
+\item Counters for coins, checkpoints, jumps, and dashes are reset to zero.
+\item All environment elements (e.g., coins, enemies, hazards) are reactivated.
+\item Previously visited map areas are cleared from \texttt{visitedAreas} (for exploration rewards).
 \end{itemize}
 
 \begin{lstlisting}[language={[Sharp]C}]
@@ -1696,19 +1704,28 @@ public override void OnEpisodeBegin()
 }
 \end{lstlisting}
 
-By introducing randomized initial conditions while maintaining consistent rules, this reset strategy avoids agent overfitting and supports the learning of more generalizable navigation and combat strategies.
+Randomized resets prevent the agent from memorizing a single deterministic trajectory, instead encouraging robust and adaptive policy development across varying initial conditions.
 
-\subsection{Episode Termination and Completion Handling}
+\subsubsection{Interaction Phase}
 
-Episodes conclude under one of the following conditions:
+Throughout the episode, the agent perceives the environment via observations, selects actions based on its policy, and receives scalar rewards or penalties as feedback. The simulation continues until one of the termination conditions is met.
+
+\subsubsection{Termination Phase}
+
+Episodes are concluded by either success, failure, or timeout. The following termination conditions are defined:
 
 \begin{itemize}
-\item The agent’s health reaches zero due to hazards or enemy damage
-\item The \texttt{MaxStep} count is exceeded, triggering a forced episode end
-\item The agent completes the intended level objective or calls \texttt{EndEpisode()} manually
+\item Agent health reaches zero due to hazard or enemy damage.
+\item The \texttt{MaxStep} count (predefined in \texttt{BehaviorParameters}) is reached.
+\item The agent achieves the episode objective and calls \texttt{EndEpisode()} manually.
 \end{itemize}
 
-Before termination, the \texttt{CompleteEpisode()} method calculates final rewards, including completion bonuses and efficiency taxes, and records key metrics for analysis.
+Prior to ending an episode, the \texttt{CompleteEpisode()} method computes summary rewards based on overall performance and efficiency:
+
+\begin{itemize}
+\item Completion bonuses proportional to coin and checkpoint collection ratios.
+\item Efficiency penalties for excessive jumping or dashing (discouraging inefficient movement).
+\end{itemize}
 
 \begin{lstlisting}[language={[Sharp]C}]
 public void CompleteEpisode()
@@ -1729,120 +1746,173 @@ public void CompleteEpisode()
 }
 \end{lstlisting}
 
-This reward finalization mechanism ensures agents are not only rewarded for immediate actions, but also for overall strategic performance across an entire episode.
+This finalization step ensures that short-term decisions are balanced against long-term performance, encouraging agents to act efficiently and strategically across the full episode duration.
 
-\subsection{Reward Feedback Loop and Evaluation}
+\subsection{Reward Design and Feedback Loop}
 
-The reinforcement learning agent receives both immediate and episodic feedback based on its actions and behavior. These feedback mechanisms are implemented in \texttt{EvaluateRewards()} and collision-related methods such as \texttt{OnTriggerEnter2D()}.
+Reward design plays a pivotal role in shaping an agent's learning trajectory in reinforcement learning. In this project, a combination of immediate, event-driven, and episode-level feedback mechanisms is implemented to encourage the development of intelligent, purposeful behavior. These rewards and penalties are parameterized via the \texttt{RewardConfigSO} ScriptableObject, enabling easy tuning without modifying the core agent logic.
 
-\textbf{Short-term rewards}:
-\begin{itemize}
-\item Distance moved per step (mobility reward)
-\item Discovery of new tiles (exploration reward)
-\item Reduction in proximity to coins (shaping reward)
-\end{itemize}
+\subsubsection{Reward Function Philosophy}
 
-\textbf{Event-based feedback}:
-\begin{itemize}
-\item Coin collection or checkpoint reached
-\item Hazard collision or enemy damage
-\item Attacking or eliminating enemies
-\end{itemize}
-
-\textbf{End-of-episode summary}:
-\begin{itemize}
-\item Completion ratios for goals
-\item Efficiency tax on resource usage (jumps, dashes)
-\end{itemize}
-
-\begin{lstlisting}[language={[Sharp]C}]
-private void EvaluateRewards()
-{
-	float distanceMoved = Vector2.Distance(transform.position, lastPosition);
-	if (distanceMoved > 0.1f)
-		AddReward(rewardConfigSO.movingReward \* distanceMoved);
-	else
-		AddReward(rewardConfigSO.idlePenalty);
-	
-	Vector2Int gridPos = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-	if (!visitedAreas.Contains(gridPos))
-	{
-		AddReward(rewardConfigSO.explorationReward);
-		visitedAreas.Add(gridPos);
-	}
-}
-\end{lstlisting}
-
-This tiered reward structure encourages exploration, careful movement, and goal-oriented decision-making.
-
-
-\subsection{Runtime Optimization Techniques}
-
-To accelerate the training process without sacrificing consistency:
+The reward strategy balances three core design goals:
 
 \begin{itemize}
-\item \textbf{Increased Time Scale:} \texttt{Time.timeScale} is set to 2 in \texttt{Initialize()}, doubling simulation speed.
-\item \textbf{Headless Mode:} Training runs without rendering the player camera or visual effects to save GPU cycles.
-\item \textbf{Simplified Physics:} Lightweight colliders and fewer rigidbodies minimize physics overhead.
-\item \textbf{Observation Normalization:} Disabled to preserve intuitive debugging of raw numerical states.
+\item \textbf{Encourage goal-directed behavior}: e.g., reaching checkpoints and collecting coins.
+\item \textbf{Discourage inefficient movement}: e.g., excessive jumping or dashing without utility.
+\item \textbf{Foster exploration and hazard avoidance}: e.g., bonuses for discovering new areas and penalties for touching spikes or enemies.
 \end{itemize}
 
-These enhancements help reduce episode time and allow more simulation steps within practical timeframes.
+By using both dense (frequent) and sparse (event-based) rewards, the agent receives sufficient feedback to learn early behaviors while also being incentivized to achieve longer-term objectives.
 
-\subsection{Real-Time Monitoring and Logging}
-Monitoring training progress is critical for understanding agent learning dynamics and ensuring that reinforcement signals are producing the intended behaviors. To support real-time evaluation, this project includes custom visualization and data logging tools that track agent performance during training. These utilities provide both live feedback inside the Unity editor and persistent logs for post-training analysis.
-Key performance metrics are exposed via public read-only properties in \texttt{AgentController.cs}. These include cumulative statistics across episodes:
+\subsubsection{Short-Term and Shaping Rewards}
+
+These rewards are evaluated at every decision step and provide real-time feedback:
 
 \begin{itemize}
-\item \texttt{EpisodeNumber}: number of completed training episodes
-\item \texttt{AverageSteps}: mean episode length
-\item \texttt{AverageRewards}: mean cumulative reward per episode
-\item \texttt{DeathCount}: total number of deaths encountered
+\item Positive reward for horizontal movement based on distance traveled.
+\item Penalty for standing idle without exploration.
+\item Reward for exploring new areas (each visited tile yields a one-time bonus).
+\item Distance-based shaping reward inversely proportional to distance to nearest coin.
 \end{itemize}
 
-\begin{lstlisting}[language={[Sharp]C}]
-public int AverageSteps => episodeCounter == 0 ? 0 : totalStepsAcrossEpisodes / episodeCounter;
-public float AverageRewards => episodeCounter == 0 ? 0 : totalRewardsAcrossEpisodes / episodeCounter;
-public int DeathCount => cumulativeDeaths;
-\end{lstlisting}
+\subsubsection{Event-Based Feedback}
 
-These metrics are visualized in real-time via \texttt{RewardTrackerUI.cs} and saved to CSV files through \texttt{RewardLogger.cs}. Additionally, TensorBoard dashboards provide smoothed reward trends, episode lengths, loss values, and entropy measures throughout training.
-
-\subsubsection{RewardTrackerUI}
-
-The \texttt{RewardTrackerUI.cs} script overlays key training statistics directly onto the Unity game screen using TextMeshPro. This tool enables developers to observe agent progress without halting or pausing the training session. The display updates every frame and includes metrics such as:
+Triggered by interactions with in-game elements, these rewards provide feedback on significant actions:
 
 \begin{itemize}
-\item Current episode number and cumulative death count
-\item Step progress (current vs max), current episode reward
-\item Agent health and position
-\item Coins and checkpoints collected relative to total counts
-\item Jump and dash counts, including their cumulative penalty costs
+\item +1.5 for collecting a coin
+\item +2.0 for reaching a checkpoint
+\item −3.0 for colliding with hazards
+\item +0.5 for damaging an enemy, +1.5 for killing
+\item −2.5 for taking damage from an enemy
 \end{itemize}
 
-This real-time overlay aids in identifying abnormal behaviors, reward stagnation, or sudden regressions in agent performance. It is especially useful during early training stages, where debugging and reward function calibration are most active.
+These values are retrieved from RewardConfigSO and applied via collision events such as OnTriggerEnter2D() or combat callbacks.
+
+\subsubsection{Episodic Summary Feedback}
+
+At the end of each episode, rewards are further adjusted to reflect overall performance:
+
+\begin{itemize}
+\item Coin and checkpoint completion bonuses scale with percentage collected.
+\item Jump and dash taxes penalize excessive or unnecessary usage.
+\end{itemize}
+
+This feedback structure balances local behavior optimization with long-term resource management and planning. The table \ref{PlayerAgentRewardPenaltyTable} shows the example of tuned reward and penalties.
+
+\begin{table}[H]
+\caption{Player Agent Reward and Penalty Table}
+\label{tbl:PlayerAgentRewardPenaltyTable}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Event or Behavior} & \textbf{Type} & \textbf{Value} \\
+\hline
+Idle (no movement) & Penalty & −0.02 \\
+Movement (per unit distance) & Reward & +0.001 \\
+Exploration (new tile visited) & Reward & +0.05 \\
+Jumping & Penalty & −0.03 \\
+Dashing & Penalty & −0.05 \\
+Collecting a Coin & Reward & +1.5 \\
+Reaching a Checkpoint & Reward & +2.0 \\
+Touching Hazard & Penalty & −3.0 \\
+Damaging an Enemy & Reward & +0.5 \\
+Killing an Enemy & Reward & +1.5 \\
+Hit by an Enemy & Penalty & −2.5 \\
+Coin Completion Bonus (episode end) & Reward & +2.0 × (coin completion ratio) \\
+Checkpoint Completion Bonus (episode end) & Reward & +2.0 × (checkpoint completion ratio) \\
+Jump Count Tax (episode end) & Penalty & −0.01 × (jump count) \\
+Dash Count Tax (episode end) & Penalty & −0.02 × (dash count) \\
+Distance-Based Coin Shaping & Reward & +0.01 × (1 / distance to nearest coin) \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Enemy Agent Reward Design}
+
+Enemy agents are going to be train with a distinct set of objectives that emphasize disrupting player progress and prolonging their own survival. Their reward model includes:
+
+\begin{table}[!h]
+\caption{Enemy Agent Reward Table}
+\label{tbl:EnemyAgentRewardTable}
+\begin{tabular}{|l|l|} \hline
+\textbf{Action} & \textbf{Reward} \\ \hline
+Player Damaged & +100 \\
+Chasing Player (interval-based) & +5 \\
+Survival Over Time (per interval) & +1 \\
+Touching Hazard or Falling & −50 \\
+Eliminated by Player & −200 \\ \hline
+\end{tabular}
+\end{table}
+
+This structure will encourages proactive behaviors like pursuit and positioning, while punishing recklessness or poor navigation.
+
+\subsubsection{Reward Configuration: Externalization and Tuning}
+
+All reward parameters are defined in \texttt{RewardConfigSO.cs}, a Unity ScriptableObject for modular editing. This enables:
+
+\begin{itemize}
+\item Live tuning of individual reward weights without recompilation
+\item Independent experimentation across agents or tasks
+\item Easier scaling or balancing when new mechanics are added (e.g., ranged attacks)
+\end{itemize}
+
+The reward system is tuned iteratively based on observed agent behaviors and logged performance metrics, ensuring alignment between intended and learned behavior
+
+%\subsection{Runtime Optimization Techniques}
+
+%To accelerate the training process without sacrificing consistency:
+
+%\begin{itemize}
+%\item \textbf{Increased Time Scale:} \texttt{Time.timeScale} is set to 2 in \texttt{Initialize()}, doubling simulation speed.
+%\item \textbf{Headless Mode:} Training runs without rendering the player camera or visual effects to save GPU cycles.
+%\item \textbf{Simplified Physics:} Lightweight colliders and fewer rigidbodies minimize physics overhead.
+%\item \textbf{Observation Normalization:} Disabled to preserve intuitive debugging of raw numerical states.
+%\end{itemize}
+
+%These enhancements help reduce episode time and allow more simulation steps within practical timeframes.
+
+
+\subsection{Logging, Monitoring, and Evaluation}
+Monitoring the training process is essential for ensuring the stability, convergence, and quality of the learned agent behavior. In this project, a combination of real-time visual feedback, structured data logging, and offline evaluation tools are implemented to track progress and support reward tuning. These tools not only facilitate immediate debugging but also enable long-term analysis of agent learning dynamics.
+
+\subsubsection{Real-Time Statistics with RewardTrackerUI}
+
+The \texttt{RewardTrackerUI.cs} script provides an in-game overlay that displays live performance metrics during training. This tool is rendered using \texttt{TextMeshPro }elements within the Unity scene and updates every frame, offering quick insight into the agent's behavior without requiring a full debug pause or console output inspection.
+
+The following metrics are displayed:
+
+\begin{itemize}
+\item Current episode number
+\item Episode step count vs. max step limit
+\item Current cumulative reward
+\item Player agent’s current health
+\item Coins and checkpoints collected (with progress bars)
+\item Number of jumps and dashes (with respective penalties)
+\item Total deaths encountered across all episodes
+\end{itemize}
 
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=9cm]{./Attachments/RewardTrackerUIExample.png}}
-\caption{Real-time agent statistics during training, visualized through \texttt{RewardTrackerUI} using overlay}
-\label{fig:RewardTrackerUIExample}
+\caption{Real-time training statistics rendered in-game via \texttt{RewardTrackerUI.cs}}
+\label{fig:RewardTrackerUI}
 \end{figure}
 
-\subsubsection{RewardLogger}
+This overlay is especially useful during early-stage training and curriculum progression, where it provides immediate visual validation of new behaviors, response to rewards, and unexpected regressions.
 
-To support longitudinal analysis and reward function tuning, the \texttt{RewardLogger.cs} script records per-episode summaries to a timestamped CSV file. This logging system subscribes to the agent’s \texttt{OnEpisodeEnded} event and appends structured data after each episode ends. Logged fields include:
+\subsubsection{Structured Logging with RewardLogger}
+
+For long-term analysis, each completed episode’s performance is recorded to a timestamped CSV file using \texttt{RewardLogger.cs}. This logger captures detailed statistics on each episode and writes them to the \texttt{/Assets/Logging directory}. The logs are compatible with spreadsheet tools (Excel, Google Sheets) and data analysis libraries (e.g., Python Pandas).
+
+Fields logged per episode include:
 
 \begin{itemize}
-\item Episode number
-\item Total steps taken
-\item Total cumulative reward
-\item Coins and checkpoints collected percentage in the level
-\item Jump and dash counts along with their associated penalties
-\item Cumulative averages of steps and rewards across all episodes
+\item Episode number and total step count
+\item Cumulative reward at episode end
+\item Coins and checkpoints collected
+\item Jump and dash usage (plus respective penalties)
+\item Cumulative averages of steps and rewards
 \end{itemize}
-
-These logs are saved to the \texttt{/Assets/Logging/} directory and are compatible with spreadsheet applications such as Excel or analysis tools like Python/Pandas. They provide a quantitative foundation for tuning hyperparameters, analyzing policy efficiency, and validating learning consistency over time.
 
 \begin{lstlisting}
 Episode,Steps,Reward,CoinsCollected,TotalCoins,CheckpointsCollected,TotalCheckpoints,JumpCount,JumpPenalty,DashCount,DashPenalty,CumulativeAvgSteps,CumulativeAvgRewards
@@ -1851,115 +1921,169 @@ Episode,Steps,Reward,CoinsCollected,TotalCoins,CheckpointsCollected,TotalCheckpo
 ...
 \end{lstlisting}
 
-\subsubsection{TensorBoard Monitoring}
-
-During training, statistics are logged via the ML-Agents TensorBoard system:
+This log format enables retrospective evaluation, such as:
 
 \begin{itemize}
-\item Average reward per episode
-\item Episode length
-\item Coins collected
-\item Number of deaths
-\item Training loss and entropy
+\item Plotting learning curves (reward vs. episode)
+\item Identifying performance plateaus or regressions
+\item Measuring reward-to-action ratios
+\item Comparing curriculum effectiveness across stages
 \end{itemize}
 
-These logs are used to generate training graphs, reward curves, and behavior analysis.
+\subsubsection{Performance Monitoring via TensorBoard}
+
+In parallel with Unity’s internal tools, the ML-Agents framework supports TensorBoard logging for a higher-level view of model training. This includes:
+
+\begin{itemize}
+\item Episode reward trends
+\item Mean episode length
+\item Value function loss and policy entropy
+\item Reward signal contributions (e.g., extrinsic, shaping, penalties)
+\end{itemize}
+
+TensorBoard provides visualizations that help answer key questions during training:
+
+\begin{itemize}
+\item Is the agent learning stably or oscillating?
+\item Are rewards being exploited or underutilized?
+\item Is policy entropy decreasing (indicating policy convergence)?
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=12cm]{./Attachments/TensorBoardExample.png}}
+\caption{TensorBoard summary showing average rewards, episode lengths, and loss values over time}
+\label{fig:TensorBoardExample}
+\end{figure}
+
+\subsubsection{Internal Metric Access via AgentController}
+
+For scripting access and external systems, \texttt{AgentController.cs} exposes key episode metrics through read-only properties:
+
+\begin{lstlisting}[language={[Sharp]C}]
+public int AverageSteps => episodeCounter == 0 ? 0 : totalStepsAcrossEpisodes / episodeCounter;
+public float AverageRewards => episodeCounter == 0 ? 0 : totalRewardsAcrossEpisodes / episodeCounter;
+public int DeathCount => cumulativeDeaths;
+\end{lstlisting}
+
+These fields enable dashboards, remote monitors, and hybrid systems (e.g., curriculum controllers or reward tuners) to make data-informed decisions in real-time or post-episode.
+
+\subsubsection{Evaluation Protocols}
+
+Evaluation of trained policies is performed through controlled test runs in the final composite environment. These sessions are used to validate:
+
+\begin{itemize}
+\item Goal completion rates (e.g., percent of coins or checkpoints collected)
+\item Mean survival time and number of deaths
+\item Efficiency scores based on jump and dash usage
+\item Generalization to level variations and unseen configurations
+\end{itemize}
+
+Performance is benchmarked using both in-game RewardTrackerUI metrics and exported RewardLogger data. These results are later aggregated and discussed in the Results and Discussion chapter.
+
+Through an integrated system of real-time visual overlays, structured logs, and external dashboards, this project provides a robust infrastructure for tracking and evaluating reinforcement learning progress. This monitoring framework ensures that both short-term agent behaviors and long-term performance trends are visible and actionable throughout the training lifecycle.
 
 \section{Packaging, Deployment, and Reusability}
-The successful deployment of a trained AI agent within a game development environment requires a structured approach to integration, optimization, and packaging. This process ensures that the AI agent operates efficiently within the Unity-based platformer while remaining modular and reusable for future applications. A key objective of this project is to produce an AI framework that can be seamlessly transferred to other 2D platformer projects with minimal overhead and high configurability.\par
 
-Following successful training, the AI model is transitioned from a learning system to a deployable module capable of real-time inference. The following subsections detail the methodology for embedding the AI model into the Unity engine, implementing a dual-rendering system for visual perception, designing a modular AI architecture for extensibility, and packaging the entire system as a distributable Unity asset.\par
-\subsection{Integration of the Trained AI Model}
-Once training has converged to a satisfactory policy, the model is integrated into the Unity environment for inference-based execution. This integration must ensure that the AI agent can process observations, make decisions, and interact with the environment in real time without performance degradation.
-\subsubsection{Loading and Utilizing the Trained Model}
-The trained policy is exported as an ONNX-format model file (\texttt{.onnx}), which is compatible with Unity’s ML-Agents inference engine. Integration involves the following steps:\par
+Beyond training and evaluation, a key objective of this project is to develop a reinforcement learning framework that is modular, extensible, and suitable for deployment in a range of 2D platformer scenarios. This section outlines the process of transforming the trained AI agent into a reusable Unity package, covering model integration, perception architecture, modular system design, and documentation for third-party developers.
+
+\subsection{Deployment of Trained AI Model}
+
+Once training is complete, the model is exported in the Open Neural Network Exchange (ONNX) format, which is natively supported by Unity ML-Agents for inference.
+
+\subsubsection{Inference Integration in Unity}
+
+The deployment process follows these steps:
+
 \begin{itemize}
-\item \textbf{Model Importing:}
-\begin{itemize}
-\item The \texttt{.onnx} file is placed within the Unity project’s \texttt{Assets} directory.
-\item The \texttt{Behavior Parameters} component is configured to reference the imported model.
+\item The trained \texttt{.onnx} file is imported into the Unity project and assigned to the Behavior Parameters component of the PlayerAgent.
+\item The \texttt{BehaviorType} is set to \texttt{Inference Only}, disabling training and enabling real-time decision making.
+\item Observations continue to be collected in real time using the same \texttt{CollectObservations()} logic as in training.
+\item Agent actions are computed via the ONNX model and routed through the Action Module system to control character behavior.
 \end{itemize}
-\item \textbf{Agent Configuration:}
-\begin{itemize}
-\item The AI agent is transitioned from training mode to inference mode.
-\item Real-time observations from the game environment are routed into the model, which outputs the corresponding action vector.
-\end{itemize}
-\item \textbf{Testing and Validation:}
-\begin{itemize}
-\item The agent is tested within a sandbox scene to ensure inference stability.
-\item Debugging tools such as \texttt{RewardTrackerUI.cs} and custom inspectors are used to monitor agent behavior.
-\end{itemize}
-\end{itemize}
+
+This configuration allows the agent to function autonomously in gameplay scenarios, supporting applications such as AI-controlled enemies, allies, or automated testers.
+
 \subsection{Dual-Rendering System for Agent Perception}
-To optimize visual-based learning and inference, a dual-camera rendering architecture is employed. This system separates the player-visible graphics from the AI’s perceptual input, enabling the agent to receive a structured and minimalistic version of the game environment.
-\subsubsection{Design and Implementation}
-\begin{itemize}
-\item \textbf{Primary Camera (Player View):}
-\begin{itemize}
-\item Renders the game world with standard textures, effects, and UI layers.
-\item Intended for player visualization and human gameplay.
-\end{itemize}
-\item \textbf{Secondary Camera (Agent Perception View):}
-\begin{itemize}
-    \item Hidden from the player and used exclusively by the AI agent.
-    \item Renders simplified ML sprites that represent game objects using flat, color-coded geometries.
-    \item Applies no lighting, shaders, or post-processing to maintain interpretability.
-\end{itemize}
 
-\item \textbf{ML-Agents Integration:}
-\begin{itemize}
-    \item ML-Agents receives visual observations from the agent camera.
-    \item These observations are transformed into tensors and used by the neural network for decision-making.
-\end{itemize}
-\end{itemize}
-\subsubsection{Advantages of the Dual-Rendering System}
-\begin{itemize}
-\item \textbf{Reduced Visual Complexity:} AI focuses only on game-relevant entities such as platforms, hazards, and goals.
-\item \textbf{Standardized Input:} Visual consistency across levels and environments enhances generalization.
-\item \textbf{Accelerated Learning:} Simplified visuals improve convergence rate during training.
-\end{itemize}
-\subsection{Modular AI System for Reusability}
-To maximize flexibility and reuse, the AI system is architected in modular components, each responsible for a distinct layer of functionality. This structure allows developers to easily adapt, extend, or replace behaviors without altering the core inference logic.
-\begin{itemize}
-\item \textbf{PlayerActionModules:} Serves as the centralized interface between the agent and gameplay scripts, such as \texttt{BasicPlayerMovement.cs} and \texttt{PlayerAttack.cs}.
-\item \textbf{Observation Encapsulation:} All observable states are gathered in a controlled and extensible method via \texttt{CollectObservations()}.
-\item \textbf{RewardConfigSO:} Stores all reward parameters in a ScriptableObject, allowing dynamic tuning without modifying logic code.
-\item \textbf{Behavior Configuration:} The \texttt{BehaviorParameters} component permits external adjustment of inference frequency, action type, and network linkage.
-\end{itemize}
+To enhance visual perception and reduce overfitting to aesthetic features, a dual-camera rendering system is employed.
 
-This modularity supports expansion to new environments, additional abilities (e.g., ranged attacks, double jump), and future agent roles such as adversaries or allies.
-
-\subsection{Packaging the AI as a Reusable Unity Asset}
-
-To distribute the AI system for use in other Unity-based projects, the entire framework is bundled into a Unity asset package with comprehensive documentation and versioning.
-
-\subsubsection{Asset Bundling and Exportation}
+\subsubsection{System Overview}
 
 \begin{itemize}
-\item All core AI scripts (e.g., \texttt{AgentController.cs}, \texttt{PlayerActionModules.cs}), model files, configuration assets, and ML sprite prefabs are grouped into a structured folder.
-\item The package excludes scene-specific elements, allowing developers to integrate the AI system into custom levels.
-\item ML-Agents package dependencies and Unity version requirements are clearly documented.
+\item \textbf{Primary Camera (Gameplay View):} Used by human players; renders full graphics, UI, and environment layers.
+\item \textbf{Secondary Camera (Agent View):} Hidden from the player; renders ML-specific sprites on a separate layer. These sprites use solid color codes to represent hazards, goals, enemies, and other elements.
 \end{itemize}
 
-\subsubsection{Documentation and User Guide}
+\subsubsection{Benefits}
 
 \begin{itemize}
-\item A \texttt{README.md} file provides an overview, installation steps, and quick-start guidance.
-\item A PDF manual offers detailed explanations of the AI architecture, action mapping, reward customization, and known integration tips.
-\item Code examples demonstrate common use cases, such as adding new movement types or adjusting camera layers.
+\item Reduced perceptual complexity accelerates learning.
+\item Consistent sprite representations improve generalization across environments.
+\item ML sprite layers are easily extendable, supporting new gameplay elements without retraining.
 \end{itemize}
 
-\subsubsection{Version Control and Distribution}
+\subsection{Modular Architecture for Generalization}
+
+A core architectural goal of this project is to ensure that the AI system can be reused across different platformer levels or projects without extensive modification. This is achieved through clear separation of responsibilities and modular component design.
 
 \begin{itemize}
-\item The AI system is maintained under semantic versioning to support iterative improvements.
-\item Changelogs detail updates, fixes, and compatibility notes.
-\item Distribution channels include GitHub repositories, private asset sharing, or submission to the Unity Asset Store (future scope).
-\item Community contributions and extensions are encouraged to promote long-term reusability and scalability.
+\item \textbf{AgentController.cs:} Acts as the primary interface with ML-Agents. Handles decision reception, reward evaluation, and episode control.
+\item \textbf{PlayerActionModules.cs:} Provides a middleware layer that decouples agent logic from gameplay implementation. New actions can be added modularly.
+\item \textbf{RewardConfigSO:} Encapsulates all reward and penalty values in a ScriptableObject. Enables rapid tuning without altering source code.
+\item \textbf{ML Sprite System:} Isolated layer-based visual system for training and inference.
 \end{itemize}
 
-\subsection{Summary}
-This packaging and deployment framework transforms the trained agent from a research asset into a production-ready AI module. Its modular, extensible, and fully documented structure supports both technical adoption and creative expansion, making it suitable for integration into a wide array of 2D platformer projects.
+These components support rapid prototyping, behavior extension (e.g., ranged attacks, new movement abilities), and integration with new levels or AI roles (e.g., allies, enemies, bosses).
+
+\subsection{Packaging for Third-Party Use}
+
+To enable integration into other Unity projects, the entire AI framework is bundled as a Unity package with documentation.
+
+\subsubsection{Asset Package Structure}
+
+The package includes:
+
+\begin{itemize}
+\item Core scripts: \texttt{AgentController.cs}, \texttt{PlayerActionModules.cs}, \texttt{RewardLogger.cs}, etc.
+\item Prefabs and configurations: ML sprites, behavior parameters, ScriptableObjects.
+\item ONNX model: Exported trained policy for inference.
+\item Documentation: Setup guide, user manual, and example usage.
+\end{itemize}
+
+Scene-specific elements and assets (e.g., level geometry, decorative sprites) are excluded to maximize compatibility with user projects.
+
+\subsubsection{Documentation and Versioning}
+
+Comprehensive documentation is provided in both Markdown (README.md) and PDF formats. It includes:
+
+\begin{itemize}
+\item Setup instructions and dependency requirements
+\item Step-by-step integration and inference guide
+\item Description of modular architecture and extendability
+\item Instructions for retraining or curriculum modification
+\end{itemize}
+
+Versioning follows semantic versioning (e.g., v1.0.0), with changelogs documenting updates and compatibility notes.
+
+This deployment strategy transforms the trained reinforcement learning agent from an experimental artifact into a reusable, scalable component for game AI. The dual-rendering system, modular design, and packaging tools ensure that the agent can be adopted by developers with minimal integration effort. This aligns with the broader objective of democratizing AI integration for indie developers and researchers working on 2D platformer games.
+
+\section{Summary}
+
+This chapter presented the full methodology employed in the development of an adaptive reinforcement learning agent for 2D platformer environments. The chapter began with a detailed overview of the system architecture, followed by an explanation of the design and structure of the custom game environment. Platforming mechanics, agent interactions, and curriculum learning stages were introduced to progressively guide the agent toward mastering complex behaviors.  
+
+The development of AI agents was then discussed in depth, highlighting the modular architecture implemented through the PlayerActionModules system. This approach enabled scalable and reusable control of agent behavior, decoupling decision logic from action execution. A comprehensive breakdown of the action and observation spaces, along with the dual-camera perception system, demonstrated how the agent perceives and interacts with its environment using both numerical and visual modalities.  
+
+Reward shaping techniques were introduced to align the agent's learning objectives with desirable gameplay behaviors, incorporating both short-term and long-term feedback loops. A structured reward configuration system allowed for fine-tuning and flexible experimentation.  
+
+The training process was described with attention to hyperparameter selection, simulation management, and episode lifecycle control. Runtime optimizations such as time scaling and headless mode were applied to accelerate training while maintaining consistency.  
+
+Logging, monitoring, and evaluation were addressed through a combination of real-time UI overlays, structured CSV logs, and TensorBoard analytics. These tools enabled continuous performance tracking, supporting the iterative refinement of agent policies.  
+
+Finally, a robust packaging and deployment pipeline was proposed to support reusability. The trained agent was modularized, exported as a Unity asset package, and documented for integration into other platformer game projects.  
+
+Through this methodology, the project establishes a reusable and generalizable framework for training intelligent agents in 2D platformer settings, laying the foundation for experimentation, expansion, and real-world deployment in game development contexts.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% Experiments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
